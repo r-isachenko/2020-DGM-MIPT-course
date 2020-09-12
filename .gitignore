@@ -1,0 +1,13 @@
+*.DS_Store
+
+#Tex
+*.out
+*.log
+*.aux
+*.bbl
+*.blg
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*eps-converted-to.pdf

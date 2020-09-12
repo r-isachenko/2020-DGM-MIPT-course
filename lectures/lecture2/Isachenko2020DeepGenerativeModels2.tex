@@ -1,0 +1,391 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx, epsfig}
+\usepackage{amsmath,mathrsfs,amsfonts,amssymb}
+%\usepackage{subfig}
+\usepackage{floatflt}
+\usepackage{epic,ecltree}
+\usepackage{mathtext}
+\usepackage{fancybox}
+\usepackage{fancyhdr}
+\usepackage{multirow}
+\usepackage{enumerate}
+\usepackage{epstopdf}
+\usepackage{multicol}
+\usepackage{algorithm}
+\usepackage[noend]{algorithmic}
+\def\algorithmicrequire{\textbf{Input:}}
+\def\algorithmicensure{\textbf{Output:}}
+\usetheme{default}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
+\usecolortheme{default}
+\setbeamerfont{title}{size=\Huge}
+\setbeamertemplate{footline}[page number]{}
+
+\newcommand{\bx}{\mathbf{x}} 
+\newcommand{\bz}{\mathbf{z}} 
+\newcommand{\by}{\mathbf{y}} 
+
+\newcommand{\bX}{\mathbf{X}} 
+\newcommand{\bZ}{\mathbf{Z}} 
+
+\newcommand{\btheta}{\boldsymbol{\theta}} 
+\newcommand{\bphi}{\boldsymbol{\phi}} 
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+%\definecolor{beamer@blendedblue}{RGB}{15,120,80}
+%----------------------------------------------------------------------------------------------------------
+\title[\hbox to 56mm{Deep Generative Models  \hfill\insertframenumber\,/\,\inserttotalframenumber}]
+{Deep Generative Models \\ Lecture 2}
+\author[Roman Isachenko]{\\Roman Isachenko}
+\institute[MIPT]{Moscow Institute of Physics and Technology \\
+}
+\date{2020}
+%--------------------------------------------------------------------------------
+\begin{document}
+%--------------------------------------------------------------------------------
+\begin{frame}
+%\thispagestyle{empty}
+\titlepage
+\end{frame}
+%--------------------------------------------------------------------------------
+\section{Intro}
+%=======
+\begin{frame}{Generative models zoo}
+    \begin{figure}
+        \centering
+        \includegraphics[width=1.0\linewidth]{figs/generative_models_zoo.pdf}
+        \label{fig:generative_models_zoo}
+    \end{figure}
+\vfill
+\hrule\medskip
+{\scriptsize Radford A., Metz L., Chintala S. Unsupervised representation learning with deep convolutional generative adversarial networks  \href{https://arxiv.org/abs/1511.06434}{https://arxiv.org/abs/1511.06434}}
+\end{frame}
+%--------------------------------------------------------------------------------
+\subsection{Latent variable models}
+\begin{frame}{Bayesian framework}
+\begin{itemize}
+    \item $\bx$ -- samples;
+    \item $\by$ -- target variables;
+    \item $\btheta$ -- model parameters.
+\end{itemize}
+\begin{minipage}[t]{0.5\columnwidth}
+\begin{block}{Discriminative}
+    \[
+        p(\by, \btheta | \bx) = p(\by | \bx, \btheta) p(\btheta)
+    \]
+    \begin{itemize}
+        \item Find conditional probability of $\by$ given $\bx$. \\
+        \item Samples $\bx$ are given. \\
+        \item Used for classification, regression.
+    \end{itemize}
+\end{block}
+\end{minipage}%
+\begin{minipage}[t]{0.5\columnwidth}
+\begin{block}{Generative}
+    \[
+        p(\by, \bx, \btheta) = p(\by, \bx | \btheta) p(\btheta)
+    \]
+    \begin{itemize}
+        \item Find joint probability of $(\bx, \by)$.
+        \item Samples $\bx$ should be modelled. \\
+        \item Generation of new samples $(\bx, \by)$.
+    \end{itemize}
+\end{block}
+\end{minipage}
+\end{frame}
+%=======
+\begin{frame}{Generative models}
+    Given samples $\{\bx_i\}_{i=1}^n \in X$ from unknown distribution $p(\bx)$.
+    
+    \begin{block}{Goal}
+    	learn a distribution $p(\bx)$ for 
+    	\begin{itemize}
+    	    \item evaluating $p(\bx)$ for new samples;
+    	    \item sampling from $p(\bx)$.
+    	\end{itemize}
+    \end{block}
+    \begin{block}{Challenge}
+    	 Data is complex and high-dimensional (curse of dimensionality).
+    \end{block}
+    \begin{block}{Solution}
+        Fix probabilistic model $p(\bx | \btheta)$~-- the set of parameterized distributions . \\
+        Instead of searching true $p(\bx)$ over all probability distributions, learn function approximation $p(\bx | \btheta) \approx p(\bx)$.
+    \end{block}
+\end{frame}
+%=======
+\begin{frame}{Latent variable models}
+    Suppose that our probabilistic model $p(\bx, \bz | \btheta)$ instead of $p(\bx | \btheta)$.
+    \begin{itemize}
+        \item Here $\bz$ are latent variables.
+        \item We observe only samples $\bx$. 
+        \item Latent variables $\bz$ are unknown.
+        \item Parameters $\btheta$ are not random.
+    \end{itemize}
+    \begin{block}{MLE problem for LVM}
+    \vspace{-0.3cm}
+    \begin{multline*}
+        \btheta^* = \argmax_{\btheta} p(\bX, \bZ | \btheta) = \argmax_{\btheta} \prod_{i=1}^n p(\bx_i, \bz_i | \btheta) = \\ = \argmax_{\btheta} \sum_{i=1}^n \log p(\bx_i, \bz_i | \btheta).
+    \end{multline*}
+    \vspace{-0.1cm}
+    \end{block}
+    What if $\btheta$ are random variables with distribution $p(\btheta)$?
+\end{frame}
+%=======
+\begin{frame}{Bayesian framework}
+    What if $\btheta$ are random variables with distribution $p(\btheta)$? \\
+    Before we get any data, we do not know anything about $\btheta$ except the \textbf{prior}  distribution $p(\btheta)$. \\
+    When we get data, we could change the \textbf{prior} distribution to the \textbf{posterior}. 
+    \begin{block}{Bayes theorem}
+    \[
+        p(\btheta | \bX, \bZ) = \frac{p(\bX, \bZ | \btheta) p(\btheta)}{p(\bX, \bZ)} = \frac{p(\bX, \bZ | \btheta) p(\btheta)}{\int p(\bX , \bZ) p(\btheta) d \btheta} 
+    \]
+    \end{block}
+    \begin{block}{Full Bayesian inference}
+    \[
+        p(\bx^* | \bX, \bZ) = \int p(\bx^* | \btheta) p(\btheta | \bX, \bZ) d \btheta
+    \]
+    \end{block}
+\end{frame}
+%=======
+\begin{frame}{Bayesian framework}
+    \begin{block}{Full Bayesian inference}
+    \[
+        p(\bx^* | \bX, \bZ) = \int p(\bx^* | \btheta) p(\btheta | \bX, \bZ) d \btheta
+    \]
+    \end{block}
+    \begin{block}{Maximum a posteriori (MAP)}
+    \vspace{-0.2cm}
+    \[
+        \btheta^* = \argmax_{\btheta} p(\btheta | \bX, \bZ) = \argmax_{\btheta} \bigl(\log p(\bX, \bZ | \btheta) + \log p(\btheta) \bigr)
+    \]
+    \vspace{-0.2cm}
+    \[
+    p(\bx^* | \bX, \bZ) = \int p(\bx^* | \btheta) p(\btheta | \bX, \bZ) d \btheta \approx p(\bx^* | \btheta^*).
+    \]
+    \end{block}
+\end{frame}
+%=======
+\begin{frame}{Latent variable models}
+    \begin{block}{MLE problem}
+    \vspace{-0.3cm}
+    \[
+        \btheta^* = \argmax_{\btheta} p(\bX | \btheta) = \argmax_{\btheta} \prod_{i=1}^n p(\bx_i | \btheta) = \argmax_{\btheta} \sum_{i=1}^n \log p(\bx_i | \btheta).
+    \]
+    \vspace{-0.3cm}
+    \end{block}
+    \begin{block}{Challenge}
+    $p(\bx | \btheta)$ could be intractable.
+    \end{block}
+    \begin{block}{Extend probabilistic model}
+    Introduce latent variable $\bz$ for each sample $\bx$
+    \[
+        p(\bx, \bz | \btheta) = p(\bx | \bz, \btheta) p(\bz); \quad 
+        \log p(\bx, \bz | \btheta) = \log p(\bx | \bz, \btheta) + \log p(\bz).
+    \]
+    \[
+        p(\bx | \btheta) = \int p(\bx, \bz | \btheta) d\bz = \int p(\bx | \bz, \btheta) p(\bz) d\bz.
+    \]
+    \end{block}
+\end{frame}
+%=======
+\begin{frame}{Latent variable models}
+    \[
+    \log p(\bx | \btheta) = \log \int p(\bx | \bz, \btheta) p(\bz) d\bz \rightarrow \max_{\btheta}
+    \]
+    \vspace{-0.6cm}
+    \begin{block}{Examples}
+    \begin{minipage}[t]{0.45\columnwidth}
+		\textit{Mixture of gaussians} \\
+		\vspace{-0.5cm}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.75\linewidth]{figs/mixture_of_gaussians.png}
+		\end{figure}
+		\vspace{-0.5cm}
+	    \begin{itemize}
+	        \item $p(\bx | \bz, \btheta) = \mathcal{N}(\bx | \boldsymbol{\mu}_\bz, \boldsymbol{\Sigma}^2_\bz)$
+	        \item $p(\bz) = \text{Cat}(\bz | \boldsymbol{\pi})$
+	    \end{itemize}
+	\end{minipage}%
+	\begin{minipage}[t]{0.53\columnwidth}
+		\textit{PCA model} \\
+		\vspace{-0.5cm}
+		\begin{figure}
+			\centering
+			\includegraphics[width=.7\linewidth]{figs/pca.png}
+		\end{figure}
+		\vspace{-0.5cm}
+		\begin{itemize}
+	        \item $p(\bx | \bz, \btheta) = \mathcal{N}(\bx | \mathbf{W} \bz + \boldsymbol{\mu}, \boldsymbol{\Sigma}^2_\bz)$
+	        \item $p(\bz) = \mathcal{N}(\bz | 0, \mathbf{I})$
+	    \end{itemize}
+	\end{minipage}
+	\end{block}
+
+\vfill
+\hrule\medskip
+{\scriptsize Bishop\,C. Pattern Recognition and Machine Learning, 2006.}
+    
+\end{frame}
+%=======
+\begin{frame}{Latent variable models}
+    \[
+    \log p(\bx | \btheta) = \log \int p(\bx | \bz, \btheta) p(\bz) d\bz \rightarrow \max_{\btheta}
+    \]
+	\textbf{PCA goal:} Project original data $\bX$ onto low latent space while maximizing the variance of the projected data. 
+	\begin{figure}
+		\centering
+		\includegraphics[width=.7\linewidth]{figs/bayesian_pca.png}
+	\end{figure}
+	\vspace{-0.5cm}
+	\begin{itemize}
+        \item $p(\bx | \bz, \btheta) = \mathcal{N}(\bx | \mathbf{W} \bz + \boldsymbol{\mu}, \boldsymbol{\Sigma}^2_\bz)$
+        \item $p(\bz) = \mathcal{N}(\bz | 0, \mathbf{I})$
+    \end{itemize}
+
+\vfill
+\hrule\medskip
+{\scriptsize Bishop\,C. Pattern Recognition and Machine Learning, 2006.}
+    
+\end{frame}
+%=======
+\begin{frame}{Incomplete likelihood}
+        \begin{block}{MLE problem}
+            \vspace{-0.3cm}
+            \begin{multline*}
+                \vspace{-0.3cm}
+                \btheta^* = \argmax_{\btheta} p(\bX, \bZ | \btheta) = \argmax_{\btheta} \prod_{i=1}^n p(\bx_i, \bz_i | \btheta) = \\ = \argmax_{\btheta} \sum_{i=1}^n \log p(\bx_i, \bz_i | \btheta).
+            \end{multline*}
+            \vspace{-0.3cm}
+        \end{block}
+	Since $Z$ is unknown, maximize \textbf{incomplete likelihood}.
+    \begin{block}{MILE problem}
+        \vspace{-0.3cm}
+    	\begin{multline*}
+        	\btheta^* = \argmax_{\btheta} \log p(\bX| \btheta) = \argmax_{\btheta} \log \int p(\bX, \bZ | \btheta) d \bZ = \\ = \argmax_{\btheta} \log \int p(\bX| \bZ, \btheta) p(\bZ) d\bZ.
+    	\end{multline*}
+        \vspace{-0.3cm}
+	\end{block}
+	
+\end{frame}
+%=======
+\subsubsection{Variational inference}
+\begin{frame}{Variational lower bound}
+	\begin{multline*}
+		\log p(\bX| \btheta) 
+		= \log \frac{p(\bX, \bZ| \btheta)}{p(\bZ|\bX, \btheta)} = \\ 
+		= \int q(\bZ) \log \frac{p(\bX, \bZ| \btheta)}{p(\bZ|\bX, \btheta)}d\bZ
+		= \int q(\bZ) \log \frac{p(\bX, \bZ| \btheta) q(\bZ)}{p(\bZ|\bX, \btheta) q(\bZ)} d\bZ = \\
+		= \int q(\bZ) \log \frac{p(\bX, \bZ | \btheta)}{q(\bZ)}d\bZ + \int q(\bZ) \log \frac{q(\bZ)}{p(\bZ|\bX, \btheta)}d\bZ = \\ 
+		= \mathcal{L} (q, \btheta) + KL(q(\bZ) || p(\bZ|\bX, \btheta)) \geq \mathcal{L} (q, \btheta).
+	\end{multline*}
+	\begin{block}{Kullback-Leibler divergence}
+	    \begin{itemize}
+	        \item $KL(q || p) \geq 0$;
+	        \item $KL(q || p) = 0 \Leftrightarrow q \equiv p$.
+	    \end{itemize}
+	\end{block}
+\end{frame}
+%=======
+\begin{frame}{Variational lower bound}
+\[
+    \log p(\bX| \btheta) = \mathcal{L} (q, \btheta) + KL(q(\bZ) || p(\bZ|\bX, \btheta)) \geq \mathcal{L} (q, \btheta).
+\]
+\begin{block}{ELBO}
+\begin{align*}
+    \mathcal{L} (q, \btheta) &= \int q(\bZ) \log \frac{p(\bX, \bZ | \btheta)}{q(\bZ)}d\bZ = \\ 
+    &= \int q(\bZ) \log p(\bX | \bZ, \btheta) d\bZ + \int q(\bZ) \log \frac{p(\bZ)}{q(\bZ)}d\bZ \\ 
+    &= \mathbb{E}_{q} \log p(\bX | \bZ, \btheta) - KL (q(\bZ) || p(\bZ))
+\end{align*}
+\end{block}
+Instead of maximizing incomplete likelihood, maximize ELBO
+\[
+    \max_{\theta} p(\bX | \btheta) \quad \rightarrow \quad \max_{q, \theta} \mathcal{L} (q, \btheta).
+\]
+    
+\end{frame}
+%=======
+\begin{frame}{EM-algorithm}
+	\[
+		\mathcal{L} (q, \btheta)  = \int q(\bZ) \log p(\bX | \bZ, \btheta) d\bZ + \int q(\bZ) \log \frac{p(\bZ)}{q(\bZ)}d\bZ.
+	\]
+	\begin{block}{Block-coordinate optimization}
+	\begin{itemize}
+		\item Initialize $\btheta^*$;
+		\item E-step
+		\[
+			q(\bZ) = \argmax_q \mathcal{L} (q, \btheta^*) = \argmin_q KL(q || p) =
+			 p(\bZ| \bX, \btheta^*);
+		\]
+		\item M-step
+		\[
+			\btheta^* = \argmax_{\btheta} \mathcal{L} (q, \btheta);
+		\]
+		\item Repeat E-step and M-step until convergence.
+	\end{itemize}
+	\end{block}
+\end{frame}
+%=======
+\begin{frame}{Amortized variational inference}
+    \begin{block}{E-step}
+    \vspace{-0.3cm}
+    \[
+		q(\bZ) = \argmax_q \mathcal{L} (q, \btheta^*) = \argmin_q KL(q || p) =
+		 p(\bZ| \bX, \btheta^*).
+	\]
+	could be \textbf{intractable}.
+    \end{block}
+	\begin{block}{Idea}
+	Restrict the family of all possible distributions $q(\bz)$ to the particular parametric class conditioned of sample: $q(\bz|\bx, \bphi)$.
+	\end{block}
+	
+	\textbf{Variational Bayes}
+	\begin{itemize}
+		\item E-step
+		\[
+		\bphi_n = \bphi_{n-1} + \left.\eta \nabla_{\bphi} \mathcal{L}(\bphi, \btheta_{n-1})\right|_{\bphi=\bphi_{n-1}}
+		\]
+		\item M-step
+		\[
+		\btheta_n = \btheta_{n-1} + \left.\eta \nabla_{\btheta} \mathcal{L}(\bphi_n, \btheta)\right|_{\btheta=\btheta_{n-1}}
+		\]
+	\end{itemize}
+\end{frame}
+%=======
+\begin{frame}{References}
+{\scriptsize
+\begin{itemize}
+    \item \textit{Variational Bayesian inference with Stochastic Search} \\
+	\href{https://arxiv.org/abs/1206.6430}{https://arxiv.org/abs/1206.6430}
+
+    \item \textit{Stochastic Variational Inference} \\
+	\href{https://arxiv.org/abs/1206.7051}{https://arxiv.org/abs/1206.7051}
+
+    \item \textit{Doubly Stochastic Variational Bayes for non-Conjugate Inference} \\
+	\href{http://proceedings.mlr.press/v32/titsias14.pdf}{http://proceedings.mlr.press/v32/titsias14.pdf}
+
+    \item \textit{Auto-Encoding Variational Bayes} \\
+	\href{https://arxiv.org/abs/1312.6114}{https://arxiv.org/abs/1312.6114}
+    
+    \item \textit{Markov chain Monte Carlo and variational inference: Bridging the gap} \\
+	\href{https://arxiv.org/pdf/1410.6460.pdf}{https://arxiv.org/pdf/1410.6460.pdf}
+	
+    \item \textit{Tutorial on Variational Autoencoders} \\
+	\href{http://arxiv.org/abs/1606.05908}{http://arxiv.org/abs/1606.05908}
+\end{itemize}
+}
+\end{frame}
+%=======
+%--------------------------------------------------------------------------------
+\subsection{Flow models}
+%--------------------------------------------------------------------------------
+\subsection{Implicit models}
+\subsubsection{GAN}
+\subsubsection{Evatuation of GANs}
+%--------------------------------------------------------------------------------
+\section{Conclusion}
+%--------------------------------------------------------------------------------
+
+\end{document} 

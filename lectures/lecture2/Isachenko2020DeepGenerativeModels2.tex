@@ -139,7 +139,7 @@
     When we get data, we could change the \textbf{prior} distribution to the \textbf{posterior}. 
     \begin{block}{Bayes theorem}
     \[
-        p(\btheta | \bX, \bZ) = \frac{p(\bX, \bZ | \btheta) p(\btheta)}{p(\bX, \bZ)} = \frac{p(\bX, \bZ | \btheta) p(\btheta)}{\int p(\bX , \bZ) p(\btheta) d \btheta} 
+        p(\btheta | \bX, \bZ) = \frac{p(\bX, \bZ | \btheta) p(\btheta)}{p(\bX, \bZ)} = \frac{p(\bX, \bZ | \btheta) p(\btheta)}{\int p(\bX , \bZ | \btheta) p(\btheta) d \btheta} 
     \]
     \end{block}
     \begin{block}{Full Bayesian inference}
@@ -260,7 +260,7 @@
             \end{multline*}
             \vspace{-0.3cm}
         \end{block}
-	Since $Z$ is unknown, maximize \textbf{incomplete likelihood}.
+	Since $\bZ$ is unknown, maximize \textbf{incomplete likelihood}.
     \begin{block}{MILE problem}
         \vspace{-0.3cm}
     	\begin{multline*}
@@ -345,11 +345,11 @@ Instead of maximizing incomplete likelihood, maximize ELBO
 	\begin{itemize}
 		\item E-step
 		\[
-		\bphi_n = \bphi_{n-1} + \left.\eta \nabla_{\bphi} \mathcal{L}(\bphi, \btheta_{n-1})\right|_{\bphi=\bphi_{n-1}}
+		\bphi_k = \bphi_{k-1} + \left.\eta \nabla_{\bphi} \mathcal{L}(\bphi, \btheta_{k-1})\right|_{\bphi=\bphi_{k-1}}
 		\]
 		\item M-step
 		\[
-		\btheta_n = \btheta_{n-1} + \left.\eta \nabla_{\btheta} \mathcal{L}(\bphi_n, \btheta)\right|_{\btheta=\btheta_{n-1}}
+		\btheta_k = \btheta_{k-1} + \left.\eta \nabla_{\btheta} \mathcal{L}(\bphi_k, \btheta)\right|_{\btheta=\btheta_{k-1}}
 		\]
 	\end{itemize}
 \end{frame}

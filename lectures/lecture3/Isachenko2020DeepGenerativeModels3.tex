@@ -114,24 +114,6 @@ Since $\bZ$ is unknown, maximize \textbf{incomplete likelihood}.
 
 \end{frame}
 %=======
-\subsubsection{Variational inference}
-\begin{frame}{Variational lower bound}
-\begin{multline*}
-	\log p(\bX| \btheta) 
-	= \log \frac{p(\bX, \bZ| \btheta)}{p(\bZ|\bX, \btheta)} = \\ 
-	= \int q(\bZ) \log \frac{p(\bX, \bZ| \btheta)}{p(\bZ|\bX, \btheta)}d\bZ
-	= \int q(\bZ) \log \frac{p(\bX, \bZ| \btheta) q(\bZ)}{p(\bZ|\bX, \btheta) q(\bZ)} d\bZ = \\
-	= \int q(\bZ) \log \frac{p(\bX, \bZ | \btheta)}{q(\bZ)}d\bZ + \int q(\bZ) \log \frac{q(\bZ)}{p(\bZ|\bX, \btheta)}d\bZ = \\ 
-	= \mathcal{L} (q, \btheta) + KL(q(\bZ) || p(\bZ|\bX, \btheta)) \geq \mathcal{L} (q, \btheta).
-\end{multline*}
-\begin{block}{Kullback-Leibler divergence}
-	\begin{itemize}
-		\item $KL(q || p) \geq 0$;
-		\item $KL(q || p) = 0 \Leftrightarrow q \equiv p$.
-	\end{itemize}
-\end{block}
-\end{frame}
-%=======
 \begin{frame}{Variational lower bound}
 	\begin{block}{ELBO}
 		\vspace{-0.1cm}
@@ -278,7 +260,7 @@ Optimization w.r.t. $\btheta$: \textbf{mini-batching} (1) + \textbf{Monte-Carlo}
 \[
 	f(\xi) = \int q(\eta|\xi) h(\eta) d\eta
 \]
-Let $\eta = h(g(\xi, \epsilon))$, where $g$ is a deterministic function, $\epsilon$ is a random variable with a density function $r(\epsilon)$.
+Let $\eta = g(\xi, \epsilon)$, where $g$ is a deterministic function, $\epsilon$ is a random variable with a density function $r(\epsilon)$.
 \begin{multline*}
 \nabla_\xi \int q(\eta|\xi) h(\eta) d\eta = \nabla_\xi \int r(\epsilon) h(g(\xi, \epsilon)) d \epsilon \\
 \approx \nabla_\xi h(g(\xi, \epsilon^*)), \quad \epsilon^* \sim r(\epsilon).
@@ -296,7 +278,7 @@ Let $\eta = h(g(\xi, \epsilon))$, where $g$ is a deterministic function, $\epsil
 \begin{frame}{ELBO gradient (E-step, $\nabla_{\bphi} \mathcal{L}(\bphi, \btheta)$)}
 	\vspace{-0.3cm}
 	\begin{multline*}
-		\nabla_{\bphi} \mathcal{L} (\bphi, \btheta) = \nabla_{\bphi}\int q(\bZ|\bX, \bphi) \log p(\bX| \bZ, \btheta)d\bZ  - \nabla_{\bphi} KL \\ \approx  n \nabla_{\bphi}\int r(\epsilon) \log p(\bx_i| g(\bx_i, \epsilon, \bphi), \btheta)d\epsilon  - \nabla_{\bphi} KL  \\ \approx
+		\nabla_{\bphi} \mathcal{L} (\bphi, \btheta) = \nabla_{\bphi}\int q(\bZ|\bX, \bphi) \log p(\bX| \bZ, \btheta)d\bZ  - \nabla_{\bphi} KL \\ \approx  n \nabla_{\bphi}\int r(\bepsilon) \log p(\bx_i| g(\bx_i, \bepsilon, \bphi), \btheta)d\bepsilon  - \nabla_{\bphi} KL  \\ \approx
 		n \nabla_{\bphi} \log p(\bx_i| g(\bx_i, \bepsilon^*, \bphi), \btheta)  - \nabla_{\bphi} KL , \quad \bepsilon^* \sim r(\bepsilon).
 	\end{multline*}
 	
@@ -390,13 +372,14 @@ Generation objects by sampling the latent space $\bz \sim \mathcal{N}(0, \mathbf
     	\end{multline*}
         \vspace{-0.3cm}
     \end{block}
+	We would like to maximize lower bound $\mathcal{L}(q)$.
 \end{frame}
 %=======
 \begin{frame}{Mean field approximation}
     \begin{block}{Independence assumption}
     \vspace{-0.3cm}
     \[
-    q(\bT) = \prod_{i=1}^k q_i(\bT_i), \quad \bT = [\bT_1, \dots, \bT_k], \quad \bT_j = \{ \bt_{ij}\}_{i=1}^n.
+    q(\bT) = \prod_{i=1}^k q_i(\bT_i), \quad \bT = [\bT_1, \dots, \bT_k], \, \bT_j = \{ \bt_{ij}\}_{i=1}^n, \, \bt_i = \{ \bT_{ij}\}_{j=1}^k.
     \]
     \vspace{-0.3cm}
     \end{block}
@@ -439,7 +422,7 @@ Generation objects by sampling the latent space $\bz \sim \mathcal{N}(0, \mathbf
     		\mathcal{L} (q)
     		= \int q_j (\bT_j) \log \hat{p}(\bX, \bT_j) d \bT_j - \int q_j(\bT_j) \log q_j(\bT_j) d\bT_j + \text{const}(q_j) = \\
     		 \int q_j (\bT_j) \log \frac{\hat{p}(\bX, \bT_j)}{q_j(\bT_j)} d\bT_j + \text{const}(q_j) = \\
-    		= KL (q_j(\bT_j) || \hat{p}(\bX, \bT_j)) + \text{const}(q_j) \rightarrow \max_{q_j}.
+    		= - KL (q_j(\bT_j) || \hat{p}(\bX, \bT_j)) + \text{const}(q_j) \rightarrow \max_{q_j}.
     	\end{multline*}
     \end{block}
 \end{frame}
@@ -455,7 +438,7 @@ Generation objects by sampling the latent space $\bz \sim \mathcal{N}(0, \mathbf
 	\begin{block}{ELBO}
 		\vspace{-0.3cm}
 	    \[
-			\mathcal{L} (q) = KL (q_j(\bT_j) || \hat{p}(\bX, \bT_j))  + \text{const}(q_j) \rightarrow \max_{q_j}.
+			\mathcal{L} (q) = - KL (q_j(\bT_j) || \hat{p}(\bX, \bT_j))  + \text{const}(q_j) \rightarrow \max_{q_j}.
 	    \]
 	    \vspace{-0.3cm}
 	\end{block}
@@ -477,7 +460,7 @@ Generation objects by sampling the latent space $\bz \sim \mathcal{N}(0, \mathbf
 \begin{frame}{Mean field approximation}
 	\begin{block}{ELBO}
 		\[
-			\mathcal{L} (q) = KL (q_j(\bT_j) || \hat{p}(\bX, \bT_j))  + \text{const}(q_j) \rightarrow \max_{q_j}.
+			\mathcal{L} (q) = - KL (q_j(\bT_j) || \hat{p}(\bX, \bT_j))  + \text{const}(q_j) \rightarrow \max_{q_j}.
 		\]
 		\vspace{-0.3cm}
 	\end{block}
@@ -509,7 +492,7 @@ Generation objects by sampling the latent space $\bz \sim \mathcal{N}(0, \mathbf
 		\begin{multline*}
 			\log q(\bZ) = \int q(\btheta) \log p(\bX, \bZ,  \btheta) d\btheta + \text{const} = \\
 			= \int \delta(\btheta - \btheta_0) \log p(\bX, \bZ,  \btheta) d\btheta + \text{const} = \\
-			= p (\bZ | \bX, \btheta_0) +  \text{const}.
+			= \log p (\bZ | \bX, \btheta_0) +  \text{const}.
 		\end{multline*}
 	\end{block}
 	\vspace{-0.3cm}
@@ -524,14 +507,14 @@ Generation objects by sampling the latent space $\bz \sim \mathcal{N}(0, \mathbf
 \begin{frame}{Mean field approximation}
 	\begin{block}{ELBO}
 		\[
-			\mathcal{L} (q) = KL (q_j(\bT_j) || \hat{p}(\bX, \bT_j))  + \text{const}(q_j) \rightarrow \max_{q_j}.
+			\mathcal{L} (q) = - KL (q_j(\bT_j) || \hat{p}(\bX, \bT_j))  + \text{const}(q_j) \rightarrow \max_{q_j}.
 		\]
 	\vspace{-0.3cm}
 	\end{block}
 	\begin{block}{ELBO maximization w.r.t. $q_2 \equiv \theta_0$}
 		\vspace{-0.3cm}
 		\begin{align*}
-			\mathcal{L} (q_2) &= KL (q(\btheta) || \hat{p}(\bX, \btheta))  + \text{const}(\btheta_0) \\ 
+			\mathcal{L} (q_2) &= - KL (q(\btheta) || \hat{p}(\bX, \btheta))  + \text{const}(\btheta_0) \\ 
 			&= \int q (\btheta) \log \frac{\hat{p}(\bX, \btheta)}{q(\btheta)} d\btheta + \text{const}(\btheta_0) \\
 			& = \int q (\btheta) \log \hat{p}(\bX, \btheta) d\btheta  - \int q (\btheta) \log q(\btheta) d\btheta + \text{const}(\btheta_0) \\
 			& = \int \delta(\btheta - \btheta_0) \log \hat{p}(\bX, \btheta) d\btheta  - \int \delta \log \delta d\btheta + \text{const}(\btheta_0) \\ 
@@ -546,7 +529,7 @@ Generation objects by sampling the latent space $\bz \sim \mathcal{N}(0, \mathbf
 	\begin{block}{ELBO maximization w.r.t. $q_2 \equiv \theta_0$}
 		\vspace{-0.3cm}
 		\[
-			\mathcal{L} (q_2) = \int \delta(\btheta - \btheta_0) \log \hat{p}(\bX, \btheta) d\btheta + \text{const}(\btheta_0) = \hat{p}(\bX, \btheta^0).
+			\mathcal{L} (q_2) = \int \delta(\btheta - \btheta_0) \log \hat{p}(\bX, \btheta) d\btheta + \text{const}(\btheta_0) = \log \hat{p}(\bX, \btheta_0).
 		\]
 	\end{block}
 	\vspace{-0.3cm}
@@ -572,7 +555,7 @@ Generation objects by sampling the latent space $\bz \sim \mathcal{N}(0, \mathbf
     \]
     \end{block}
 
-	\begin{block}{EM algorithm}
+	\begin{block}{EM algorithm (special case)}
 	\begin{itemize}
 		\item Initialize $\btheta^*$;
 		\item E-step

@@ -135,10 +135,10 @@
 \begin{figure}
 	\includegraphics[width=0.8\linewidth]{figs/flows_how2.png}
 \end{figure}
-\begin{itemize}
+\begin{itemize}	
+	\item Latent representation is given by $\bz = f(\bx, \btheta)$.
 	\item Likelihood is given by $\bz = f(\bx, \btheta)$ and change of variables.
 	\item Sampling of $\bx$ is performed by sampling from a base distribution $p(\bz)$ and applying $\bx = f^{-1}(\bz, \btheta) = g(\bz, \btheta)$.
-	\item Latent representation is given by $\bz = f(\bx, \btheta)$.
 \end{itemize}
 \vfill
 \hrule\medskip
@@ -171,6 +171,8 @@
 		p(f(\bx)) \left|\det \left(\frac{\partial \textbf{f}_2}{\partial \textbf{f}_1} \cdot \frac{\partial \textbf{f}_1}{\partial \bx} \right) \right| = \\
 		= p(f(\bx))  \left|\det \left(\frac{\partial \textbf{f}_2}{\partial \textbf{f}_1} \right) \right| \cdot \left| \det \left( \frac{\partial \textbf{f}_1}{\partial \bx} \right) \right|
 	\end{multline*}
+
+	What we will get in the case $\bz = f(\bx) = f_n \circ \dots \circ f_1(\bx)$?
 \end{frame}
 %=======
 \begin{frame}{Flows}
@@ -197,6 +199,7 @@
 	\[
 	\log p(\bx|\btheta) = \log p(f(\bx, \btheta)) + \log \left|\det \left( \frac{\partial f(\bx, \btheta)}{\partial \bx} \right) \right|
 	\]
+	What is the computational comprexity of computing the determinant?
 	\begin{block}{What we want}
 		\begin{itemize}
 			\item Efficient computation of Jacobian $\frac{\partial f(\bx, \btheta)}{\partial \bx}$;
@@ -305,6 +308,7 @@
 		\end{itemize}
 	\end{block}
 	To obtain more flexible class of dictributions, stack more coupling layers (with different ordering of components!). \\
+	
 	\vfill
 	\hrule\medskip
 	{\scriptsize \href{https://arxiv.org/pdf/1410.8516.pdf}{https://arxiv.org/pdf/1410.8516.pdf}} 
@@ -492,82 +496,6 @@
 	{\scriptsize \href{https://arxiv.org/pdf/1802.07088.pdf}{https://arxiv.org/pdf/1802.07088.pdf}} 
 \end{frame}
 %=======
-\begin{frame}{Glow, 2018}
-	\begin{figure}
-		\centering
-		\includegraphics[width=\linewidth]{figs/glow_faces.png}
-	\end{figure}
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1807.03039.pdf}{https://arxiv.org/pdf/1807.03039.pdf}} 
-\end{frame}
-%=======
-\begin{frame}{Glow, 2018}
-	\begin{figure}
-		\centering
-		\includegraphics[width=\linewidth]{figs/glow_block.png}
-	\end{figure}
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1807.03039.pdf}{https://arxiv.org/pdf/1807.03039.pdf}}   
-\end{frame}
-%=======
-\begin{frame}{Glow, 2018}
-	\begin{figure}
-		\centering
-		\includegraphics[width=\linewidth]{figs/glow_ops.png}
-	\end{figure}
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1807.03039.pdf}{https://arxiv.org/pdf/1807.03039.pdf}}    
-\end{frame}
-%=======
-\begin{frame}{Glow, 2018}
-	\begin{block}{Invertible 1x1 conv}
-		Cost to compute $\det (\mathbf{W})$ is $O(c^3)$. 
-		
-		LU-decomposition reduces the cost to $O(c)$:
-		\[
-		\mathbf{W} = \mathbf{P}\mathbf{L}(\mathbf{U} + \text{diag}(\mathbf{s})).
-		\]
-	\end{block}
-	\begin{figure}
-		\centering
-		\includegraphics[width=\linewidth]{figs/glow_1x1_conv.png}
-	\end{figure}
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1807.03039.pdf}{https://arxiv.org/pdf/1807.03039.pdf}}    
-\end{frame}
-%=======
-\begin{frame}{Glow, 2018}
-	\begin{block}{Face interpolation}
-		\begin{figure}
-			\centering
-			\includegraphics[width=\linewidth]{figs/glow_interpolation.png}
-		\end{figure}
-	\end{block}
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1807.03039.pdf}{https://arxiv.org/pdf/1807.03039.pdf}}   
-\end{frame}
-%=======
-\begin{frame}{Glow, 2018}
-	\begin{block}{Face attributes manipulation}
-		\begin{figure}
-			\centering
-			\includegraphics[width=\linewidth]{figs/glow_attributes.png}
-		\end{figure}
-	\end{block}
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1807.03039.pdf}{https://arxiv.org/pdf/1807.03039.pdf}}   
-\end{frame}
-%=======
-\begin{frame}{Summary}
-	
-\end{frame}
-%=======
 \begin{frame}{References}
 	{\tiny
 		\begin{itemize}
@@ -596,9 +524,6 @@
 			\textbf{Summary:} Invertible reversible networks. Remove noninvertible blocks (max-pooling, strides) from RevNets. Loss of \\
 			information is not a necessary condition to learn representations that generalize well on hard problems, such as ImageNet.
 			
-			\item \textbf{Glow:} Better Reversible Generative Models \\
-			\href{https://arxiv.org/abs/1807.03039}{https://arxiv.org/abs/1807.03039} \\
-			\textbf{Summary:} Extension of RealNVP. Suggests 1x1 reversible convolutions instead of reversing channel ordering. 1x1 conv is \\ square matrix which could be easily be inversed. Compares 1x1 conv with reversing and fixed shuffling. 
 		\end{itemize}
 	}
 \end{frame}

@@ -15,3 +15,4 @@
 | Homework | Date | Deadline | Description | Link |
 |---------|------|-------------|--------|-------|
 | 1 | September, 14 | September, 28 | Autoregressive models. | [notebook](homeworks/homework1/hw1.ipynb) |
+| 2 | September, 28 | October, 12 | Latent variable models. Flows. | [notebook](homeworks/homework2/hw2.ipynb) |

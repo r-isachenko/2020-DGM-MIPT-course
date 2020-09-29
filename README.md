@@ -8,7 +8,7 @@
 | 2 | September, 9 | Bayesian framework. Latent variable models. EM-algorithm. | [slides](lectures/lecture2/Isachenko2020DeepGenerativeModels2.pdf) | [video](https://youtu.be/IXVoKY92u1k) |
 | 3 | September, 16 | EM-algorithm. VAE. Mean field approximation. | [slides](lectures/lecture3/Isachenko2020DeepGenerativeModels3.pdf) | [video](https://youtu.be/y1csC6gkmxU) |
 | 4 | September, 23 | Flow models (NICE, RealNVP, RevNet, i-RevNet). | [slides](lectures/lecture4/Isachenko2020DeepGenerativeModels4.pdf) | [video](https://youtu.be/epFV2wNE6Kk) |
-| 5 | September, 29 | Flow models (Glow, Flow++). Flows in VAE. Autoregressive flows (IAF, MAF) | [slides](lectures/lecture5/Isachenko2020DeepGenerativeModels5.pdf) | [video] |
+| 5 | September, 30 | Flow models (Glow, Flow++). Flows in VAE. Autoregressive flows (IAF, MAF) | [slides](lectures/lecture5/Isachenko2020DeepGenerativeModels5.pdf) | [video] |
 
 
 ## Homeworks

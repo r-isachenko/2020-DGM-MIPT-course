@@ -316,7 +316,7 @@
 \begin{frame}{VAE recap}
 	\vspace{-0.5cm}
 	\[
-	p(\bx | \btheta) \geq \mathcal{L} (\bphi, \btheta)  = \mathbb{E}_{q(\bz | \bx, \bphi)} \log \frac{p(\bx, \bz | \btheta)}{q(\bz| \bx, \phi)} \rightarrow \max_{\bphi, \btheta}.
+	p(\bx | \btheta) \geq \mathcal{L} (\bphi, \btheta)  = \mathbb{E}_{q(\bz | \bx, \bphi)} \log \frac{p(\bx, \bz | \btheta)}{q(\bz| \bx, \bphi)} \rightarrow \max_{\bphi, \btheta}.
 	\]
 	\vspace{-0.5cm}
 	\begin{figure}[h]
@@ -393,7 +393,7 @@
 	\begin{block}{ELBO objective}
 		\vspace{-0.5cm}
 		\begin{align*}
-			\mathcal{L} (\bphi, \btheta_*)  &= \mathbb{E}_{q_K(\bz_K | \bx, \bphi_*)} \log \frac{p(\bx, \bz_K | \btheta)}{q_K(\bz_K| \bx, \bphi_*)} \\
+			\mathcal{L} (\bphi, \btheta)  &= \mathbb{E}_{q_K(\bz_K | \bx, \bphi_*)} \log \frac{p(\bx, \bz_K | \btheta)}{q_K(\bz_K| \bx, \bphi_*)} \\
 			&= \mathbb{E}_{q_K(\bz_K | \bx, \bphi_*)} \bigl[\log p(\bx, \bz_K | \btheta) - \log q_K(\bz_K| \bx, \bphi_*) \bigr] 
 		\end{align*}
 	\end{block}
@@ -415,8 +415,8 @@
 		\begin{align*}
 			\mathcal{L} (\bphi, \btheta) 
 			&= \mathbb{E}_{q_K(\bz_K | \bx, \bphi_*)} \bigl[\log p(\bx, \bz_K | \btheta) - \log q_K(\bz_K| \bx, \bphi_*) \bigr] \\
-			&= \mathbb{E}_{q_0(\bz_0 | \bx, \bphi)} \left. \bigl[\log p(\bx, \bz_K | \btheta) - \log q_K(\bz_K| \bx, \bphi_*) \bigr]\right|_{\bz_K = g(\bz_0, \{\bphi\}_{k=1}^K)} \\
-			&= \mathbb{E}_{q_0(\bz_0 | \bx, \bphi)} \bigg[\log p(\bx, \bz_K | \btheta) -  \log q(\bz_0 | \bx, \bphi ) - \\ & - \sum_{k=1}^K \log \left| \det \left( \frac{\partial g_k(\bz_{k - 1}, \bphi_k)}{\partial \bz_{k-1}} \right) \right| \bigg].
+			&= \mathbb{E}_{q(\bz_0 | \bx, \bphi)} \left. \bigl[\log p(\bx, \bz_K | \btheta) - \log q_K(\bz_K| \bx, \bphi_*) \bigr]\right|_{\bz_K = g(\bz_0, \{\bphi\}_{k=1}^K)} \\
+			&= \mathbb{E}_{q(\bz_0 | \bx, \bphi)} \bigg[\log p(\bx, \bz_K | \btheta) -  \log q(\bz_0 | \bx, \bphi ) - \\ & - \sum_{k=1}^K \log \left| \det \left( \frac{\partial g_k(\bz_{k - 1}, \bphi_k)}{\partial \bz_{k-1}} \right) \right| \bigg].
 		\end{align*}
 	\end{block}
 	\vfill
@@ -481,7 +481,7 @@
 	\end{block}
 	This process is sequential. \\
 	Let use the following reparametrization:
-	$\hat{\bsigma} = \frac{1}{\bsigma}; \quad \hat{\bmu} = - \frac{\bmu}{\bsigma}.$
+	$\bsigma = \frac{1}{\hat{\bsigma}}; \quad \bmu = - \frac{\hat{\bmu}}{\hat{\bsigma}}.$
 	
 	\begin{block}{Inverse transform ($\bx \rightarrow \bz$)}
 		\vspace{-0.2cm}
@@ -513,10 +513,10 @@
 	\end{block}
 	Inverse autoregressive flow use such inverted autoregressive model as a flow in VAE:
 	\[
-		\bz_0 = \bsigma_0(\bx) \cdot \bepsilon + \bmu_0(\bx), \quad \bepsilon \sim \mathcal{N}(0, 1); \quad (q_0(\bz_0 | \bx, \bphi))
+		\bz_0 = \bsigma(\bx) \cdot \bepsilon + \bmu(\bx), \quad \bepsilon \sim \mathcal{N}(0, 1); \quad  \sim q(\bz_0 | \bx, \bphi).
 	\]
 	\[
-		\bz_k = \bsigma_k(\bz_{k - 1}) \cdot \bz_{t-1} + \bmu_k(\bz_{k - 1}), \quad k \geq 1 \quad (q_k(\bz_k | \bx, \bphi)).
+		\bz_k = \bsigma_k(\bz_{k - 1}) \cdot \bz_{k-1} + \bmu_k(\bz_{k - 1}), \quad k \geq 1; \quad  \sim q_k(\bz_k | \bx, \bphi, \{\bphi_j\}_{j=1}^k).
 	\]
 	\vfill
 	\hrule\medskip
@@ -548,225 +548,6 @@
 	{\scriptsize \href{https://arxiv.org/pdf/1606.04934.pdf}{https://arxiv.org/pdf/1606.04934.pdf}} 
 \end{frame}
 %=======
-\begin{frame}{Masked autoregressive flow (MAF)}
-	\begin{block}{Gaussian autoregressive model}
-	\vspace{-0.5cm}
-	\[
-		p(\bx | \btheta) = \prod_{i=1}^m p(x_i | \bx_{1:i - 1}, \btheta) = \prod_{i=1}^m \mathcal{N} \left(x_i | \mu_i(\bx_{1:i-1}), \sigma^2_i (\bx_{1:i-1})\right).
-	\]
-	\vspace{-0.5cm}
-	\end{block}
-	We could use MADE (masked autoencoder) as conditional model. The sampling order could be crucial.
-	\begin{figure}
-		\includegraphics[width=\linewidth]{figs/maf1.png}
-	\end{figure}
-	Samples from the base distribution could be an indicator of how good the flow was fitted. \\
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf}} 
-\end{frame}
-%=======
-\begin{frame}{Masked autoregressive flow (MAF)}
-	\begin{block}{Gaussian autoregressive model}
-		\vspace{-0.5cm}
-		\[
-		p(\bx | \btheta) = \prod_{i=1}^m p(x_i | \bx_{1:i - 1}, \btheta) = \prod_{i=1}^m \mathcal{N} \left(x_i | \mu_i(\bx_{1:i-1}), \sigma^2_i (\bx_{1:i-1})\right).
-		\]
-		\vspace{-0.5cm}
-	\end{block}
-	\begin{figure}
-		\includegraphics[width=\linewidth]{figs/maf1.png}
-	\end{figure}
-	MAF is just a stacked MADE model.
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf}} 
-\end{frame}
-%=======
-\begin{frame}{MAF vs IAF}
-	\begin{block}{Sampling and inverse transform in MAF}
-		\vspace{-0.2cm}
-		\[
-			x_i = \hat{\sigma}_i (\bx_{1:i-1}) \cdot z_i + \hat{\mu}_i(\bx_{1:i-1}).
-		\]
-		\[
-			z_i = \left(x_i - \hat{\mu}_i(\bx_{1:i-1}) \right) \cdot \frac{1}{\hat{\sigma}_i (\bx_{1:i-1}) }.
-		\]
-		\vspace{-0.5cm}
-		\begin{itemize}
-			\item Sampling is slow (sequential).
-			\item Density estimation is fast.
-		\end{itemize}
-	\end{block}
-	\begin{block}{Sampling and inverse transform in IAF}
-		\vspace{-0.2cm}
-		\[
-			z_i = \sigma_i (\bx_{1:i-1}) \cdot x_i + \mu_i(\bx_{1:i-1}).
-		\]
-		\[
-			x_i = \left(z_i - \mu_i(\bx_{1:i-1}) \right) \cdot \frac{1}{\sigma_i (\bx_{1:i-1})}.
-		\]
-		\vspace{-0.3cm}
-		\begin{itemize}
-			\item Sampling is fast.
-			\item Density estimation is slow (sequential).
-		\end{itemize}
-	\end{block}
-	
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf}} 
-\end{frame}
-%=======
-\begin{frame}{MAF vs IAF}
-		\begin{block}{Theorem}
-			Training a MAF with maximum likelihood corresponds to fitting an implicit IAF  with stochastic variational inference where the posterior is taken to be the base density $\pi(\bz)$:
-			\[  
-			\max_{\btheta} p(\bX | \btheta) \quad \Leftrightarrow \quad \min_{\btheta} KL\left(p(\bz | \btheta) || \pi(\bz)\right).
-			\]
-			\vspace{-0.5cm}
-			\begin{itemize}
-				\item $\pi(\bz)$ is a base distribution; $\pi(\bx)$ is a data distribution.
-				\item $\bz = f(\bx, \btheta)$~-- MAF model; $\bx = g(\bz, \btheta)$~-- IAF model.
-			\end{itemize}
-		\end{block}
-		\vspace{-0.3cm}
-		\[
-			\log p(\bz | \btheta) = \log \pi(g(\bz, \btheta)) + \log \left| \det \left( \frac{\partial g(\bz, \btheta)}{\partial \bz}\right) \right|
-		\]
-		\[
-			\log p(\bx | \btheta) = \log \pi(f(\bx, \btheta)) + \log \left| \det \left( \frac{\partial f(\bx, \btheta)}{\partial \bx}\right) \right|
-		\]
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf}} 
-\end{frame}
-%=======
-\begin{frame}{MAF vs IAF}
-		\begin{block}{Theorem}
-			Training a MAF with maximum likelihood corresponds to fitting an implicit IAF  with stochastic variational inference where the posterior is taken to be the base density $\pi(\bz)$:
-			\[  
-			\max_{\btheta} p(\bX | \btheta) \quad \Leftrightarrow \quad \min_{\btheta} KL\left(p(\bz | \btheta) || \pi(\bz)\right).
-			\]
-			\vspace{-0.5cm}
-		\end{block}
-		\begin{block}{Proof}
-			\vspace{-0.5cm}
-			\begin{multline*}
-				KL\left(p(\bz | \btheta) || \pi(\bz) \right) = \mathbb{E}_{p(\bz | \btheta)} \bigl[ \log p(\bz | \btheta) - \log \pi(\bz) \bigr] = \\ 
-				= \mathbb{E}_{p(\bz | \btheta)} \left[ \log \pi(g(\bz, \btheta)) + \log \left| \det \left( \frac{\partial g(\bz, \btheta)}{\partial \bz}\right) \right| - \log \pi(\bz) \right] = \\
-				= \mathbb{E}_{\pi(\bx)} \left[ \log \pi(\bx) - \log \left| \det \left( \frac{\partial f(\bx, \btheta)}{\partial \bx}\right) \right| - \log \pi(f(\bx, \btheta)) \right].
-			\end{multline*}
-		\end{block}
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf}} 
-\end{frame}
-%=======
-\begin{frame}{MAF vs IAF}
-	\begin{block}{Proof (continued)}
-		\vspace{-0.5cm}
-		\begin{multline*}
-			KL\left(p(\bz | \btheta) || \pi(\bz) \right) = \mathbb{E}_{\pi(\bx)} \left[ \log \pi(\bx) - \log \left| \det \left( \frac{\partial f(\bx, \btheta)}{\partial \bx}\right) \right| - \log \pi(f(\bx, \btheta)) \right] = \\
-			= \mathbb{E}_{\pi(\bx)} \bigl[ \log \pi(\bx) - \log p(\bx | \btheta) \bigr] = KL (\pi(\bx) || p(\bx | \btheta)).
-		\end{multline*}
-		\begin{align*}
-			\argmin_{\btheta}  KL (\pi(\bx) || p(\bx | \btheta)) &= \argmin_{\btheta} \mathbb{E}_{\pi(\bx)} \left[ \log \pi(\bx) - \log p(\bx | \btheta) \right] \\
-			&= \argmax_{\btheta} \mathbb{E}_{\pi(\bx)} \log p(\bx | \btheta)
-		\end{align*}
-		Unbiased estimator is MLE:
-		\[
-			\mathbb{E}_{\pi(\bx)} \log p(\bx | \btheta) = \sum_{i=1}^n \log p(\bx_i | \btheta).
-		\]
-	\end{block}
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf}} 
-\end{frame}
-%=======
-\begin{frame}{MAF vs IAF vs RealNVP}
-	\begin{block}{MAF}
-		\vspace{-0.3cm}
-		\[
-		\bx = \hat{\bsigma} (\bx) \odot \bz + \hat{\bmu}(\bx).
-		\]
-		\vspace{-0.5cm}
-		\begin{itemize}
-			\item Calculating the density $p(\bx | \btheta)$ - 1 pass.
-			\item Sampling - $m$ passes.
-		\end{itemize}
-	\end{block}
-	\begin{block}{IAF}
-		\vspace{-0.3cm}
-		\[
-		\bx = \bsigma (\bz) \odot \bz + \bmu(\bz).
-		\]
-		\vspace{-0.5cm}
-		\begin{itemize}
-			\item Calculating the density $p(\bx | \btheta)$ - $m$ passes.
-			\item Sampling - 1 pass.
-		\end{itemize}
-	\end{block}
-	\begin{block}{RealNVP}
-		\vspace{-1cm}
-		\begin{align*}
-			\bx_{1:d} &= \bz_{1:d}; \\ \bx_{d:m} &= \bz_{d:m} \odot \exp \left(c_1(\bz_{1:d}, \btheta)\right) + c_2(\bx_{1:d}, \btheta).
-		\end{align*}
-		\vspace{-0.3cm}
-	\end{block}
-	
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf}} 
-\end{frame}
-%=======
-\begin{frame}{MAF vs IAF vs RealNVP}
-	\begin{block}{RealNVP}
-		\vspace{-0.7cm}
-		\begin{align*}
-			\bx_{1:d} &= \bz_{1:d}; \\ \bx_{d:m} &= \bz_{d:m} \odot \exp \left(c_1(\bz_{1:d}, \btheta)\right) + c_2(\bx_{1:d}, \btheta).
-		\end{align*}
-		\vspace{-0.8cm}
-	\end{block}
-	\begin{itemize}
-		\item Calculating the density $p(\bx | \btheta)$ - 1 pass.
-		\item Sampling - 1 pass.
-	\end{itemize}
-
-	RealNVP is a special case of MAF and IAF:
-	\begin{block}{MAF}
-		\vspace{-0.5cm}
-		\begin{equation*}
-			\begin{cases}
-				\hat{\mu}_i  = \hat{\sigma}_i = 0, \, i = 1, \dots, d; \\
-				\hat{\mu}_i, \hat{\sigma}_i \text{ -- functions of } \bx_{1:d}, \, i = d+1, \dots, m.
-			\end{cases}
-		\end{equation*}
-		\vspace{-0.3cm}
-	\end{block}
-	\begin{block}{IAF}
-		\vspace{-0.3cm}
-		\begin{equation*}
-			\begin{cases}
-				\mu_i  = \sigma_i = 0, \, i = 1, \dots, d; \\
-				\mu_i, \sigma_i \text{ -- functions of } \bz_{1:d}, \, i = d+1, \dots, m.
-			\end{cases}
-		\end{equation*}
-	\end{block}
-	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf}} 
-\end{frame}
-%=======
-\begin{frame}{Summary}
-	\begin{itemize}
-		\item Flows is a continuous model. To use it for discrete distribution, the data should be dequantized.
-		\item Original VAE model has lot of limitations. One of them is a restricted class of variational posteriors.
-		\item Using flows in a latent space of VAE could give more flexible posterior distribution.
-		\item Gaussian autoregressive model is a special type of flow (RealNVP model is a special type of this autoregressive model).
-	\end{itemize}
-\end{frame}
-%=======
 \begin{frame}{References}
 	{\scriptsize
 		\begin{itemize}
@@ -777,15 +558,17 @@
 			
 			\item \textbf{Flow++:} Improving Flow-Based Generative Models with Variational Dequantization and Architecture Design \\
 			\href{https://arxiv.org/abs/1902.00275}{https://arxiv.org/abs/1902.00275} \\
-			\textbf{Summary:} Flow model which investigates the dequantization of discrete probability distribution. Derives ELBO objective with variational noise dequantization distribution. 
+			\textbf{Summary:} Flow model which investigates the dequantization of discrete probability \\ distribution. Derives ELBO objective with variational noise dequantization distribution.
+			
+			\item Variational Inference with Normalizing Flows \\
+			\href{https://arxiv.org/abs/1505.05770}{https://arxiv.org/abs/1505.05770} \\
+			\textbf{Summary:} Propose to use normalizing flows in variational inference. Discuss finite and infinitesimal flows. Uses invertible \\
+			flows: planar, radial. Comparison with NICE.
 			
 			\item \textbf{IAF}: Improving Variational Inference with Inverse Autoregressive Flow \\
 			\href{https://arxiv.org/abs/1606.04934}{https://arxiv.org/abs/1606.04934} \\
 			\textbf{Summary:} Introduce inverse autoregressive flow (IAF). Models each autoregressive conditional as gaussian with autoregressive means and covariances. Inverse transformation allows to parallelize sampling.
 			
-			\item \textbf{MAF}: Masked Autoregressive Flow for Density Estimation \\ 
-			\href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf} \\
-			\textbf{Summary:} Similar to IAF. Give comprehensive overview with link to IAF and RealNVP.  MAF is suitable for density estimation, IAF as a recognition network.
 		\end{itemize}
 	}
 \end{frame}

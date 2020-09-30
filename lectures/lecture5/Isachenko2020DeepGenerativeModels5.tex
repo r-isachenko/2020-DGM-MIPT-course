@@ -340,7 +340,7 @@
 		\]
 		\item Poor probabilistic model (decoder)
 		\[
-		p(\bx | \bz) = \mathcal{N}(\bx| \bmu_{\btheta}(\bz), \bsigma^2_{\btheta}(\bz)).
+		p(\bx | \bz, \btheta) = \mathcal{N}(\bx| \bmu_{\btheta}(\bz), \bsigma^2_{\btheta}(\bz)).
 		\]
 		\item Loose lower bound
 		\[
@@ -364,16 +364,16 @@
 \begin{frame}{Flows in VAE}
 	Apply the sequence of transformations to the random variables 
 	\[
-	\bz_0 \sim q_0(\bz | \bx, \bphi) = \mathcal{N}(\bz| \bmu_{\bphi}(\bx), \bsigma^2_{\bphi}(\bx)).
+	\bz_0 \sim q(\bz | \bx, \bphi) = \mathcal{N}(\bz| \bmu_{\bphi}(\bx), \bsigma^2_{\bphi}(\bx)).
 	\]
-	Here, $q_0(\bz | \bx, \bphi)$ plays the role of a base distribution.
+	Here, $q(\bz | \bx, \bphi)$ (which is a VAE encoder) plays the role of a base distribution.
 	\[
-	\bz_0 \xrightarrow{g_1} \bz_1 \xrightarrow{g_2} \dots \xrightarrow{g_K} \bz_K.
+	\bz_0 \xrightarrow{g_1} \bz_1 \xrightarrow{g_2} \dots \xrightarrow{g_K} \bz_K, \quad \bz_K = g(\bz_0), \quad g = g_K \circ \dots \circ g_1.
 	\]
-	Each $g_k $ is a flow transformation (e.g. planar, radial, coupling layer).
-	\[
-	\log q_K(\bz_K) = \log q_0(\bz_0) - \sum_{k=1}^K \log \left| \det \left( \frac{\partial g_k(\bz_{k - 1})}{\partial \bz_{k-1}} \right) \right|.
-	\]
+	Each $g_k $ is a flow transformation (e.g. planar, radial, coupling layer) parameterized by $\bphi_k$.
+	\begin{align*}
+		\log q_K(\bz_K | \bx, \bphi, \{\bphi\}_{k=1}^K) &= \log q(\bz_0 | \bx, \bphi) \\ &- \sum_{k=1}^K \log \left| \det \left( \frac{\partial g_k(\bz_{k - 1}, \bphi_k)}{\partial \bz_{k-1}} \right) \right|.
+	\end{align*}
 	
 	\vfill
 	\hrule\medskip
@@ -381,16 +381,44 @@
 \end{frame}
 %=======
 \begin{frame}{Flows in VAE}
-	\[
-	\log q_K(\bz_K) = \log q_0(\bz_0) - \sum_{k=1}^K \log \left| \det \left( \frac{\partial g_k(\bz_{k - 1})}{\partial \bz_{k-1}} \right) \right|.
-	\]
-	Now the variational posterior is $q_K(\bz_K | \bx, \bphi)$.
-	\begin{align*}
-		\mathcal{L} (\bphi, \btheta)  &= \mathbb{E}_{q_K(\bz_K | \bx, \bphi)} \log \frac{p(\bx, \bz_K | \btheta)}{q_K(\bz_K| \bx, \phi)} \\
-		&= \mathbb{E}_{q_K(\bz_K | \bx, \bphi)} \bigl[\log p(\bx, \bz_K | \btheta) - \log q_K(\bz_K| \bx, \phi) \bigr] \\
-		&= \mathbb{E}_{q_0(\bz_0 | \bx, \bphi)} \bigl[\log p(\bx, \bz_K | \btheta) - \log q_K(\bz_K| \bx, \phi) \bigr] \\
-		&= \mathbb{E}_{q_0(\bz_0 | \bx, \bphi)} \bigg[\log p(\bx, \bz_K | \btheta) -  \log q_0(\bz_0 | \bx, \bphi ) - \\ & - \sum_{k=1}^K \log \left| \det \left( \frac{\partial g_k(\bz_{k - 1})}{\partial \bz_{k-1}} \right) \right| \bigg].
-	\end{align*}
+	\begin{block}{Flow model in latent space}
+		\vspace{-0.5cm}
+		\begin{align*}
+			\log q_K(\bz_K | \bx, \bphi, \{\bphi\}_{k=1}^K) &= \log q(\bz_0 | \bx, \bphi) \\ &- \sum_{k=1}^K \log \left| \det \left( \frac{\partial g_k(\bz_{k - 1}, \bphi_k)}{\partial \bz_{k-1}} \right) \right|.
+		\end{align*}
+		\vspace{-0.5cm}
+	\end{block}
+	Let use $q_K(\bz_K | \bx, \bphi_*), \, \bphi_* = \{\bphi, \bphi_1, \dots, \bphi_K\}$ as a variational distribution. \\
+	Here $\bphi$~-- encoder parameters, $\{\bphi\}_{k=1}^K$~-- flow parameters.
+	\begin{block}{ELBO objective}
+		\vspace{-0.5cm}
+		\begin{align*}
+			\mathcal{L} (\bphi, \btheta_*)  &= \mathbb{E}_{q_K(\bz_K | \bx, \bphi_*)} \log \frac{p(\bx, \bz_K | \btheta)}{q_K(\bz_K| \bx, \bphi_*)} \\
+			&= \mathbb{E}_{q_K(\bz_K | \bx, \bphi_*)} \bigl[\log p(\bx, \bz_K | \btheta) - \log q_K(\bz_K| \bx, \bphi_*) \bigr] 
+		\end{align*}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/pdf/1505.05770.pdf}{https://arxiv.org/pdf/1505.05770.pdf}} 
+\end{frame}
+%=======
+\begin{frame}{Flows in VAE}
+	\begin{block}{Variational distribution}
+		\vspace{-0.5cm}
+		\[
+			\log q_K(\bz_K | \bx, \bphi_*) = \log q(\bz_0 | \bx, \bphi) - \sum_{k=1}^K \log \left| \det \left( \frac{\partial g_k(\bz_{k - 1}, \bphi_k)}{\partial \bz_{k-1}} \right) \right|.
+		\]
+		\vspace{-0.5cm}
+	\end{block}
+	\begin{block}{ELBO objective}
+		\vspace{-0.5cm}
+		\begin{align*}
+			\mathcal{L} (\bphi, \btheta) 
+			&= \mathbb{E}_{q_K(\bz_K | \bx, \bphi_*)} \bigl[\log p(\bx, \bz_K | \btheta) - \log q_K(\bz_K| \bx, \bphi_*) \bigr] \\
+			&= \mathbb{E}_{q_0(\bz_0 | \bx, \bphi)} \left. \bigl[\log p(\bx, \bz_K | \btheta) - \log q_K(\bz_K| \bx, \bphi_*) \bigr]\right|_{\bz_K = g(\bz_0, \{\bphi\}_{k=1}^K)} \\
+			&= \mathbb{E}_{q_0(\bz_0 | \bx, \bphi)} \bigg[\log p(\bx, \bz_K | \btheta) -  \log q(\bz_0 | \bx, \bphi ) - \\ & - \sum_{k=1}^K \log \left| \det \left( \frac{\partial g_k(\bz_{k - 1}, \bphi_k)}{\partial \bz_{k-1}} \right) \right| \bigg].
+		\end{align*}
+	\end{block}
 	\vfill
 	\hrule\medskip
 	{\scriptsize \href{https://arxiv.org/pdf/1505.05770.pdf}{https://arxiv.org/pdf/1505.05770.pdf}} 
@@ -591,23 +619,45 @@
 \end{frame}
 %=======
 \begin{frame}{MAF vs IAF}
-	\small{
 		\begin{block}{Theorem}
-			Training a MAF with maximum likelihood corresponds to fitting an implicit IAF  with stochastic variational inference where the posterior is taken to be the base density:
+			Training a MAF with maximum likelihood corresponds to fitting an implicit IAF  with stochastic variational inference where the posterior is taken to be the base density $\pi(\bz)$:
 			\[  
-			\max_{\btheta} p(\bX | \btheta) \quad \Leftrightarrow \quad \min_{\btheta} KL\left(p(\bz | \btheta) || \pi(\bz)\right)
+			\max_{\btheta} p(\bX | \btheta) \quad \Leftrightarrow \quad \min_{\btheta} KL\left(p(\bz | \btheta) || \pi(\bz)\right).
 			\]
-			(Here, $\pi(\bz)$ is a base distribution, $\pi(\bx)$ is a data distribution).
+			\vspace{-0.5cm}
+			\begin{itemize}
+				\item $\pi(\bz)$ is a base distribution; $\pi(\bx)$ is a data distribution.
+				\item $\bz = f(\bx, \btheta)$~-- MAF model; $\bx = g(\bz, \btheta)$~-- IAF model.
+			\end{itemize}
+		\end{block}
+		\vspace{-0.3cm}
+		\[
+			\log p(\bz | \btheta) = \log \pi(g(\bz, \btheta)) + \log \left| \det \left( \frac{\partial g(\bz, \btheta)}{\partial \bz}\right) \right|
+		\]
+		\[
+			\log p(\bx | \btheta) = \log \pi(f(\bx, \btheta)) + \log \left| \det \left( \frac{\partial f(\bx, \btheta)}{\partial \bx}\right) \right|
+		\]
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf}} 
+\end{frame}
+%=======
+\begin{frame}{MAF vs IAF}
+		\begin{block}{Theorem}
+			Training a MAF with maximum likelihood corresponds to fitting an implicit IAF  with stochastic variational inference where the posterior is taken to be the base density $\pi(\bz)$:
+			\[  
+			\max_{\btheta} p(\bX | \btheta) \quad \Leftrightarrow \quad \min_{\btheta} KL\left(p(\bz | \btheta) || \pi(\bz)\right).
+			\]
+			\vspace{-0.5cm}
 		\end{block}
 		\begin{block}{Proof}
 			\vspace{-0.5cm}
 			\begin{multline*}
 				KL\left(p(\bz | \btheta) || \pi(\bz) \right) = \mathbb{E}_{p(\bz | \btheta)} \bigl[ \log p(\bz | \btheta) - \log \pi(\bz) \bigr] = \\ 
-				= \mathbb{E}_{p(\bz | \btheta)} \left[ \log \pi(g(\bz)) + \log \left| \det \left( \frac{\partial g(\bz)}{\partial \bz}\right) \right| - \log \pi(\bz) \right] = \\
-				= \mathbb{E}_{\pi(\bx)} \left[ \log \pi(\bx) - \log \left| \det \left( \frac{\partial f(\bx)}{\partial \bx}\right) \right| - \log \pi(f(\bx)) \right].
+				= \mathbb{E}_{p(\bz | \btheta)} \left[ \log \pi(g(\bz, \btheta)) + \log \left| \det \left( \frac{\partial g(\bz, \btheta)}{\partial \bz}\right) \right| - \log \pi(\bz) \right] = \\
+				= \mathbb{E}_{\pi(\bx)} \left[ \log \pi(\bx) - \log \left| \det \left( \frac{\partial f(\bx, \btheta)}{\partial \bx}\right) \right| - \log \pi(f(\bx, \btheta)) \right].
 			\end{multline*}
 		\end{block}
-	}
 	\vfill
 	\hrule\medskip
 	{\scriptsize \href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf}} 
@@ -615,20 +665,19 @@
 %=======
 \begin{frame}{MAF vs IAF}
 	\begin{block}{Proof (continued)}
-		{\small
-			\begin{multline*}
-				KL\left(p(\bz | \btheta) || \pi(\bz) \right) = \mathbb{E}_{\pi(\bx)} \left[ \log \pi(\bx) - \log \left| \det \left( \frac{\partial f(\bx)}{\partial \bx}\right) \right| - \log \pi(f(\bx)) \right] = \\
-				= \mathbb{E}_{\pi(\bx)} \bigl[ \log \pi(\bx) - \log p(\bx | \btheta) \bigr] = KL (\pi(\bx) || p(\bx | \btheta)).
-			\end{multline*}
-			\begin{align*}
-				\argmin_{\btheta}  KL (\pi(\bx) || p(\bx | \btheta)) &= \argmin_{\btheta} \mathbb{E}_{\pi(\bx)} \left[ \log \pi(\bx) - \log p(\bx | \btheta) \right] \\
-				&= \argmax_{\btheta} \mathbb{E}_{\pi(\bx)} \log p(\bx | \btheta)
-			\end{align*}
-			Unbiased estimator is MLE:
-			\[
+		\vspace{-0.5cm}
+		\begin{multline*}
+			KL\left(p(\bz | \btheta) || \pi(\bz) \right) = \mathbb{E}_{\pi(\bx)} \left[ \log \pi(\bx) - \log \left| \det \left( \frac{\partial f(\bx, \btheta)}{\partial \bx}\right) \right| - \log \pi(f(\bx, \btheta)) \right] = \\
+			= \mathbb{E}_{\pi(\bx)} \bigl[ \log \pi(\bx) - \log p(\bx | \btheta) \bigr] = KL (\pi(\bx) || p(\bx | \btheta)).
+		\end{multline*}
+		\begin{align*}
+			\argmin_{\btheta}  KL (\pi(\bx) || p(\bx | \btheta)) &= \argmin_{\btheta} \mathbb{E}_{\pi(\bx)} \left[ \log \pi(\bx) - \log p(\bx | \btheta) \right] \\
+			&= \argmax_{\btheta} \mathbb{E}_{\pi(\bx)} \log p(\bx | \btheta)
+		\end{align*}
+		Unbiased estimator is MLE:
+		\[
 			\mathbb{E}_{\pi(\bx)} \log p(\bx | \btheta) = \sum_{i=1}^n \log p(\bx_i | \btheta).
-			\]
-		}
+		\]
 	\end{block}
 	\vfill
 	\hrule\medskip
@@ -707,6 +756,15 @@
 	\vfill
 	\hrule\medskip
 	{\scriptsize \href{https://arxiv.org/pdf/1705.07057.pdf}{https://arxiv.org/pdf/1705.07057.pdf}} 
+\end{frame}
+%=======
+\begin{frame}{Summary}
+	\begin{itemize}
+		\item Flows is a continuous model. To use it for discrete distribution, the data should be dequantized.
+		\item Original VAE model has lot of limitations. One of them is a restricted class of variational posteriors.
+		\item Using flows in a latent space of VAE could give more flexible posterior distribution.
+		\item Gaussian autoregressive model is a special type of flow (RealNVP model is a special type of this autoregressive model).
+	\end{itemize}
 \end{frame}
 %=======
 \begin{frame}{References}

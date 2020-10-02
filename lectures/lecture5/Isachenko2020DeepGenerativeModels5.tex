@@ -486,10 +486,10 @@
 	\begin{block}{Inverse transform ($\bx \rightarrow \bz$)}
 		\vspace{-0.2cm}
 		\[
-			z_i = \bsigma_i (\bx_{1:i-1}) \cdot x_i + \bmu_i(\bx_{1:i-1}).
+			z_i = \sigma_i (\bx_{1:i-1}) \cdot x_i + \mu_i(\bx_{1:i-1}).
 		\]
 		\[
-			x_i = \left( z_i - \bmu_i(\bx_{1:i-1})\right) \cdot \frac{1}{\bsigma_i (\bx_{1:i-1}) }.
+			x_i = \left( z_i - \mu_i(\bx_{1:i-1})\right) \cdot \frac{1}{\sigma_i (\bx_{1:i-1}) }.
 		\]
 		\vspace{-0.3cm}
 	\end{block}
@@ -504,20 +504,18 @@
 	\begin{block}{Inverse transform ($\bx \rightarrow \bz$)}
 		\vspace{-0.2cm}
 		\[
-			z_i = \bsigma_i (\bx_{1:i-1}) \cdot x_i + \bmu_i(\bx_{1:i-1}).
+			z_i = \sigma_i (\bx_{1:i-1}) \cdot x_i + \mu_i(\bx_{1:i-1}).
 		\]
 		\[
-			x_i = \left( z_i - \bmu_i(\bx_{1:i-1})\right) \cdot \frac{1}{\bsigma_i (\bx_{1:i-1})}.
+			x_i = \left( z_i - \mu_i(\bx_{1:i-1})\right) \cdot \frac{1}{\sigma_i (\bx_{1:i-1})}.
 		\]
 		\vspace{-0.3cm}
 	\end{block}
 	Inverse autoregressive flow use such inverted autoregressive model as a flow in VAE:
-	\[
-		\bz_0 = \bsigma(\bx) \cdot \bepsilon + \bmu(\bx), \quad \bepsilon \sim \mathcal{N}(0, 1); \quad  \sim q(\bz_0 | \bx, \bphi).
-	\]
-	\[
-		\bz_k = \bsigma_k(\bz_{k - 1}) \cdot \bz_{k-1} + \bmu_k(\bz_{k - 1}), \quad k \geq 1; \quad  \sim q_k(\bz_k | \bx, \bphi, \{\bphi_j\}_{j=1}^k).
-	\]
+	\begin{align*}
+		\bz_0 &= \bsigma(\bx) \cdot \bepsilon + \bmu(\bx), \quad \bepsilon \sim \mathcal{N}(0, 1); \quad  \sim q(\bz_0 | \bx, \bphi). \\
+		\bz_k &= \bsigma_k(\bz_{k - 1}) \cdot \bz_{k-1} + \bmu_k(\bz_{k - 1}), \quad k \geq 1; \quad  \sim q_k(\bz_k | \bx, \bphi, \{\bphi_j\}_{j=1}^k).
+	\end{align*}
 	\vfill
 	\hrule\medskip
 	{\scriptsize \href{https://arxiv.org/pdf/1606.04934.pdf}{https://arxiv.org/pdf/1606.04934.pdf}} 

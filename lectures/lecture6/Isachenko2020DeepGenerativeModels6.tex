@@ -50,7 +50,7 @@
 %\definecolor{beamer@blendedblue}{RGB}{15,120,80}
 %----------------------------------------------------------------------------------------------------------
 \title[\hbox to 56mm{Deep Generative Models  \hfill\insertframenumber\,/\,\inserttotalframenumber}]
-{Deep Generative Models \\ Lecture 5}
+{Deep Generative Models \\ Lecture 6}
 \author[Roman Isachenko]{\\Roman Isachenko}
 \institute[MIPT]{Moscow Institute of Physics and Technology \\
 }
@@ -557,202 +557,34 @@
 \end{itemize}
 \end{frame}
 %=======
-\begin{frame}{Importance Sampling}
-\vspace{-0.5cm}
-\begin{align*}
-    p(\bx | \btheta) &= \int p(\bx, \bz | \btheta) d\bz = \int \left[\frac{p(\bx, \bz | \btheta)}{q(\bz | \bx)} \right] q(\bz | \bx) d\bz \\
-    &= \int f(\bx, \bz) q(\bz | \bx) d\bz = \mathbb{E}_{\bz \sim q(\bz | \bx)} f(\bx, \bz)
-\end{align*}
-Here $f(\bx, \bz) = \frac{p(\bx, \bz | \btheta)}{q(\bz | \bx)}$.
-\begin{multline*}
-    \log p(\bx | \btheta) = \log \mathbb{E}_{\bz \sim q(\bz | \bx)} f(\bx, \bz)
-    \geq \mathbb{E}_{\bz \sim q(\bz | \bx)} \log f(\bx, \bz) = \\
-    = \mathbb{E}_{\bz \sim q(\bz | \bx)} \log \frac{p(\bx, \bz | \btheta)}{q(\bz | \bx)} = \mathcal{L}(q, \btheta).
-\end{multline*}
-Could we choose better $f(\bx, \bz)$? \\
-\vspace{0.2cm}
-Let $f(\bx, \bz_1, \dots, \bz_K) = \frac{1}{K} \sum_{k=1}^K \frac{p(\bx, \bz_k | \btheta)}{q(\bz_k | \bx)}$.
-\end{frame}
-%=======
-\begin{frame}{IWAE, 2015}
-\[
-    f(\bx, \bz_1, \dots, \bz_K) = \frac{1}{K} \sum_{k=1}^K \frac{p(\bx, \bz_k | \btheta)}{q(\bz_k | \bx)}
-\]
-\begin{multline*}
-    \log p(\bx | \btheta) = \log \mathbb{E}_{\bz_1, \dots, \bz_K \sim q(\bz | \bx)} f(\bx, \bz, \dots, \bz_K) \geq \\
-    \geq \mathbb{E}_{\bz_1, \dots, \bz_K \sim q(\bz | \bx)} \log f(\bx, \bz, \dots, \bz_K) = \\
-    = \mathbb{E}_{\bz_1, \dots, \bz_K \sim q(\bz | \bx)} \log \left[\frac{1}{K} \sum_{k=1}^K\frac{p(\bx, \bz_k | \btheta)}{q(\bz_k | \bx)} \right] = \mathcal{L}_K(q, \btheta).
-\end{multline*}
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1509.00519.pdf}{https://arxiv.org/pdf/1509.00519.pdf}}
-\end{frame}
-%=======
-\begin{frame}{IWAE, 2015}
-\begin{block}{VAE objective}
-\vspace{-0.2cm}
-\[
-	p(\bx | \btheta) \geq \mathcal{L} (q, \btheta)  = \mathbb{E}_{q(\bz | \bx)} \log \frac{p(\bx, \bz | \btheta)}{q(\bz| \bx)} \rightarrow \max_{\bphi, \btheta}
-\]
-\[
-    \mathcal{L} (q, \btheta)  = \mathbb{E}_{\bz_1, \dots, \bz_K \sim q(\bz | \bx)} \left( \frac{1}{K} \sum_{k=1}^K \log \frac{p(\bx, \bz_k | \btheta)}{q(\bz_k| \bx)} \right) \rightarrow \max_{q, \btheta}.
-\]
-\vspace{-0.2cm}
-\end{block}
-\begin{block}{IWAE objective}
-\vspace{-0.2cm}
-\[
-	\mathcal{L}_K (q, \btheta)  = \mathbb{E}_{\bz_1, \dots, \bz_K \sim q(\bz | \bx)} \log \left( \frac{1}{K}\sum_{k=1}^K\frac{p(\bx, \bz_k | \btheta)}{q(\bz_k| \bx)} \right) \rightarrow \max_{q, \btheta}.
-\]
-\end{block}
-If $K=1$, these objectives coincide.
-
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1509.00519.pdf}{https://arxiv.org/pdf/1509.00519.pdf}}
-\end{frame}
-%=======
-\begin{frame}{IWAE, 2015}
-\begin{block}{Theorem}
-\begin{enumerate}
-    \item $\log p(\bx | \btheta) \geq \mathcal{L}_K (q, \btheta) \geq \mathcal{L}_M (q, \btheta), \quad \text{for } K \geq M$;
-    \item $\log p(\bx | \btheta) = \lim_{K \rightarrow \infty} \mathcal{L}_K (q, \btheta)$ if $\frac{p(\bx, \bz | \btheta)}{q(\bz | \bx)}$ is bounded.
-\end{enumerate}
-\vspace{-0.2cm}
-\end{block}
-\begin{block}{Proof of 1.}
-{ \footnotesize
-\vspace{-0.5cm}
-    \begin{align*}
-        \mathcal{L}_K (q, \btheta) &= \mathbb{E}_{\bz_1, \dots, \bz_K} \log \left( \frac{1}{K}\sum_{k=1}^K\frac{p(\bx, \bz_k | \btheta)}{q(\bz_k| \bx)} \right) = \\
-        &= \mathbb{E}_{\bz_1, \dots, \bz_K} \log \mathbb{E}_{k_1, \dots, k_M} \left( \frac{1}{M}\sum_{m=1}^M\frac{p(\bx, \bz_{k_m} | \btheta)}{q(\bz_{k_m}| \bx)} \right) \geq \\
-        &\geq \mathbb{E}_{\bz_1, \dots, \bz_K} \mathbb{E}_{k_1, \dots, k_m} \log \left( \frac{1}{M}\sum_{m=1}^M\frac{p(\bx, \bz_{k_m} | \btheta)}{q(\bz_{k_m}| \bx)} \right) = \\
-        &= \mathbb{E}_{\bz_1, \dots, \bz_M} \log \left( \frac{1}{M}\sum_{m=1}^M\frac{p(\bx, \bz_m | \btheta)}{q(\bz_m| \bx)} \right) = \mathcal{L}_M (q, \btheta)
-    \end{align*}
-}
-\end{block}
-    
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1509.00519.pdf}{https://arxiv.org/pdf/1509.00519.pdf}}
-\end{frame}
-%=======
-\begin{frame}{IWAE, 2015}
-    \begin{block}{Theorem}
-\begin{enumerate}
-    \item $\log p(\bx) \geq \mathcal{L}_K (q, \btheta) \geq \mathcal{L}_M (q, \btheta), \quad \text{for} K \geq M$;
-    \item $\log p(\bx) = \lim_{K \rightarrow \infty} \mathcal{L}_K (q, \btheta)$ if $\frac{p(\bx, \bz | \btheta)}{q(\bz | \bx)}$ is bounded.
-\end{enumerate}
-\vspace{-0.2cm}
-\end{block}
-\begin{block}{Proof of 2.}
-\vspace{0.2cm}
-Consider r.v. $\xi_K = \frac{1}{K}\sum_{k=1}^K \frac{p(\bx, \bz_k | \btheta)}{q(\bz_k | \bx)}$. \\
-\vspace{0.2cm}
-If summands are bounded, then (from the strong law of large numbers)
-\[
-    \xi_K \xrightarrow[K \rightarrow \infty]{a.s.} \mathbb{E}_{q(\bz | \bx)} \frac{p(\bx, \bz | \btheta)}{q(\bz | \bx)} = p(\bx | \btheta).
-\]
-Hence $\mathcal{L}_K (q, \btheta) = \mathbb{E} \log \xi_K$ converges to $\log p(\bx | \btheta)$ as $K \rightarrow \infty$.
-\end{block}
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1509.00519.pdf}{https://arxiv.org/pdf/1509.00519.pdf}}
-\end{frame}
-%=======
-\begin{frame}{IWAE, 2015}
-    \[
-        \log p(\bx | \btheta) \geq \mathcal{L}_K(q, \btheta) \geq \mathcal{L}(q, \btheta)
-    \]
-    If $K > 1$ the bound could be tighter.
-    \begin{align*}
-        \mathcal{L} (q, \btheta) &= \mathbb{E}_{q(\bz | \bx)} \log \frac{p(\bx, \bz | \btheta)}{q(\bz| \bx)}; \\
-        \mathcal{L}_K (q, \btheta) &= \mathbb{E}_{\bz_1, \dots, \bz_K \sim q(\bz | \bx)} \log \left( \frac{1}{K}\sum_{k=1}^K\frac{p(\bx, \bz_k | \btheta)}{q(\bz_k| \bx)} \right).
-    \end{align*}
-    \vspace{-0.2cm}
-    \begin{itemize}
-        \item $\mathcal{L}_1(q, \btheta) = \mathcal{L}(q, \btheta)$;
-        \item $\mathcal{L}_{\infty}(q, \btheta) = \log p(\bx | \btheta)$.
-    \end{itemize}
-    \vspace{0.2cm}
-    Which $q(\bz | \bx)$ gives $\mathcal{L}(q, \btheta) = \log p(\bx | \btheta)$? \\
-    \vspace{0.2cm}
-    Which $q(\bz | \bx)$ gives $\mathcal{L}(q, \btheta) = \mathcal{L}_K(q, \btheta)$?
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1509.00519.pdf}{https://arxiv.org/pdf/1509.00519.pdf}}
-\end{frame}
-%=======
-\begin{frame}{IWAE, 2017}
-\begin{block}{Theorem}
-The VAE objective is equal to IWAE objective 
-\[
-    \mathcal{L}(q_{EW}, \btheta) = \mathcal{L}_K(q, \btheta)
-\]
-for the following variational distribution
-\[
-    q_{EW}(\bz | \bx) = \mathbb{E}_{\bz_2, \dots, \bz_K \sim q(\bz | \bx)} q_{IW}(\bz | \bx, \bz_{2:K}),
-\]
-where \[
-    q_{IW}(\bz | \bx, \bz_{2:K}) = \frac{\frac{p(\bx, \bz)}{q(\bz | \bx)})}{\frac{1}{K} \sum_{k=1}^K \frac{p(\bx, \bz_k)}{q(\bz_k | \bx)}} q(\bz | \bx) = \frac{p(\bx, \bz)}{\frac{1}{K}\left( \frac{p(\bx, \bz)}{q(\bz | \bx)} + \sum_{k=2}^K \frac{p(\bx, \bz_k)}{q(\bz_k | \bx)}\right)}.
-\]
-\end{block}
-
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://openreview.net/pdf?id=Syw2ZgrFx}{https://openreview.net/pdf?id=Syw2ZgrFx}}
-\end{frame}
-%=======
-\begin{frame}{IWAE, 2017}
-    \begin{figure}
-        \centering
-        \includegraphics[width=\linewidth]{figs/IWAE_1.png}
-    \end{figure}
-    \begin{figure}
-        \centering
-        \includegraphics[width=\linewidth]{figs/IWAE_2.png}
-    \end{figure}
-
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://openreview.net/pdf?id=Syw2ZgrFx}{https://openreview.net/pdf?id=Syw2ZgrFx}}
-\end{frame}
-%=======
-\begin{frame}{IWAE, 2015}
-How to determine whether all VAE latent variables are informative?
-\[
-    A_{i} = \text{cov}_\bx \left( \mathbb{E}_{q(z_i | \bx)} [z_i] \right) > 0.01 \quad \Leftrightarrow \quad z_i \text{ is active}
-\]
-\begin{figure}
-    \centering
-    \includegraphics[width=\linewidth]{figs/IWAE_3.png}
-\end{figure}
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1509.00519.pdf}{https://arxiv.org/pdf/1509.00519.pdf}}
-\end{frame}
-%=======
 \begin{frame}{ELBO surgery, 2016}
-\begin{block}{ELBO interpretations}
-\begin{itemize}
-    \item Evidence minus posterior KL
-    \[
-        \mathcal{L}(q, \btheta) = \log p(\bX | \btheta) + KL(q(\bZ | \bX) || p(\bZ | \bX, \btheta)).
-    \]
-    \item Average negative energy plus entropy
-    \[
-        \mathcal{L}(q, \btheta) = \mathbb{E}_{q(\bZ | \bX)} p(\bX, \bZ | \btheta) + \mathbb{H} \left[q(\bZ | \bX) \right].
-    \]
-    \item Average term-by-term reconstruction minus KL to prior
-    \[
-        \mathcal{L}(q, \btheta) = \frac{1}{n} \sum_{i=1}^n \left[ \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta) - KL(q(\bz_i | \bx_i) || p(\bz_i)) \right].
-    \]
-\end{itemize}
-\end{block}
-
-\vfill
-\hrule\medskip
-{\scriptsize \href{http://approximateinference.org/accepted/HoffmanJohnson2016.pdf}{http://approximateinference.org/accepted/HoffmanJohnson2016.pdf}}
+		\[
+			\mathcal{L} (q, \btheta)  = \int q(\bZ | \bX) \log \frac{p(\bX, \bZ, \btheta)}{q(\bZ | \bX)} d\bZ.
+		\]
+		\vspace{-0.1cm}
+	\begin{block}{ELBO interpretations}
+	\begin{itemize}
+	    \item Evidence minus posterior KL
+	    \vspace{-0.1cm}
+	    \[
+	        \mathcal{L}(q, \btheta) = \log p(\bX | \btheta) - KL(q(\bZ | \bX) || p(\bZ | \bX, \btheta)).
+	    \]
+	    \item Average negative energy plus entropy
+	    \vspace{-0.1cm}
+	    \[
+	        \mathcal{L}(q, \btheta) = \mathbb{E}_{q(\bZ | \bX)} p(\bX, \bZ | \btheta) + \mathbb{H} \left[q(\bZ | \bX) \right].
+	    \]
+	    \item Average term-by-term reconstruction minus KL to prior
+	    \vspace{-0.1cm}
+	    \[
+	        \mathcal{L}(q, \btheta) = \frac{1}{n} \sum_{i=1}^n \left[ \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta) - KL(q(\bz_i | \bx_i) || p(\bz_i)) \right].
+	    \]
+	\end{itemize}
+	\end{block}
+	
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{http://approximateinference.org/accepted/HoffmanJohnson2016.pdf}{http://approximateinference.org/accepted/HoffmanJohnson2016.pdf}}
 \end{frame}
 %=======
 \begin{frame}{ELBO surgery, 2016}
@@ -796,7 +628,7 @@ where $i$ is treated as random variable:
     = \sum_{i=1}^n \int q(i, \bz) \log \frac{q(i, \bz)}{p(\bz)p(i)} d \bz =
     \int \sum_{i=1}^n q(i, \bz) \log \frac{ q (\bz) q(i | \bz) }{p(\bz) p(i) } d \bz = \\
     = \int q(\bz) \log \frac{q(\bz)}{p(\bz)} d\bz + \int \sum_{i=1}^n q(i | \bz) q(\bz) \log \frac{q(i | \bz)}{p(i)} d \bz = \\
-    = KL (q(\bz) || p(\bz)) - \mathbb{E}_{q(\bz)} \mathbb{H} \left[q(i | \bz)  \right] + \log N.
+    = KL (q(\bz) || p(\bz)) - \mathbb{E}_{q(\bz)} \mathbb{H} \left[q(i | \bz)  \right] + \log n.
 \end{multline*}
 }
 \end{block}
@@ -814,11 +646,11 @@ where $i$ is treated as random variable:
 \begin{block}{Proof (continued)}
 {\footnotesize
 \[
-    \frac{1}{n} \sum_{i=1}^n KL(q(\bz_i | \bx_i) || p(\bz_i)) = KL (q(\bz) || p(\bz)) - \mathbb{E}_{q(\bz)} \mathbb{H} \left[q(i | \bz) \right] + \log N
+    \frac{1}{n} \sum_{i=1}^n KL(q(\bz_i | \bx_i) || p(\bz_i)) = KL (q(\bz) || p(\bz)) - \mathbb{E}_{q(\bz)} \mathbb{H} \left[q(i | \bz) \right] + \log n
 \]
 \begin{multline*}
     \mathbb{I}_{q(i, \bz)} [i, \bz] = \mathbb{E}_{q(i, \bz)} \log \frac{q(i, \bz)}{q(i)q(\bz)} = \mathbb{E}_{q(\bz)} \mathbb{E}_{q(i | \bz)} \log \frac{q(i | \bz) q(\bz)}{q(i)q(\bz)} = \\
-    = \mathbb{E}_{q(\bz)} \mathbb{E}_{q(i | \bz)} \log \frac{q(i | \bz)}{q(i)} = - \mathbb{E}_{q(\bz)} \mathbb{H} \left[ q(i | \bz) \right] + \log N.
+    = \mathbb{E}_{q(\bz)} \mathbb{E}_{q(i | \bz)} \log \frac{q(i | \bz)}{q(i)} = - \mathbb{E}_{q(\bz)} \mathbb{H} \left[ q(i | \bz) \right] + \log n.
 \end{multline*}
 }
 \end{block}
@@ -838,7 +670,7 @@ where $i$ is treated as random variable:
 \begin{multline*}
     \mathcal{L}(q, \btheta) = \frac{1}{n} \sum_{i=1}^n \left[ \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta) - KL(q(\bz_i | \bx_i) || p(\bz_i)) \right] = \\
     = \frac{1}{n} \sum_{i=1}^n \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta) - \mathbb{I}_{q(i, \bz)} [i, \bz] - KL(q(\bz) || p(\bz)) = \\
-    = \underbrace{\frac{1}{n} \sum_{i=1}^n \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta)}_{\text{Reconstruction loss}} - \underbrace{\left(\log N - \mathbb{E}_{q(\bz)} \mathbb{H} \left[ q(i | \bz) \right] \right)\vphantom{\sum_{i=1}} }_{0 \leq \text{Mutual info} \leq \log N } - \underbrace{KL(q(\bz) || p(\bz))\vphantom{\sum_{i=1}}}_{\text{Marginal KL}}
+    = \underbrace{\frac{1}{n} \sum_{i=1}^n \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta)}_{\text{Reconstruction loss}} - \underbrace{\left(\log n - \mathbb{E}_{q(\bz)} \mathbb{H} \left[ q(i | \bz) \right] \right)\vphantom{\sum_{i=1}} }_{0 \leq \text{Mutual info} \leq \log N } - \underbrace{KL(q(\bz) || p(\bz))\vphantom{\sum_{i=1}}}_{\text{Marginal KL}}
 \end{multline*}
 }
 \end{block}
@@ -852,7 +684,7 @@ where $i$ is treated as random variable:
 \vspace{-0.3cm}
 {\footnotesize
 \[
-    \mathcal{L}(q, \btheta) = \underbrace{\frac{1}{n} \sum_{i=1}^n \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta)}_{\text{Reconstruction loss}} - \underbrace{\left(\log N - \mathbb{E}_{q(\bz)} \mathbb{H} \left[ q(i | \bz) \right] \right)\vphantom{\sum_{i=1}}}_{0 \leq \text{Mutual info} \leq \log N } - \underbrace{KL(q(\bz) || p(\bz))\vphantom{\sum_{i=1}}}_{\text{Marginal KL}}
+    \mathcal{L}(q, \btheta) = \underbrace{\frac{1}{n} \sum_{i=1}^n \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta)}_{\text{Reconstruction loss}} - \underbrace{\left(\log n - \mathbb{E}_{q(\bz)} \mathbb{H} \left[ q(i | \bz) \right] \right)\vphantom{\sum_{i=1}}}_{0 \leq \text{Mutual info} \leq \log n } - \underbrace{KL(q(\bz) || p(\bz))\vphantom{\sum_{i=1}}}_{\text{Marginal KL}}
 \]}
 \end{block}
 \vspace{-0.3cm}
@@ -975,14 +807,6 @@ Is it beneficial to couple the prior with the variational posterior or MoG is en
 	\item \textbf{Parallel WaveNet}: Fast High-Fidelity Speech Synthesis \\
 	\href{https://arxiv.org/pdf/1711.10433.pdf}{https://arxiv.org/pdf/1711.10433.pdf} \\
 	\textbf{Summary}: WaveNet is MAF (sequential generation). To exploit IAF fast sampling, knowledge distillation used. Teacher network is large WaveNet, student - is a IAF small WaveNet (generate samples from noise is parallel). The loss is KL divergence between student and teacher distributions. The additional perceptual, contrastive and power losses used to create more natural sounds.
-	
-	\item \textbf{IWAE}: Importance Weighted Autoencoders \\
-	\href{https://arxiv.org/pdf/1509.00519.pdf}{https://arxiv.org/pdf/1509.00519.pdf} \\
-	\textbf{Summary:} Propose the version of ELBO which is tighter to the log-density. Sampling of k objects from latent space instead of one. The more samples we samples the more tight the gap is. In the limit we will get the true likelihood. The gradient is given by importance sampling reweighting. Analyze the number of active latent units.
-
-    \item Reinterpreting Importance-Weighted Autoencoders \\
-	\href{https://arxiv.org/abs/1704.02916}{https://arxiv.org/abs/1704.02916} \\
-	\textbf{Summary:} IWAE maximizes a tighter ELBO than VAE ELBO. This ELBO is also related to some implicit variational distribution. The analytical form of this distribution is given and visualized. 
 	
 	\item \textbf{ELBO surgery:} yet another way to carve up the variational evidence lower bound \\
 	\href{http://approximateinference.org/accepted/HoffmanJohnson2016.pdf}{http://approximateinference.org/accepted/HoffmanJohnson2016.pdf} \\

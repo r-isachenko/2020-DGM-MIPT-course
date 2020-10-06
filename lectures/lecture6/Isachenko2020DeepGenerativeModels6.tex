@@ -696,7 +696,7 @@ where $i$ is treated as random variable:
     \includegraphics[width=0.8\linewidth]{figs/ELBO_surgery.png}
 \end{figure}
 \[
-\log N \approx 11.0021
+\log n \approx 11.0021
 \]
 \vfill
 \hrule\medskip
@@ -708,7 +708,7 @@ where $i$ is treated as random variable:
 \vspace{-0.3cm}
 {\footnotesize
 \[
-    \mathcal{L}(q, \btheta) = \underbrace{\frac{1}{n} \sum_{i=1}^n \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta)}_{\text{Reconstruction loss}} - \underbrace{\left(\log N - \mathbb{E}_{q(\bz)} \mathbb{H} \left[ q(i | \bz) \right] \right)\vphantom{\sum_{i=1}}}_{0 \leq \text{Mutual info} \leq \log N } - \underbrace{KL(q(\bz) || p(\bz))\vphantom{\sum_{i=1}}}_{\text{Marginal KL}}
+    \mathcal{L}(q, \btheta) = \underbrace{\frac{1}{n} \sum_{i=1}^n \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta)}_{\text{Reconstruction loss}} - \underbrace{\left(\log n - \mathbb{E}_{q(\bz)} \mathbb{H} \left[ q(i | \bz) \right] \right)\vphantom{\sum_{i=1}}}_{0 \leq \text{Mutual info} \leq \log N } - \underbrace{KL(q(\bz) || p(\bz))\vphantom{\sum_{i=1}}}_{\text{Marginal KL}}
 \]}
 \end{block}
 
@@ -749,30 +749,18 @@ How to choose the optimal $p(\bz)$?
 Do we equally need the multimodal prior? \\
 \vspace{0.2cm}
 Is it beneficial to couple the prior with the variational posterior or MoG is enough?
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{figs/VampPrior_1.png}
-\end{figure}
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1705.07120.pdf}{https://arxiv.org/pdf/1705.07120.pdf}}
-\end{frame}
-%=======
-\begin{frame}{VampPrior, 2017}
-\vspace{1.5cm}
-	\begin{minipage}[t]{0.5\columnwidth}
-		\begin{figure}[h]
-			\centering
-			\includegraphics[width=1.\linewidth]{figs/VampPrior_2.png}
-		\end{figure}
-	\end{minipage}%
-	\begin{minipage}[t]{0.5\columnwidth}
-		\begin{figure}[h]
-			\centering
-			\includegraphics[width=1.\linewidth]{figs/VampPrior_3.png}
-		\end{figure}
-	\end{minipage}
-\vspace{1.5cm}
+\begin{minipage}[t]{0.5\columnwidth}
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=1.\linewidth]{figs/VampPrior_1.png}
+	\end{figure}
+\end{minipage}%
+\begin{minipage}[t]{0.5\columnwidth}
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=1.\linewidth]{figs/VampPrior_2.png}
+	\end{figure}
+\end{minipage}
 \vfill
 \hrule\medskip
 {\scriptsize \href{https://arxiv.org/pdf/1705.07120.pdf}{https://arxiv.org/pdf/1705.07120.pdf}}

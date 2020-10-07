@@ -9,7 +9,7 @@
 | 3 | September, 16 | EM-algorithm. VAE. Mean field approximation. | [slides](lectures/lecture3/Isachenko2020DeepGenerativeModels3.pdf) | [video](https://youtu.be/y1csC6gkmxU) |
 | 4 | September, 23 | Flow models (NICE, RealNVP, RevNet, i-RevNet). | [slides](lectures/lecture4/Isachenko2020DeepGenerativeModels4.pdf) | [video](https://youtu.be/epFV2wNE6Kk) |
 | 5 | September, 30 | Flow models (Glow, Flow++). Flows in VAE. Autoregressive flows (IAF) | [slides](lectures/lecture5/Isachenko2020DeepGenerativeModels5.pdf) | [video](https://youtu.be/KA941HS8oAg) |
-| 6 | October, 7 | Autoregressive flows (IAF, MAF, Parallel WaveNet). ELBO surgery. VampPrior. | [slides](lectures/lecture6/Isachenko2020DeepGenerativeModels6.pdf) | [video] |
+| 6 | October, 7 | Autoregressive flows (IAF, MAF, Parallel WaveNet). ELBO surgery. | [slides](lectures/lecture6/Isachenko2020DeepGenerativeModels6.pdf) | [video](https://youtu.be/8xzHeHJmXc4) |
 
 
 ## Homeworks

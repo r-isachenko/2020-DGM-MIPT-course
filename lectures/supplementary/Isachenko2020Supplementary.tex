@@ -49,7 +49,21 @@
 %\thispagestyle{empty}
 \titlepage
 \end{frame}
-=======
+%=======
+\begin{frame}{IWAE, 2015}
+How to determine whether all VAE latent variables are informative?
+\[
+A_{i} = \text{cov}_\bx \left( \mathbb{E}_{q(z_i | \bx)} [z_i] \right) > 0.01 \quad \Leftrightarrow \quad z_i \text{ is active}
+\]
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figs/IWAE_3.png}
+\end{figure}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://arxiv.org/pdf/1509.00519.pdf}{https://arxiv.org/pdf/1509.00519.pdf}}
+\end{frame}
+%=======
  \begin{frame}{GatedPixelCNN (2016)}
  \begin{figure}
      \centering
@@ -105,6 +119,44 @@
         \item Work on both continuous and discrete data.
         \item There is no natural way to do unsupervised learning.
     \end{itemize}
+\end{frame}
+%=======
+\begin{frame}{PixelVAE, 2016}
+	\begin{block}{Hierarchical VAE}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.7\linewidth]{figs/PixelVAE_1.png}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/pdf/1611.05013.pdf}{https://arxiv.org/pdf/1611.05013.pdf}}
+\end{frame}
+%=======
+\begin{frame}{PixelVAE, 2016}
+	\begin{block}{Hierarchical decomposition}
+		\vspace{-1cm}
+		\begin{align*}
+			p(\bz_1, \dots, \bz_L) &= p(\bz_L) p(\bz_{L-1} | \bz_L) \dots p(\bz_1, \bz_2); \\
+			q(\bz_1, \dots, \bz_L | \bx) &= q(\bz_1 | \bx) \dots q(\bz_L | \bx).
+		\end{align*}
+	\end{block}
+	\vspace{-0.5cm}
+	\begin{block}{ELBO}
+		\vspace{-0.5cm}
+		{\footnotesize
+			\begin{align*}
+				\mathcal{L}(q, \btheta) &= \mathbb{E}_{q(\bz_1 | \bx)} \log p(\bx | \bz_1, \btheta) - KL(q(\bz_1, \dots, \bz_L | \bx) || p(\bz_1, \dots, \bz_L)) \\
+				&= \mathbb{E}_{q(\bz_1 | \bx)} \log p(\bx | \bz_1, \btheta) - \int \prod_{j=1}^L q(\bz_j | \bx) \sum_{i=1}^L \log \frac{q(\bz_i | \bx)}{p(\bz_i | \bz_{i + 1})} d \bz_1 \dots d \bz_L \\
+				&= \mathbb{E}_{q(\bz_1 | \bx)} \log p(\bx | \bz_1, \btheta) - \sum_{i=1}^L \int \prod_{j=1}^L q(\bz_j | \bx) \log \frac{q(\bz_i | \bx)}{p(\bz_i | \bz_{i + 1})} d \bz_1 \dots d \bz_L \\
+				&= \mathbb{E}_{q(\bz_1 | \bx)} \log p(\bx | \bz_1, \btheta) - \sum_{i=1}^L \int q(\bz_{i+1} | \bx) q(\bz_i | \bx) \log \frac{q(\bz_i | \bx)}{p(\bz_i | \bz_{i + 1})} d \bz_i d \bz_{i+1} \\
+				&= \mathbb{E}_{q(\bz_1 | \bx)} \log p(\bx | \bz_1, \btheta) - \sum_{i=1}^L \mathbb{E}_{q(\bz_{i+1} | \bx)} \left[ KL (q(\bz_i | \bx) || p(\bz_i | \bz_{i + 1}))\right]
+			\end{align*}
+		}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/pdf/1611.05013.pdf}{https://arxiv.org/pdf/1611.05013.pdf}}
 \end{frame}
 %=======
 \begin{frame}{References}

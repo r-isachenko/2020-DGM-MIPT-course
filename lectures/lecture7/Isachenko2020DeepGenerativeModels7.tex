@@ -111,9 +111,9 @@
 \begin{frame}{VampPrior, 2017}
 	\begin{block}{Variational Mixture of posteriors}
 		\[
-		p(\bx | \blambda) = \frac{1}{K} \sum_{k=1}^K q(\bz | \bu_k),
+		p(\bz | \blambda) = \frac{1}{K} \sum_{k=1}^K q(\bz | \bu_k),
 		\]
-		where $\bu_1, \dots \bu_K$ is trainable preudo-inputs.
+		where $\blambda = \{\bu_1, \dots, \bu_K\}$ are trainable preudo-inputs.
 	\end{block}
 	\begin{itemize}
 		\item Multimodal $\Rightarrow$ prevents over-regularization;.
@@ -371,7 +371,7 @@ This results in $KL (q(\bZ_j | \bx) || p(\bZ_j)) \geq \lambda$ for all $j$, in p
 \begin{frame}{Variational Lossy AutoEncoder, 2016}
 \begin{block}{Lossy code via explicit information placement}
 \[
-    p(\bx | \bz, \btheta) = \prod_{i=1}^m p(x_i | \bz, \bx_{\text{WindowAround}(i)}).
+    p(\bx | \bz, \btheta) = \prod_{i=1}^m p(x_i | \bz, \bx_{\text{WindowAround}(i)}, \btheta).
 \]
 \begin{itemize}
     \item WindowAround($i$) restricts the receptive field (it forbids to represent arbitrarily complex distribution over $\bx$ without dependence on $\bz$). 
@@ -398,7 +398,7 @@ This results in $KL (q(\bZ_j | \bx) || p(\bZ_j)) \geq \lambda$ for all $j$, in p
 	\begin{block}{VampPrior}
 		\vspace{-0.5cm}
 		\[
-			p(\bx | \blambda) = \frac{1}{K} \sum_{k=1}^K q(\bz | \bu_k),
+			p(\bz | \blambda) = \frac{1}{K} \sum_{k=1}^K q(\bz | \bu_k),
 		\]
 	where $\bu_1, \dots \bu_K$ is trainable preudo-inputs.
 	\end{block}
@@ -445,8 +445,8 @@ VAE with AF prior in latent code $\bz$ is equivalent to using IAF posterior for 
 		}
 	\end{block}
 	\begin{itemize}
-		\item IAF posterior decoder path: $p(\bx|\bz)$, $\bz \sim p(\bz)$.
-		\item AF prior decoder path: $p(\bx|\bz)$, $\bz = g(\bepsilon, \blambda)$, $\bepsilon \sim p(\bepsilon)$. 
+		\item IAF posterior decoder path: $p(\bx|\bz, \btheta)$, $\bz \sim p(\bz)$.
+		\item AF prior decoder path: $p(\bx|\bz, \btheta)$, $\bz = g(\bepsilon, \blambda)$, $\bepsilon \sim p(\bepsilon)$. 
 	\end{itemize}
 	AF prior and IAF posterior have the same computation cost, so using AF prior makes the model more expressive at no training time cost.
 \vfill
@@ -595,8 +595,8 @@ If $K=1$, these objectives coincide.
 \begin{frame}{IWAE, 2015}
 \begin{block}{Theorem}
 	\begin{enumerate}
-		\item $\log p(\bx) \geq \mathcal{L}_K (q, \btheta) \geq \mathcal{L}_M (q, \btheta), \quad \text{for} K \geq M$;
-		\item $\log p(\bx) = \lim_{K \rightarrow \infty} \mathcal{L}_K (q, \btheta)$ if $\frac{p(\bx, \bz | \btheta)}{q(\bz | \bx)}$ is bounded.
+		\item $\log p(\bx | \btheta) \geq \mathcal{L}_K (q, \btheta) \geq \mathcal{L}_M (q, \btheta), \quad \text{for} K \geq M$;
+		\item $\log p(\bx | \btheta) = \lim_{K \rightarrow \infty} \mathcal{L}_K (q, \btheta)$ if $\frac{p(\bx, \bz | \btheta)}{q(\bz | \bx)}$ is bounded.
 	\end{enumerate}
 	\vspace{-0.2cm}
 \end{block}
@@ -718,7 +718,7 @@ Which $q(\bz | \bx)$ gives $\mathcal{L}(q, \btheta) = \mathcal{L}_K(q, \btheta)$
 %=======
 \begin{frame}{IWAE}
 \[
-\frac{a_1 + \dots + a_K}{K} = \mathbb{E}_{i_1, \dots, i_M} \frac{a_{i_1} + \dots + a_{i_M}}{M}, \quad i_1, \dots i_M \sim U[1, K]
+\frac{a_1 + \dots + a_K}{K} = \mathbb{E}_{i_1, \dots, i_M} \frac{a_{i_1} + \dots + a_{i_M}}{M}, \quad i_1, \dots, i_M \sim U[1, K]
 \]
 \end{frame}
 

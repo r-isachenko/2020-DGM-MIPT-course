@@ -76,9 +76,6 @@
         \includegraphics[width=1.0\linewidth]{figs/generative_models_zoo.pdf}
         \label{fig:generative_models_zoo}
     \end{figure}
-\vfill
-\hrule\medskip
-{\scriptsize Radford A., Metz L., Chintala S. Unsupervised representation learning with deep convolutional generative adversarial networks  \href{https://arxiv.org/abs/1511.06434}{https://arxiv.org/abs/1511.06434}}
 \end{frame}
 \begin{frame}{Motivation}
     \begin{figure}
@@ -168,13 +165,13 @@
 %--------------------------------------------------------------------------------
 \section{Likelihood based models}
 \begin{frame}{Problem Statement}
-Given samples $\{\bx_i\}_{i=1}^n \in X$ from unknown distribution $p(\bx)$.
+Given samples $\{\bx_i\}_{i=1}^n \in X$ from unknown distribution $\pi(\bx)$.
 
 \begin{block}{Goal}
-	learn a distribution $p(\bx)$ for 
+	learn a distribution $\pi(\bx)$ for 
 	\begin{itemize}
-	    \item evaluating $p(\bx)$ for new samples;
-	    \item sampling from $p(\bx)$.
+	    \item evaluating $\pi(\bx)$ for new samples;
+	    \item sampling from $\pi(\bx)$.
 	\end{itemize}
 \end{block}
 \begin{block}{Challenge}
@@ -217,7 +214,7 @@ Given samples $\{\bx_i\}_{i=1}^n \in X$ from unknown distribution $p(\bx)$.
 %=======
 \begin{frame}{Maximum likelihood}
     Fix probabilistic model $p(\bx | \btheta)$~-- the set of parameterized distributions . \\
-    Instead of searching true $p(\bx)$ over all probability distributions, learn function approximation $p(\bx | \btheta) \approx p(\bx)$.
+    Instead of searching true $\pi(\bx)$ over all probability distributions, learn function approximation $p(\bx | \btheta) \approx \pi(\bx)$.
     
     \begin{block}{MLE problem}
     \vspace{-0.3cm}

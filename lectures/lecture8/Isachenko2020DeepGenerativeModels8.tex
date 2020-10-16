@@ -1,0 +1,202 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx, epsfig}
+\usepackage{amsmath,mathrsfs,amsfonts,amssymb}
+%\usepackage{subfig}
+\usepackage{floatflt}
+\usepackage{epic,ecltree}
+\usepackage{mathtext}
+\usepackage{fancybox}
+\usepackage{fancyhdr}
+\usepackage{multirow}
+\usepackage{enumerate}
+\usepackage{epstopdf}
+\usepackage{multicol}
+\usepackage{algorithm}
+\usepackage[noend]{algorithmic}
+\def\algorithmicrequire{\textbf{Input:}}
+\def\algorithmicensure{\textbf{Output:}}
+\usetheme{default}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
+\usecolortheme{default}
+\setbeamertemplate{footline}[page number]{}
+\setbeamerfont{title}{size=\Huge}
+
+\newcommand{\bt}{\mathbf{t}} 
+\newcommand{\bu}{\mathbf{u}} 
+\newcommand{\bv}{\mathbf{v}} 
+\newcommand{\bw}{\mathbf{w}} 
+\newcommand{\bx}{\mathbf{x}} 
+\newcommand{\bz}{\mathbf{z}} 
+\newcommand{\by}{\mathbf{y}} 
+
+\newcommand{\bI}{\mathbf{I}} 
+\newcommand{\bT}{\mathbf{T}} 
+\newcommand{\bX}{\mathbf{X}} 
+\newcommand{\bZ}{\mathbf{Z}} 
+
+\newcommand{\bepsilon}{\boldsymbol{\epsilon}}
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\blambda}{\boldsymbol{\lambda}}
+\newcommand{\bsigma}{\boldsymbol{\sigma}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+
+
+\newcommand{\bbE}{\mathbb{E}} 
+
+\newcommand{\cN}{\mathcal{N}} 
+\newcommand{\cS}{\mathcal{S}} 
+
+\newcommand{\btheta}{\boldsymbol{\theta}} 
+\newcommand{\bphi}{\boldsymbol{\phi}} 
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+%\definecolor{beamer@blendedblue}{RGB}{15,120,80}
+%----------------------------------------------------------------------------------------------------------
+\title[\hbox to 56mm{Deep Generative Models  \hfill\insertframenumber\,/\,\inserttotalframenumber}]
+{Deep Generative Models \\ Lecture 8}
+\author[Roman Isachenko]{\\Roman Isachenko}
+\institute[MIPT]{Moscow Institute of Physics and Technology \\
+}
+\date{2020}
+%--------------------------------------------------------------------------------
+\begin{document}
+%--------------------------------------------------------------------------------
+\begin{frame}
+%\thispagestyle{empty}
+\titlepage
+\end{frame}
+%=======
+\begin{frame}{Generative models zoo}
+\begin{figure}
+	\centering
+	\includegraphics[width=1.0\linewidth]{figs/generative_models_zoo.pdf}
+	\label{fig:generative_models_zoo}
+\end{figure}
+\end{frame}
+%=======
+\begin{frame}{Likelihood based models}
+	Is likelihood a good measure of model quality?
+	\begin{minipage}[t]{0.48\columnwidth}
+		\begin{block}{Poor likelihood \\ Great samples}
+			\vspace{-0.3cm}
+			\[
+				p_1(\bx) = \frac{1}{n} \sum_{i=1}^n \cN(\bx | \bx_i, \epsilon \bI)
+			\]
+			For small $\epsilon$ this model will generate samples with great quality, but likelihood will be very poor.
+		\end{block}
+	\end{minipage}%
+	\begin{minipage}[t]{0.52\columnwidth}
+		\begin{block}{Great likelihood \\ Poor samples}
+			\vspace{-0.3cm}
+			\[
+				p_2(\bx) = 0.01p(\bx) + 0.99p_{\text{noise}}(\bx)
+			\]
+			\begin{multline*}
+				\log \left[ 0.01p(\bx) + 0.99p_{\text{noise}}(\bx) \right] \geq  \\ \geq \log \left[ 0.01p(\bx) \right]  = \log p(\bx) - \log 100
+			\end{multline*}
+		Noisy irrelevant samples, but for high dimensions $\log p(\bx)$ becames larger.
+		\end{block}
+	\end{minipage}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1511.01844}{https://arxiv.org/abs/1511.01844}}
+\end{frame}
+%=======
+\begin{frame}{Likelihood-free learning}
+	\begin{itemize}
+		\item Likelihood is not a perfect measure for quality measure for generative model.
+		\item Likelihood could be intractable.
+	\end{itemize}
+	\begin{block}{Where did we start}
+	 We would like to approximate true data distribution $\pi(\bx)$.
+		Instead of searching true $\pi(\bx)$ over all probability distributions, learn function approximation $p(\bx | \btheta) \approx \pi(\bx)$.
+	\end{block}
+	Imagine we have two sets of samples 
+	\begin{itemize}
+		\item $\cS_1 = \{\bx_i\}_{i=1}^{n_1} \sim \pi(\bx)$
+		\item $\cS_2 = \{\bx_i\}_{i=1}^{n_2} \sim p(\bx | \btheta)$
+	\end{itemize}
+	\begin{block}{Two sample test}
+		\vspace{-0.3cm}
+		\[
+			H_0: \pi(\bx) = p(\bx | \btheta), \quad H_1: \pi(\bx) \neq p(\bx | \btheta)
+		\]
+	\end{block}
+
+\end{frame}
+%=======
+\begin{frame}{Likelihood-free learning}
+		\begin{block}{Two sample test}
+			\vspace{-0.3cm}
+			\[
+				H_0: \pi(\bx) = p(\bx | \btheta), \quad H_1: \pi(\bx) \neq p(\bx | \btheta)
+			\]
+	\end{block}
+	Define test statistic $T(\cS_1, \cS_2)$. Test statictic is likelihood free.
+	
+	If $T(\cS_1, \cS_2) < \alpha$, then accept $H_0$, else reject it.
+	
+	\begin{block}{Desired behaviour}
+		\begin{itemize}
+			\item The generative model $p(\bx | \btheta)$ minimizes the value of test statistic~$T(\cS_1, \cS_2)$.
+			\item Find appropriate test statistic in high dimensions is hard. We could try to learn the appropriate $T(\cS_1, \cS_2)$.
+		\end{itemize}
+	\end{block}
+\end{frame}
+%=======
+\begin{frame}{Vanila GAN}
+	\begin{itemize}
+		\item \textbf{Generator:} latent variable model $\bx = G(\bz)$, which minimizes two-sample test objective.
+		\item \textbf{Discriminator:} function $D(\bx)$, which distinguish real samples from model samples and maximizes two-sample test statistic.
+	\end{itemize}
+	\begin{block}{Objective}
+		\[
+			\min_{G} \max_D \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bz)} \log (1 - D(G(\bz)))
+		\]
+	\end{block}
+	For fixed generator $G(\bz)$ discriminator is performing binary classification with cross entropy loss.
+	
+	 This minimax game has global optimum $\pi(\bx) = p(\bx | \btheta)$.
+	 \vfill
+	 \hrule\medskip
+	 {\scriptsize \href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661}}
+\end{frame}
+%=======
+\begin{frame}{Vanila GAN optimality}
+	
+	\begin{block}{Objective (fixed $G$)}
+		\[
+		\max_D V(D) = \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bz)} \log (1 - D(G(\bz)))
+		\]
+	\end{block}
+	\begin{block}{Optimal discriminator}
+		\vspace{-0.5cm}
+		\begin{align*}
+			V(D) &= \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bx | \btheta)} \log (1 - D(\bx)) \\
+			&= \int \underbrace{\left[ \pi(\bx) \log D(\bx) + p(\bx | \btheta)\log (1 - D(\bx) \right]}_{y(D)} d \bx
+		\end{align*}
+		\[
+			\frac{d y(D)}{d D} = \frac{\pi(\bx)}{D(\bx)} - \frac{p(\bx | \btheta)}{1 - D(\bx)} = 0 \quad \Rightarrow \quad D^*(\bx) = \frac{\pi(\bx)}{\pi(\bx) + p(\bx | \btheta)}
+		\]
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661}}
+
+\end{frame}
+%=======
+\begin{frame}{Vanila GAN optimality}
+	
+\end{frame}
+%=======
+\begin{frame}{References}
+{\tiny
+\begin{itemize}
+	\item
+\end{itemize}
+}
+\end{frame}
+%=======
+\end{document} 

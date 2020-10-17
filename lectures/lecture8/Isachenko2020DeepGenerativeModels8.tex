@@ -43,6 +43,7 @@
 
 \newcommand{\bbE}{\mathbb{E}} 
 
+\newcommand{\cL}{\mathcal{L}} 
 \newcommand{\cN}{\mathcal{N}} 
 \newcommand{\cS}{\mathcal{S}} 
 
@@ -72,7 +73,6 @@
 \begin{figure}
 	\centering
 	\includegraphics[width=1.0\linewidth]{figs/generative_models_zoo.pdf}
-	\label{fig:generative_models_zoo}
 \end{figure}
 \end{frame}
 %=======
@@ -153,7 +153,7 @@
 	\end{itemize}
 	\begin{block}{Objective}
 		\[
-			\min_{G} \max_D \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bz)} \log (1 - D(G(\bz)))
+			V(G, D) = \min_{G} \max_D \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bz)} \log (1 - D(G(\bz)))
 		\]
 	\end{block}
 	For fixed generator $G(\bz)$ discriminator is performing binary classification with cross entropy loss.
@@ -174,7 +174,7 @@
 	\begin{block}{Optimal discriminator}
 		\vspace{-0.5cm}
 		\begin{align*}
-			V(D) &= \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bx | \btheta)} \log (1 - D(\bx)) \\
+			V(G, D) &= \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bx | \btheta)} \log (1 - D(\bx)) \\
 			&= \int \underbrace{\left[ \pi(\bx) \log D(\bx) + p(\bx | \btheta)\log (1 - D(\bx) \right]}_{y(D)} d \bx
 		\end{align*}
 		\[
@@ -189,12 +189,256 @@
 %=======
 \begin{frame}{Vanila GAN optimality}
 	
+	\begin{block}{Objective (fixed $D$)}
+		\[
+		\max_G V(G, D^*) = \bbE_{\pi(\bx)} \log D^*(\bx) + \bbE_{p(\bz)} \log (1 - D^*(G(\bz)))
+		\]
+	\end{block}
+	\begin{block}{Optimal generator}
+		\vspace{-0.5cm}
+		\begin{multline*}
+			V(G, D^*) = \bbE_{\pi(\bx)} \log \frac{\pi(\bx)}{\pi(\bx) + p(\bx | \btheta)} + \bbE_{p(\bx | \btheta)} \log \frac{p(\bx | \btheta)}{\pi(\bx) + p(\bx | \btheta)} \\
+			 = KL \left(\pi(x) || \frac{\pi(\bx) + p(\bx | \btheta)}{2}\right) + KL \left(p(x | \btheta) || \frac{\pi(\bx) + p(\bx | \btheta)}{2}\right) - \log 4 \\
+			 = 2JSD(\pi(\bx) || p(\bx | \btheta)) - \log 4.
+		\end{multline*}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661}}
+	
+\end{frame}
+%=======
+\begin{frame}{Vanila GAN optimality}
+	\begin{block}{Optimal generator}
+		\vspace{-0.2cm}
+		\[
+			V(G, D^*)  = 2JSD(\pi(\bx) || p(\bx | \btheta)) - \log 4.
+		\]
+	\end{block}
+	\begin{block}{Jensen-Shannon divergence}
+		\vspace{-0.2cm}
+		\footnotesize
+		\[
+			JSD(\pi(\bx) || p(\bx | \btheta)) = \frac{1}{2} \left[KL \left(\pi(x) || \frac{\pi(\bx) + p(\bx | \btheta)}{2}\right) + KL \left(p(x | \btheta) || \frac{\pi(\bx) + p(\bx | \btheta)}{2}\right) \right]
+		\]
+	\end{block}
+	Also called symmetric KL divergence. Could be used as a distance measure!
+	
+	\[
+		V(G^*, D^*) = -\log 4, \quad \pi(\bx) = p(\bx | \btheta).
+	\]
+	If the generator updates are made in function space and discriminator is optimal at every step, then the generator is
+	guaranteed to converge to the data distribution.
+\end{frame}
+%=======
+\begin{frame}{Vanila GAN}
+	\begin{block}{Objective}
+		\vspace{-0.4cm}
+		\[
+		V(G, D) = \min_{G} \max_D \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bz)} \log (1 - D(G(\bz)))
+		\]
+		\vspace{-0.4cm}
+	\end{block}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=1.0\linewidth]{figs/gan_1}
+	\end{figure}
+	\begin{itemize}
+		\item Generator updates are made in parameter space.
+		\item Discriminator is not optimal at every step.
+		\item Generator and discriminator loss keeps oscillatingduring GAN training.
+	\end{itemize}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661}}
+\end{frame}
+%=======
+\begin{frame}{Vanila GAN challenges}
+	\begin{block}{Objective}
+		\vspace{-0.4cm}
+		\[
+		V(G, D) = \min_{G} \max_D \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bz)} \log (1 - D(G(\bz)))
+		\]
+		\vspace{-0.4cm}
+	\end{block}
+	\begin{itemize}
+		\item Vanishing gradients. \\
+		Early in learning, $G$ is poor, $D$ can reject samples with high confidence. In this case, $\log (1 - D(G(\bz)))$ saturates.
+		Maximize $\log D(G(z))$ instead (stronger gradients).
+		\item Mode collapse. \\
+		The phenomena where the generator of a GAN collapses to one or few samples.
+		Alternate architectures, adding regularization terms, injecting small noise
+		perturbations and other millions bags and tricks are used to avoid the mode collapse .
+	\end{itemize}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661}}
+\end{frame}
+%=======
+\begin{frame}{GAN mode collapse}
+	\begin{block}{GAN objective for optimal discriminator}
+		\vspace{-0.2cm}
+		\[
+			V(G, D^*)  = 2JSD(\pi(\bx) || p(\bx | \btheta)) - \log 4.
+		\]
+	\end{block}
+	\begin{block}{Likelihood model objective}
+		\vspace{-0.6cm}
+		\begin{multline*}
+			\max_{\btheta} \log p(\bX | \btheta) \approx \max_{\btheta}\bbE_{\pi(\bx)} \log p(\bx | \btheta) = \\ = \max_{\btheta}\bbE_{\pi(\bx)} \log p(\bx | \btheta) + \bbE_{\pi(\bx)} \log \pi(\bx) = \\ = \min_{\btheta} KL(\pi(\bx) || p(\bx | \btheta))
+		\end{multline*}
+	\vspace{-0.6cm}
+	\end{block}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{figs/mode_collapse_1}
+	\end{figure}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://arxiv.org/abs/1511.01844}{https://arxiv.org/abs/1511.01844}}
+\end{frame}
+%=======
+\begin{frame}{Mode collapse}
+	\begin{block}{Mode covering vs mode seeking}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.8\linewidth]{figs/mode_collapse_2}
+		\end{figure}
+	\vspace{-0.3cm}
+	\end{block}
+	\begin{block}{GAN mode collapse on toy example}
+		\begin{figure}
+			\centering
+			\includegraphics[width=1.0\linewidth]{figs/mode_collapse_3}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://sites.google.com/view/berkeley-cs294-158-sp20/home}{https://sites.google.com/view/berkeley-cs294-158-sp20/home} \\ \href{https://arxiv.org/abs/1611.02163}{https://arxiv.org/abs/1611.02163}}
+\end{frame}
+%=======
+\begin{frame}{Vanila GAN results}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.95\linewidth]{figs/vanila_gan_results}
+	\end{figure}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661}}
+\end{frame}
+%=======
+\begin{frame}{Deep Convolutional GAN}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{figs/dcgan_1}
+	\end{figure}
+	\begin{itemize}
+		\footnotesize
+		\item  Mean-pooling instead of max-pooling.
+		\item Transposed convolutions in the generator for upsampling.
+		\item Downsample with strided convolutions and average pooling.
+		\item ReLU for generator, Leaky-ReLU (0.2) for discriminator.
+		\item Output nonlinearity: tanh for Generator, sigmoid for discriminator.
+		\item Batch Normalization used to prevent mode collapse (not applied at the output of $G$ and input of $D$).
+		\item Adam: small LR = 2e-4; small momentum: 0.5, batch-size: 128.
+	\end{itemize}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1511.06434}{https://arxiv.org/abs/1511.06434}}
+\end{frame}
+%=======
+\begin{frame}{Deep Convolutional GAN}
+	\begin{block}{ImageNet samples}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.8\linewidth]{figs/dcgan_results_1}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1511.06434}{https://arxiv.org/abs/1511.06434}}
+\end{frame}
+%=======
+\begin{frame}{Deep Convolutional GAN}
+	\begin{block}{Smooth interpolations}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.8\linewidth]{figs/dcgan_results_2}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1511.06434}{https://arxiv.org/abs/1511.06434}}
+\end{frame}
+%=======
+\begin{frame}{Deep Convolutional GAN}
+	\begin{block}{Vector arithmetic}
+		\begin{figure}
+			\centering
+			\includegraphics[width=1.0\linewidth]{figs/dcgan_results_3}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1511.06434}{https://arxiv.org/abs/1511.06434}}
+\end{frame}
+%=======
+\begin{frame}{Improved techniques for training GANs}
+	\begin{itemize}
+		\item Feature matching
+		\[
+			\cL_G = \| \bbE_{\pi(\bx)} \mathbf{d}(\bx) - \bbE_{p(\bz)} \mathbf{d}(G(\bz)) \|_2^2
+		\]
+		Here $\mathbf{d}(\bx)$ -- intermediate layer of discriminator. Matching the learned discriminator statistics instead of the output of the discriminator. Helps to avoid the vanishing gradients for sufficiently good discriminator.
+		\item Historical averaging adds extra loss term for generator and discriminator losses
+		\vspace{-0.2cm}
+		\[
+		 \| \btheta - \sum_{t=1}^T \btheta_t\|^2_2.
+		\]
+		Here $\btheta_t$ -- value of parameters at the previous step $t$. It allows to stabilize training procedure.
+	\end{itemize}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1606.03498}{https://arxiv.org/abs/1606.03498}}
+\end{frame}
+%=======
+\begin{frame}{Improved techniques for training GANs}
+	\begin{itemize}
+		\item One-sided label smoothing. Instead of using one-hot labels in classification, use $(1 - \alpha)$ for real data (the generated samples are not smoothed).
+		\[
+			D^*(\bx) = \frac{(1 - \alpha )\pi(\bx)}{\pi(\bx) + p(\bx | \btheta)}
+		\]
+		\item Virtual batch normalization. BatchNorm makes samples within minibatch are highly correlated.
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.6\linewidth]{figs/virtual_batch_norm}
+		\end{figure}
+	Use reference fixed batch to compute the normalization statistics. To avoid overfitting construct batch with the reference batch and the current sample. 
+	\end{itemize}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1606.03498}{https://arxiv.org/abs/1606.03498}}
 \end{frame}
 %=======
 \begin{frame}{References}
 {\tiny
 \begin{itemize}
-	\item
+	\item A note on the evaluation of generative models \\
+	\href{https://arxiv.org/abs/1511.01844}{https://arxiv.org/abs/1511.01844} \\
+	\textbf{Summary:} 
+	
+	\item Generative Adversarial Nets \\
+	\href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661} \\
+	\textbf{Summary:} 
+	
+	\item Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks \\
+	\href{https://arxiv.org/abs/1511.06434}{https://arxiv.org/abs/1511.06434} \\
+	\textbf{Summary:} 
+	
+	\item Improved techniques for training GANs \\
+	\href{https://arxiv.org/abs/1606.03498}{https://arxiv.org/abs/1606.03498} \\
+	\textbf{Summary:} 
 \end{itemize}
 }
 \end{frame}

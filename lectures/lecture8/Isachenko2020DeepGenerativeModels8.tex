@@ -198,8 +198,8 @@
 		\vspace{-0.5cm}
 		\begin{multline*}
 			V(G, D^*) = \bbE_{\pi(\bx)} \log \frac{\pi(\bx)}{\pi(\bx) + p(\bx | \btheta)} + \bbE_{p(\bx | \btheta)} \log \frac{p(\bx | \btheta)}{\pi(\bx) + p(\bx | \btheta)} \\
-			 = KL \left(\pi(x) || \frac{\pi(\bx) + p(\bx | \btheta)}{2}\right) + KL \left(p(x | \btheta) || \frac{\pi(\bx) + p(\bx | \btheta)}{2}\right) - \log 4 \\
-			 = 2JSD(\pi(\bx) || p(\bx | \btheta)) - \log 4.
+			 = KL \left(\pi(x) || \frac{\pi(\bx) + p(\bx | \btheta)}{2}\right) + KL \left(p(x | \btheta) || \frac{\pi(\bx) + p(\bx | \btheta)}{2}\right) - 2\log 2 \\
+			 = 2JSD(\pi(\bx) || p(\bx | \btheta)) - 2\log 2.
 		\end{multline*}
 	\end{block}
 	\vfill
@@ -212,7 +212,7 @@
 	\begin{block}{Optimal generator}
 		\vspace{-0.2cm}
 		\[
-			V(G, D^*)  = 2JSD(\pi(\bx) || p(\bx | \btheta)) - \log 4.
+			V(G, D^*)  = 2JSD(\pi(\bx) || p(\bx | \btheta)) - 2\log 2.
 		\]
 	\end{block}
 	\begin{block}{Jensen-Shannon divergence}
@@ -225,7 +225,7 @@
 	Also called symmetric KL divergence. Could be used as a distance measure!
 	
 	\[
-		V(G^*, D^*) = -\log 4, \quad \pi(\bx) = p(\bx | \btheta).
+		V(G^*, D^*) = -2\log 2, \quad \pi(\bx) = p(\bx | \btheta).
 	\]
 	If the generator updates are made in function space and discriminator is optimal at every step, then the generator is
 	guaranteed to converge to the data distribution.
@@ -254,7 +254,7 @@
 	{\scriptsize \href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661}}
 \end{frame}
 %=======
-\begin{frame}{Vanila GAN challenges}
+\begin{frame}{Vanishing gradients}
 	\begin{block}{Objective}
 		\vspace{-0.4cm}
 		\[
@@ -262,22 +262,50 @@
 		\]
 		\vspace{-0.4cm}
 	\end{block}
-	\begin{itemize}
-		\item Vanishing gradients. \\
-		Early in learning, $G$ is poor, $D$ can reject samples with high confidence. In this case, $\log (1 - D(G(\bz)))$ saturates.
-		Maximize $\log D(G(z))$ instead (stronger gradients).
-		\item Mode collapse. \\
-		The phenomena where the generator of a GAN collapses to one or few samples.
-		Alternate architectures, adding regularization terms, injecting small noise
-		perturbations and other millions bags and tricks are used to avoid the mode collapse .
-	\end{itemize}
+	Early in learning, $G$ is poor, $D$ can reject samples with high confidence. In this case, $\log (1 - D(G(\bz)))$ saturates.
+	\begin{minipage}[t]{0.5\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.9\linewidth]{figs/vanishing_gradients_1}
+		\end{figure}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.9\linewidth]{figs/vanishing_gradients_2}
+		\end{figure}
+	\end{minipage}
 	\vfill
 	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661}}
+	{\scriptsize \href{https://arxiv.org/abs/1701.04862}{https://arxiv.org/abs/1701.04862}}
 \end{frame}
 %=======
-\begin{frame}{GAN mode collapse}
-	\begin{block}{GAN objective for optimal discriminator}
+\begin{frame}{Vanishing gradients}
+	\begin{block}{Objective}
+		\vspace{-0.4cm}
+		\[
+		V(G, D) = \min_{G} \max_D \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bz)} \log (1 - D(G(\bz)))
+		\]
+		\vspace{-0.4cm}
+	\end{block}
+	\begin{minipage}[t]{0.45\columnwidth}
+		\vspace{0.4cm}
+		Maximize $\log D(G(z))$ instead of $\log (1 - D(G(\bz)))$. \\
+		Gradients are getting much stronger, but the training is instable (with increasing mean and variance).
+	\end{minipage}%
+	\begin{minipage}[t]{0.55\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=1.0\linewidth]{figs/vanishing_gradients_3}
+		\end{figure}
+	\end{minipage}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1701.04862}{https://arxiv.org/abs/1701.04862}}
+\end{frame}
+%=======
+\begin{frame}{Likelihood-based vs GAN}
+	\begin{block}{GAN objective (for optimal discriminator)}
 		\vspace{-0.2cm}
 		\[
 			V(G, D^*)  = 2JSD(\pi(\bx) || p(\bx | \btheta)) - \log 4.
@@ -286,36 +314,53 @@
 	\begin{block}{Likelihood model objective}
 		\vspace{-0.6cm}
 		\begin{multline*}
-			\max_{\btheta} \log p(\bX | \btheta) \approx \max_{\btheta}\bbE_{\pi(\bx)} \log p(\bx | \btheta) = \\ = \max_{\btheta}\bbE_{\pi(\bx)} \log p(\bx | \btheta) + \bbE_{\pi(\bx)} \log \pi(\bx) = \\ = \min_{\btheta} KL(\pi(\bx) || p(\bx | \btheta))
+			\max_{\btheta} \log p(\bX | \btheta) \approx \max_{\btheta}\bbE_{\pi(\bx)} \log p(\bx | \btheta) = \\ = \max_{\btheta}\bbE_{\pi(\bx)} \log p(\bx | \btheta) + \bbE_{\pi(\bx)} \log \pi(\bx) = \\ = \max_{\btheta}\bbE_{\pi(\bx)}  \log \frac{p(\bx | \btheta)}{\pi(\bx)}= \min_{\btheta} KL(\pi(\bx) || p(\bx | \btheta))
 		\end{multline*}
 	\vspace{-0.6cm}
 	\end{block}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.8\linewidth]{figs/mode_collapse_1}
-	\end{figure}
+
+	What is the difference between $JS$ and $KL$ divergences?
 \vfill
 \hrule\medskip
 {\scriptsize \href{https://arxiv.org/abs/1511.01844}{https://arxiv.org/abs/1511.01844}}
 \end{frame}
 %=======
 \begin{frame}{Mode collapse}
+The phenomena where the generator of a GAN collapses to one or few distribution modes.
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{figs/mode_collapse_1}
+\end{figure}
+\begin{figure}
+	\centering
+	\includegraphics[width=1.0\linewidth]{figs/mode_collapse_3}
+\end{figure}
+Alternate architectures, adding regularization terms, injecting small noise
+perturbations and other millions bags and tricks are used to avoid the mode collapse.
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661} \\ \href{https://arxiv.org/abs/1611.02163}{https://arxiv.org/abs/1611.02163}}
+\end{frame}
+%=======
+\begin{frame}{Mode collapse}
 	\begin{block}{Mode covering vs mode seeking}
+		\vspace{-0.2cm}
+		\[
+			KL(\pi || p) = \int \pi(\bx) \log \frac{\pi(\bx)}{p(\bx)}d\bx, \quad KL_r(p || \pi) = \int p(\bx) \log \frac{p(\bx)}{\pi(\bx)}d\bx
+		\]
+		\[
+		JSD(\pi || p) = \frac{1}{2} \left[KL \left(\pi(x) || \frac{\pi(\bx) + p(\bx)}{2}\right) + KL \left(p(x) || \frac{\pi(\bx) + p(\bx)}{2}\right) \right]
+		\]
+		\vspace{-0.4cm}
 		\begin{figure}
 			\centering
-			\includegraphics[width=0.8\linewidth]{figs/mode_collapse_2}
+			\includegraphics[width=0.7\linewidth]{figs/mode_collapse_2}
 		\end{figure}
 	\vspace{-0.3cm}
 	\end{block}
-	\begin{block}{GAN mode collapse on toy example}
-		\begin{figure}
-			\centering
-			\includegraphics[width=1.0\linewidth]{figs/mode_collapse_3}
-		\end{figure}
-	\end{block}
 	\vfill
 	\hrule\medskip
-	{\scriptsize \href{https://sites.google.com/view/berkeley-cs294-158-sp20/home}{https://sites.google.com/view/berkeley-cs294-158-sp20/home} \\ \href{https://arxiv.org/abs/1611.02163}{https://arxiv.org/abs/1611.02163}}
+	{\scriptsize \href{https://sites.google.com/view/berkeley-cs294-158-sp20/home}{https://sites.google.com/view/berkeley-cs294-158-sp20/home}}
 \end{frame}
 %=======
 \begin{frame}{Vanila GAN results}
@@ -438,6 +483,10 @@
 	
 	\item Improved techniques for training GANs \\
 	\href{https://arxiv.org/abs/1606.03498}{https://arxiv.org/abs/1606.03498} \\
+	\textbf{Summary:} 
+	
+	\item Towards principled methods for training generative adversarial networks \\
+	\href{https://arxiv.org/abs/1701.04862}{https://arxiv.org/abs/1701.04862} \\
 	\textbf{Summary:} 
 \end{itemize}
 }

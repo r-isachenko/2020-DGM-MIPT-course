@@ -483,17 +483,42 @@ perturbations and other millions bags and tricks are used to avoid the mode coll
 		\item Since $\bz$ usually has lower dimensionality compared to $\bx$, manifold $G(\bz)$ has a measure 0 in $\bx$ space.
 		\begin{figure}
 			\centering
-			\includegraphics[width=0.6\linewidth]{figs/low_dim_manifold}
+			\includegraphics[width=0.5\linewidth]{figs/low_dim_manifold}
 		\end{figure}
 		\item If $\pi(\bx)$ and $p(\bx | \btheta)$ have disjoint supports, then there is a smooth optimal discrimator. In this case we won’t really be able to learn anything by backproping through it.
 		\item For such low-dimensional manifolds
 		\[
 			KL(\pi || p) = KL(p || \pi) = \infty, \quad JSD(\pi || p) = \log 2
 		\]
+		\item Adding continuous noise to the inputs of the discriminator smoothes the distributions of the probability mass.
 	\end{itemize}
 	\vfill
-	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/abs/1701.04862}{https://arxiv.org/abs/1701.04862}}
+	\hrule\medskip {\scriptsize \href{https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html}{https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html} \\ 
+	\href{https://arxiv.org/abs/1701.04862}{https://arxiv.org/abs/1701.04862}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein distance (discrete)}
+	Also called Earth Mover's distance.
+	The minimum cost of moving and transforming a pile of dirt in the shape of one probability distribution to the shape of the other distribution.
+	\begin{figure}
+		\centering
+		\includegraphics[width=.9\linewidth]{figs/EM_distance_discrete}
+	\end{figure}
+	\[
+		W(P, Q) = 5
+	\]
+	\vfill
+	\hrule\medskip {\scriptsize \href{https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html}{https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html}}
+	
+\end{frame}
+%=======
+\begin{frame}{Wasserstein distance}
+	\[
+		W(\pi, p) = \inf_{\gamma \in \prod(\pi, p)} \bbE_{(\bx, \by) \sim \gamma} \| \bx - \by \|
+	\]
+	\begin{itemize}
+		\item $\prod(\pi, p)$ -- the set of all joint distributions $\gamma (\bx, \by)$ with marginals $\pi$ and $p$ ($\int \gamma(\bx, \by) d \bx = p(\by)$, $\int \gamma(\bx, \by) d \by = \pi(\bx)$)
+	\end{itemize}
 \end{frame}
 %=======
 \begin{frame}{References}

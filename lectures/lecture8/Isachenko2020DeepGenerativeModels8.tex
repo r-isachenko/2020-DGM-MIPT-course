@@ -346,7 +346,7 @@ perturbations and other millions bags and tricks are used to avoid the mode coll
 	\begin{block}{Mode covering vs mode seeking}
 		\vspace{-0.2cm}
 		\[
-			KL(\pi || p) = \int \pi(\bx) \log \frac{\pi(\bx)}{p(\bx)}d\bx, \quad KL_r(p || \pi) = \int p(\bx) \log \frac{p(\bx)}{\pi(\bx)}d\bx
+			KL(\pi || p) = \int \pi(\bx) \log \frac{\pi(\bx)}{p(\bx)}d\bx, \quad KL(p || \pi) = \int p(\bx) \log \frac{p(\bx)}{\pi(\bx)}d\bx
 		\]
 		\[
 		JSD(\pi || p) = \frac{1}{2} \left[KL \left(\pi(x) || \frac{\pi(\bx) + p(\bx)}{2}\right) + KL \left(p(x) || \frac{\pi(\bx) + p(\bx)}{2}\right) \right]
@@ -429,6 +429,18 @@ perturbations and other millions bags and tricks are used to avoid the mode coll
 	{\scriptsize \href{https://arxiv.org/abs/1511.06434}{https://arxiv.org/abs/1511.06434}}
 \end{frame}
 %=======
+\begin{frame}{Deep Convolutional GAN}
+	\begin{block}{Mode collapse}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.95\linewidth]{figs/mode_collapse_4}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875}}
+\end{frame}
+%=======
 \begin{frame}{Improved techniques for training GANs}
 	\begin{itemize}
 		\item Feature matching
@@ -464,6 +476,24 @@ perturbations and other millions bags and tricks are used to avoid the mode coll
 	\vfill
 	\hrule\medskip
 	{\scriptsize \href{https://arxiv.org/abs/1606.03498}{https://arxiv.org/abs/1606.03498}}
+\end{frame}
+%=======
+\begin{frame}{Informal theoretical results}
+	\begin{itemize}
+		\item Since $\bz$ usually has lower dimensionality compared to $\bx$, manifold $G(\bz)$ has a measure 0 in $\bx$ space.
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.6\linewidth]{figs/low_dim_manifold}
+		\end{figure}
+		\item If $\pi(\bx)$ and $p(\bx | \btheta)$ have disjoint supports, then there is a smooth optimal discrimator. In this case we won’t really be able to learn anything by backproping through it.
+		\item For such low-dimensional manifolds
+		\[
+			KL(\pi || p) = KL(p || \pi) = \infty, \quad JSD(\pi || p) = \log 2
+		\]
+	\end{itemize}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1701.04862}{https://arxiv.org/abs/1701.04862}}
 \end{frame}
 %=======
 \begin{frame}{References}

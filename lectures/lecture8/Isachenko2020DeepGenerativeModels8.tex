@@ -40,12 +40,13 @@
 \newcommand{\bsigma}{\boldsymbol{\sigma}}
 \newcommand{\bSigma}{\boldsymbol{\Sigma}}
 
-
 \newcommand{\bbE}{\mathbb{E}} 
+\newcommand{\bbR}{\mathbb{R}} 
 
 \newcommand{\cL}{\mathcal{L}} 
 \newcommand{\cN}{\mathcal{N}} 
 \newcommand{\cS}{\mathcal{S}} 
+\newcommand{\cX}{\mathcal{X}} 
 
 \newcommand{\btheta}{\boldsymbol{\theta}} 
 \newcommand{\bphi}{\boldsymbol{\phi}} 
@@ -480,13 +481,15 @@ perturbations and other millions bags and tricks are used to avoid the mode coll
 %=======
 \begin{frame}{Informal theoretical results}
 	\begin{itemize}
-		\item Since $\bz$ usually has lower dimensionality compared to $\bx$, manifold $G(\bz)$ has a measure 0 in $\bx$ space.
+		\footnotesize
+		\item Since $\bz$ usually has lower dimensionality compared to $\bx$, manifold $G(\bz)$ has a measure 0 in $\bx$ space. Hence, support of $p(\bx | \btheta)$ lies on low-dimensional manifold.
+		\item Distribution of real images $\pi(\bx)$ is also concentrated on a low dimensional manifold.
 		\begin{figure}
 			\centering
 			\includegraphics[width=0.5\linewidth]{figs/low_dim_manifold}
 		\end{figure}
 		\item If $\pi(\bx)$ and $p(\bx | \btheta)$ have disjoint supports, then there is a smooth optimal discrimator. In this case we won’t really be able to learn anything by backproping through it.
-		\item For such low-dimensional manifolds
+		\item For such low-dimensional disjoint manifolds
 		\[
 			KL(\pi || p) = KL(p || \pi) = \infty, \quad JSD(\pi || p) = \log 2
 		\]
@@ -505,20 +508,251 @@ perturbations and other millions bags and tricks are used to avoid the mode coll
 		\includegraphics[width=.9\linewidth]{figs/EM_distance_discrete}
 	\end{figure}
 	\[
-		W(P, Q) = 5
+		W(P, Q) = 2 \text{(step 1)} + 2 \text{(step 2)} + 1 \text{(step 3)}  = 5
 	\]
 	\vfill
-	\hrule\medskip {\scriptsize \href{https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html}{https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html}}
+	\hrule\medskip 
+	{\scriptsize \href{https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html}{https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html}}
 	
 \end{frame}
 %=======
 \begin{frame}{Wasserstein distance}
 	\[
-		W(\pi, p) = \inf_{\gamma \in \prod(\pi, p)} \bbE_{(\bx, \by) \sim \gamma} \| \bx - \by \|
+		W(\pi, p) = \inf_{\gamma \in \prod(\pi, p)} \bbE_{(\bx, \by) \sim \gamma} \| \bx - \by \| =  \inf_{\gamma \in \prod(\pi, p)} \int \| \bx - \by \| \gamma (\bx, \by) d \bx d \by
 	\]
 	\begin{itemize}
 		\item $\prod(\pi, p)$ -- the set of all joint distributions $\gamma (\bx, \by)$ with marginals $\pi$ and $p$ ($\int \gamma(\bx, \by) d \bx = p(\by)$, $\int \gamma(\bx, \by) d \by = \pi(\bx)$)
+		\item $\gamma(\bx, \by)$ -- transportation plan (the amount of "dirt" that should be transported from point $\bx$ to point $\by$).
+		\item $\gamma(\bx, \by)$ -- the amount, $\|\bx - \by \|$-- the distance.
 	\end{itemize}
+	For better understanding of transportation plan function $\gamma$, try to write down the plan for previous discrete case.
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein distance vs KL vs JSD}
+	
+	\begin{minipage}[t]{0.48\columnwidth}
+		\vspace{0.1cm}
+		Consider 2d distributions
+		\[
+			\pi(x, y) = (0, U[0,1])
+		\]	
+		\[
+			p(x, y | \theta) = (\theta, U[0, 1])
+		\]
+	\end{minipage}%
+	\begin{minipage}[t]{0.52\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.8\linewidth]{figs/w_kl_jsd}
+		\end{figure}
+	\end{minipage}
+	\begin{itemize}
+		\footnotesize
+		\item $\theta = 0$.
+		Distributions are the same 
+		\[
+			KL(\pi || p) = KL(p || \pi) = JSD(p || pi) = W(\pi, p) = 0
+		\]
+		\item $\theta \neq 0$
+		\[
+			KL(\pi || p) = \int_{U[0, 1]} 1 \log \frac{1}{0} d y = \infty = KL(\pi || p)
+		\]
+		\[
+			JSD(\pi || p) = \frac{1}{2}\left( \int_{U[0, 1]}1 \log \frac{1}{1/2} dy + \int_{U[0, 1]}1 \log \frac{1}{1/2} dy \right) = \log 2
+		\]
+		\[
+			W(\pi, p) = |\theta|
+		\]
+	\end{itemize}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein distance vs KL vs JSD}
+	\begin{block}{Theorem 1}
+		Let $G(\bz, \btheta)$ be any feedforward neural network, and $p(\bz)$ a prior over $\bz$ such that $\bbE_{\bz \sim p(\bz)}
+		\|\bz\| < \infty$. Then therefore $W(\pi, p)$ is continuous everywhere and differentiable almost everywhere.
+	\end{block}
+	\begin{block}{Theorem 2}
+		Let $\pi$ be a distribution on a compact space $\cX$ and $\{p_t\}_{t=1}^\infty$ be a sequence of distributions on $\cX$. 
+		\begin{align}
+			KL(\pi || p_t) &\rightarrow 0 \, (\text{or }KL (p_t || \pi) \rightarrow 0) \\
+			JSD(\pi || p_t) &\rightarrow 0 \\
+			W(\pi || p_t) &\rightarrow 0
+		\end{align}
+		
+		Then, considering limits as $t \rightarrow \infty$, (1) implies (2), (2) implies (3).
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein GAN}
+	\begin{block}{Wasserstein distance}
+		\vspace{-0.4cm}
+		\[
+			W(\pi, p) = \inf_{\gamma \in \prod(\pi, p)} \bbE_{(\bx, \by) \sim \gamma} \| \bx - \by \| =  \inf_{\gamma \in \prod(\pi, p)} \int \| \bx - \by \| \gamma (\bx, \by) d \bx d \by
+		\]
+	\end{block}
+	The infimum across all possible joint distributions in $\prod(\pi, p)$ is intractable.
+	\begin{block}{Kantorovich-Rubinstein duality}
+		\[
+			W(\pi, p) = \frac{1}{K} \max_{\| f \|_L \leq K} \left[ \bbE_{\bx \sim \pi} f(\bx)  - \bbE_{\bx \sim p} f(\bx)\right],
+		\]
+		where $\| f \|_L \leq K$ are $K-$Lipschitz continuous functions ($f: \cX \rightarrow \bbR$)
+		\[
+			|f(\bx_1) - f(\bx_2) \leq K \| \bx_1 - \bx_2 \|, \quad \text{for all } \bx_1, \bx_2 \in \cX.
+		\]
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein GAN}
+		\begin{block}{Kantorovich-Rubinstein duality}
+		\[
+			W(\pi, p) = \frac{1}{K} \max_{\| f \|_L \leq K} \left[ \bbE_{\bx \sim \pi} f(\bx)  - \bbE_{\bx \sim p} f(\bx)\right],
+		\]
+	\end{block}
+	\begin{itemize}
+		\item Now we have to ensure that $f$ is $K$-Lipschitz continuous.
+		\item Let make $f(\bx, \phi)$ parametrized by parameters $\bphi$.
+		\item If parameters $\phi$ lies in a compact set $\boldsymbol{\Phi}$ then $f(\bx, \bphi)$ will be $K$-Lipschitz continuous function. 
+		\item Let clamp the parameters to a fixed box $\boldsymbol{\Phi} \in [-0.01, 0.01]^d$ after each gradient update.
+	\end{itemize}
+	{\footnotesize
+	\[
+		 \max_{\bphi \in \boldsymbol{\Phi}} \left[ \bbE_{\bx \sim \pi} f(\bx, \bphi)  - \bbE_{\bx \sim p} f(\bx, \bphi )\right] \leq  \max_{\| f \|_L \leq K} \left[ \bbE_{\bx \sim \pi} f(\bx)  - \bbE_{\bx \sim p} f(\bx)\right] = K W(\pi || p)
+	\]}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875}}
+\end{frame}
+%=======
+\begin{frame}{Wassestein GAN}
+	\begin{block}{Vanilla GAN objective}
+		\vspace{-0.3cm}
+		\[
+			\min_{G} \max_D \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bz)} \log (1 - D(G(\bz)))
+		\]
+	\end{block}
+	\begin{block}{WGAN objective}
+		\vspace{-0.6cm}
+		\[
+		\min_{G} W(\pi, p) = \min_{G} \frac{1}{K} \max_{\bphi \in \boldsymbol{\Phi}} \left[ \bbE_{\bx \sim \pi} f(\bx, \bphi)  - \bbE_{\bz \sim p} f(G(\bz), \bphi )\right].
+		\]
+	\end{block}
+	\begin{itemize}
+		\item Discriminator $D$ is similar to the function $f$, but not the same (it is not a classifier anymore). In the WGAN model, function $f$ is usually called $\textit{critic}$.
+		\item "Weight clipping is a clearly terrible way to enforce a Lipschitz constraint". If the clipping parameter is large, it is hard to train the critic till optimality. If the clipping parameter is too small, it could lead to vanishing gradients.
+	\end{itemize}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein GAN}
+	\begin{figure}
+		\centering
+		\includegraphics[width=1.0\linewidth]{figs/wgan_pseudocode}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein GAN}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{figs/wgan_toy}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein GAN}
+	\begin{minipage}[t]{0.49\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=1.0\linewidth]{figs/dcgan_quality}
+		\end{figure}
+	\end{minipage}%
+	\begin{minipage}[t]{0.49\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=1.0\linewidth]{figs/wgan_quality}
+		\end{figure}
+	\end{minipage}
+	\begin{itemize}
+		\item $JSD$ correlates poorly with the sample quality. Stays contast nearly maximum value $\log 2 \approx 0.69$.
+		\item $W$ is highly correlated with the sample quality. 
+	\end{itemize}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein GAN}
+	\begin{block}{WGAN converged without batch norm and constant number of filters}
+		\begin{figure}
+			\centering
+			\includegraphics[width=1.0\linewidth]{figs/wgan_convergence}
+		\end{figure}
+	\end{block}
+	\begin{block}{"In no experiment did we see evidence of mode collapse for the WGAN algorithm."}
+		\begin{figure}
+			\centering
+			\includegraphics[width=1.0\linewidth]{figs/wgan_mode_collapse}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein GAN with Gradient Penalty}
+	
+	\begin{minipage}[t]{0.45\columnwidth}
+		\vspace{0.2cm}
+		The generator distribution is fixed and equals to the real distribution + Gaussian noise. \\
+		Problems with weight clipping:
+		\begin{itemize}
+			\item The critic ignores higher moments of the data distribution.
+			\item The gradient either grow or decay exponentially.
+		\end{itemize}
+	Gradient penalty makes the gradients  more stable.
+	\end{minipage}%
+	\begin{minipage}[t]{0.52\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.95\linewidth]{figs/wgan_gp_toy}
+		\end{figure}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.95\linewidth]{figs/wgan_gp_weights}
+		\end{figure}
+	\end{minipage}
+	
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1704.00028}{https://arxiv.org/abs/1704.00028}}
+	
+\end{frame}
+%=======
+\begin{frame}{Wasserstein GAN with Gradient Penalty}
+	
+	
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1704.00028}{https://arxiv.org/abs/1704.00028}}
+	
 \end{frame}
 %=======
 \begin{frame}{References}
@@ -542,6 +776,14 @@ perturbations and other millions bags and tricks are used to avoid the mode coll
 	
 	\item Towards principled methods for training generative adversarial networks \\
 	\href{https://arxiv.org/abs/1701.04862}{https://arxiv.org/abs/1701.04862} \\
+	\textbf{Summary:} 
+	
+	\item Wasserstein GAN \\
+	\href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875} \\
+	\textbf{Summary:} 
+	
+	\item Improved Training of Wasserstein GANs \\
+	\href{https://arxiv.org/abs/1704.00028}{https://arxiv.org/abs/1704.00028} \\
 	\textbf{Summary:} 
 \end{itemize}
 }

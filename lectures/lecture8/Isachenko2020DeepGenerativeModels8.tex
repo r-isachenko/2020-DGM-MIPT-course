@@ -41,6 +41,7 @@
 \newcommand{\bSigma}{\boldsymbol{\Sigma}}
 
 \newcommand{\bbE}{\mathbb{E}} 
+\newcommand{\bbP}{\mathbb{P}} 
 \newcommand{\bbR}{\mathbb{R}} 
 
 \newcommand{\cL}{\mathcal{L}} 
@@ -747,6 +748,41 @@ perturbations and other millions bags and tricks are used to avoid the mode coll
 \end{frame}
 %=======
 \begin{frame}{Wasserstein GAN with Gradient Penalty}
+	\begin{block}{Theorem}
+		Let $\pi(\bx)$ and $p(\bx)$ be two distribution in $\cX$, a compact metric space. Then, there is 1-Lipschitz function $f^*$ which is the optimal solution of 
+		\[
+			\max_{\| f \|_L \leq 1} \left[ \bbE_{\bx \sim \pi} f(\bx)  - \bbE_{\bx \sim p} f(\bx)\right].
+		\]
+		Let $\gamma$ be the optimal transportation plan between $\pi(\bx)$ and $p(\bx)$. Then, if $f^*$ is differentiable $\gamma(x = y) = 0$ and $\bx_t = t \bx + (1 - t) \by$ with $t \in [0, 1]$ it holds that
+		\[
+			\bbP_{(\bx, \by) \sim \gamma} \left[ \nabla f^*(\bx_t) = \frac{\by - \bx_t}{\| \by - \bx_t \|} = 1 \right].
+		\]
+	\end{block}
+	\begin{block}{Corollary}
+		$f^*$ has gradient norm 1 almost everywhere under $\pi(\bx)$ and $p(\bx)$.
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1704.00028}{https://arxiv.org/abs/1704.00028}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein GAN with Gradient Penalty}
+	A differentiable function is 1-Lipschtiz if and only if it has gradients with norm at most 1 everywhere.
+	\begin{block}{Gradient penalty}
+		\[
+			W(\pi, p) = \underbrace{\bbE_{\bx \sim \pi} f(\bx)  - \bbE_{\bx \sim p} f(\bx)}_{\text{original critic loss}} + \lambda \underbrace{\bbE_{\hat{\bx}} \left[ \left( \| \nabla_{\hat{\bx}} f(\hat{\bx}) \|_2 - 1 \right) ^ 2\right]}_{\text{gradient penalty}},
+		\]
+	\end{block}
+	\begin{itemize}
+		\item Samples $\hat{\bx}$ are uniformly sampled along straight lines between pairs of points from the data distribution $\pi(\bx)$ and the generator distribuiton $p(\bx | \btheta)$.
+		\item Enforcing the unit gradient norm constraint everywhere is intractable, it turns out sifficient to enforce it only along these straight lines.
+	\end{itemize}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1704.00028}{https://arxiv.org/abs/1704.00028}}
+\end{frame}
+%=======
+\begin{frame}{Wasserstein GAN with Gradient Penalty}
 	
 	\begin{figure}
 		\centering
@@ -790,6 +826,15 @@ perturbations and other millions bags and tricks are used to avoid the mode coll
 \end{frame}
 %=======
 \begin{frame}{Summary}
+	\begin{itemize}
+		\item Likelihood is not a perfect criteria to measure quality of generative model.
+		\item Adversarial learning suggest to solve minimax problem with generator and discriminator.
+		\item Vanila GAN tries to optimize (in some sense) Jensen-Shannon divergence.
+		\item Mode collapse and vanishing gradients are the two main problems of vanila GAN.
+		\item Lots of tips and tricks has to be used to make the GAN training is stable and scalable.
+		\item Wasserstein distance is more appropriate objective function for distribution matching problem.
+		\item Gradient penalty allows to make Wasserstein GAN even more stable.
+	\end{itemize}
 \end{frame}
 %=======
 \begin{frame}{References}
@@ -797,31 +842,31 @@ perturbations and other millions bags and tricks are used to avoid the mode coll
 \begin{itemize}
 	\item A note on the evaluation of generative models \\
 	\href{https://arxiv.org/abs/1511.01844}{https://arxiv.org/abs/1511.01844} \\
-	\textbf{Summary:} 
+	\textbf{Summary:} Reviews properties relating to the evaluation and interpretation of generative models. Different divergences \\ leads to different properties. Log-likelihood values are not always meaningful in terms of samples quality.
 	
 	\item Generative Adversarial Nets \\
 	\href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661} \\
-	\textbf{Summary:} 
+	\textbf{Summary:} GAN framework is proposed. Theorem about oprimal discriminator has been proved. Some theroretical analysis \\ has been made. Experiments were carried out only on small datasets.
 	
-	\item Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks \\
+	\item \textbf{DCGAN}: Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks \\
 	\href{https://arxiv.org/abs/1511.06434}{https://arxiv.org/abs/1511.06434} \\
-	\textbf{Summary:} 
+	\textbf{Summary:} First successful application of GAN for CNN models. Suggest simple architectural guides to train such models. 
 	
 	\item Improved techniques for training GANs \\
 	\href{https://arxiv.org/abs/1606.03498}{https://arxiv.org/abs/1606.03498} \\
-	\textbf{Summary:} 
+	\textbf{Summary:} Proposed techniques to improve gan training. Feature matching, minibatch discrimination, historical averaging, one-sided label smoothing, virtual batchnorm.
 	
 	\item Towards principled methods for training generative adversarial networks \\
 	\href{https://arxiv.org/abs/1701.04862}{https://arxiv.org/abs/1701.04862} \\
-	\textbf{Summary:} 
+	\textbf{Summary:} Low-dimensional manifolds are likely be disjoint. In this case KL and JSD are bad objectives. Analyzes \\ theoretically the vanishing gradient problems. Propose adding noise to samples.
 	
-	\item Wasserstein GAN \\
+	\item \textbf{WGAN}: Wasserstein GAN \\
 	\href{https://arxiv.org/abs/1701.07875}{https://arxiv.org/abs/1701.07875} \\
-	\textbf{Summary:} 
+	\textbf{Summary:} Proposed Earth-Mover distance as divergence measure. It shows theoretically that EM distance could be better \\ than KL, JS and TV measures. Kantorovich-Rubinstein duality gives the new objective. All we need to enforce is Lipschitz \\ continuity (e.x. by gradient clipping).
 	
-	\item Improved Training of Wasserstein GANs \\
+	\item \textbf{WGAN-GP}: Improved Training of Wasserstein GANs \\
 	\href{https://arxiv.org/abs/1704.00028}{https://arxiv.org/abs/1704.00028} \\
-	\textbf{Summary:} 
+	\textbf{Summary:} Proves that optimal critic has unit gradient almost everywhere. Gradient penalty proposed to enforce Lipchitzness and constraint the critic norm. It greatly improves stability.
 \end{itemize}
 }
 \end{frame}

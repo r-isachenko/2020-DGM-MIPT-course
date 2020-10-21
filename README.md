@@ -11,6 +11,7 @@
 | 5 | September, 30 | Flow models (Glow, Flow++). Flows in VAE. Autoregressive flows (IAF) | [slides](lectures/lecture5/Isachenko2020DeepGenerativeModels5.pdf) | [video](https://youtu.be/KA941HS8oAg) |
 | 6 | October, 7 | Autoregressive flows (IAF, MAF, Parallel WaveNet). ELBO surgery. | [slides](lectures/lecture6/Isachenko2020DeepGenerativeModels6.pdf) | [video](https://youtu.be/8xzHeHJmXc4) |
 | 7 | October, 14 | VampPrior. Posterior collapse (PixelVAE, VLAE). Decoder weakening. IWAE. | [slides](lectures/lecture7/Isachenko2020DeepGenerativeModels7.pdf) | [video](https://youtu.be/tWQmomQpNEU) |
+| 8 | October, 21 | Vanila GAN. Vanishing gradients, mode collapse. KL vs JSD. DCGAN. Wasserstein distance. | [slides](lectures/lecture8/Isachenko2020DeepGenerativeModels8.pdf) | [video](https://youtu.be/0ma4ZgnwC0M) |
 
 
 ## Homeworks

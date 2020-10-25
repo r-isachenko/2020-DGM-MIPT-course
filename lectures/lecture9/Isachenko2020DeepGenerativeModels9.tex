@@ -491,6 +491,108 @@
 	{\scriptsize \href{https://arxiv.org/abs/1606.00709}{https://arxiv.org/abs/1606.00709}}
 \end{frame}
 %=======
+\begin{frame}{Evaluation of likelihood-free models}
+	How to evaluate generative models?
+	\begin{block}{Likelihood-based models}
+		\begin{itemize}
+			\item Split data to train/val/test.
+			\item Fit model on the train part.
+			\item Tune hyperparameters on the validation part.
+			\item Evaluate generalization by reporting likelihoods on the test set.
+		\end{itemize}
+	\end{block}
+	\begin{block}{Not all models have tractable likelihoods}
+		\begin{itemize}
+			\item VAE: compare ELBO values.
+			\item GAN: ???
+		\end{itemize}
+	\end{block}
+\end{frame}
+%=======
+\begin{frame}{Evaluation of likelihood-free models}
+	Let take some pretrained image classification model to get the conditional label distribution $p(y | \bx)$ (e.g. ImageNet classifier).
+	\begin{block}{What do we want from samples?}
+		\begin{itemize}
+			\item \textbf{Sharpness}
+			\begin{figure}
+				\centering
+				\includegraphics[width=0.9\linewidth]{figs/sharpness}
+			\end{figure}
+			The conditional distribution $p(y | \bx)$ should have low entropy (each image $\bx$ should have distinctly recognizable object).
+			\item \textbf{Diversity}
+			\begin{figure}
+				\centering
+				\includegraphics[width=0.9\linewidth]{figs/diversity}
+			\end{figure}
+			The marginal distribution $p(y) = \int p(y | \bx) p(\bx) d \bx$ should have high entropy (there should be as many classes generated as possible).
+		\end{itemize}
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://deepgenerativemodels.github.io}{https://deepgenerativemodels.github.io}}
+\end{frame}
+%=======
+\begin{frame}{Evaluation of likelihood-free models}
+	\begin{block}{What do we want from samples?}
+		\begin{itemize}
+			\item \textbf{Sharpness.}
+			The conditional distribution $p(y | \bx)$ should have low entropy (each image $\bx$ should have distinctly recognizable object).
+			\item \textbf{Diversity.}
+			The marginal distribution $p(y) = \int p(y | \bx) p(\bx) d \bx$ should have high entropy (there should be as many classes generated as possible).
+		\end{itemize}
+	\end{block}
+	\begin{figure}
+		\centering
+		\includegraphics[width=1.0\linewidth]{figs/is_toy}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://medium.com/octavian-ai/a-simple-explanation-of-the-inception-score-372dff6a8c7a}{https://medium.com/octavian-ai/a-simple-explanation-of-the-inception-score-372dff6a8c7a}}
+\end{frame}
+%=======
+\begin{frame}{Evaluation of likelihood-free models}
+		\begin{block}{What do we want from samples?}
+		\begin{itemize}
+			\item Sharpness $\Rightarrow$ low $H(y | \bx) = - \sum_{y} \int_{\bx} p(y, \bx) \log p(y | \bx) d\bx$.
+			\item Diversity $\Rightarrow$ high $H(y)  = - \sum_{y} p(y) \log p(y)$.
+		\end{itemize}
+	\end{block}
+	\begin{block}{Inception Score}
+		\vspace{-0.3cm}
+		\footnotesize
+		\begin{align*}
+			IS &= \exp(H(y) - H(y | \bx)) \\ 
+			&= \exp \left( - \sum_{y} p(y) \log p(y) + \sum_{y} \int_{\bx} p(y, \bx) \log p(y | \bx) d\bx\right) \\
+			&= \exp \left( \sum_{y} \int_{\bx} p(y, \bx) \log \frac{p(y | \bx)}{p(y)} d\bx\right) \\ 
+			&= \exp \left( \bbE_{\bx} \sum_{y} p(y | \bx) \log \frac{p(y | \bx)}{p(y)} \right) = \exp \left( \bbE_{\bx} KL(p(y | \bx) || p(y)) \right)
+		\end{align*}
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1606.03498}{https://arxiv.org/abs/1606.03498}}
+\end{frame}
+%=======
+\begin{frame}{Evaluation of likelihood-free models}
+	\begin{block}{Inception Score}
+		\vspace{-0.1cm}
+		\[
+			IS =  \exp \left( \bbE_{\bx} KL(p(y | \bx) || p(y)) \right)
+		\]
+		\vspace{-0.1cm}
+	\end{block}
+	\begin{block}{IS limitations}
+		\begin{itemize}
+			\item Inception score depends on the quality of the pretrained classifier $p(y | \bx)$.
+			\item If generator produces images with a different set of labels from the classifier training set, IS will be low.
+			\item If the generator produces one image per class, the IS will be perfect (there is no measure of intra-class diversity).
+			\item IS only require samples from the generator and do not take into account the desired data distribution $\pi(\bx)$ directly (only implicitly via a classifier).
+		\end{itemize}
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1801.01973}{https://arxiv.org/abs/1801.01973}}
+\end{frame}
+%=======
 \begin{frame}{References}
 {\tiny
 \begin{itemize}
@@ -507,10 +609,17 @@
 	\href{https://arxiv.org/abs/1802.05957}{https://arxiv.org/abs/1802.05957} \\
 	\textbf{Summary:} Constrain Lipschitz norm by spectral norm pf weights. Spectral norm of superpositionis less or equal to spectral norms product. Usually works better than WGAN-GP. 
 	
-
 	\item \textbf{f-GAN}:  Training generative neural samplers using variational divergence minimization  \\
 	\href{https://arxiv.org/abs/1606.00709}{https://arxiv.org/abs/1606.00709} \\
 	\textbf{Summary:} Extend adversarial learning pipeline to any f-divergence. Variational divergence minimization frameworkis derived. 
+	
+	\item Improved Techniques for Training GANs \\
+	\href{https://arxiv.org/abs/1606.03498}{https://arxiv.org/abs/1606.03498} \\
+	\textbf{Summary:} Inception Score for GAN evaluation was proposed.
+	
+	\item A Note on the Inception Score \\
+	\href{https://arxiv.org/abs/1801.01973}{https://arxiv.org/abs/1801.01973} \\
+	\textbf{Summary:} Inception Score is not an ideal metric.
 \end{itemize}
 }
 \end{frame}

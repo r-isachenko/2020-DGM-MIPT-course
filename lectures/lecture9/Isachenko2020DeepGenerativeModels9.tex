@@ -21,6 +21,8 @@
 \setbeamertemplate{footline}[page number]{}
 \setbeamerfont{title}{size=\Huge}
 
+
+\newcommand{\bh}{\mathbf{h}} 
 \newcommand{\bt}{\mathbf{t}} 
 \newcommand{\bu}{\mathbf{u}} 
 \newcommand{\bv}{\mathbf{v}} 
@@ -29,8 +31,10 @@
 \newcommand{\bz}{\mathbf{z}} 
 \newcommand{\by}{\mathbf{y}} 
 
+\newcommand{\bA}{\mathbf{A}} 
 \newcommand{\bI}{\mathbf{I}} 
 \newcommand{\bT}{\mathbf{T}} 
+\newcommand{\bW}{\mathbf{W}} 
 \newcommand{\bX}{\mathbf{X}} 
 \newcommand{\bZ}{\mathbf{Z}} 
 
@@ -58,7 +62,7 @@
 %\definecolor{beamer@blendedblue}{RGB}{15,120,80}
 %----------------------------------------------------------------------------------------------------------
 \title[\hbox to 56mm{Deep Generative Models  \hfill\insertframenumber\,/\,\inserttotalframenumber}]
-{Deep Generative Models \\ Lecture 8}
+{Deep Generative Models \\ Lecture 9}
 \author[Roman Isachenko]{\\Roman Isachenko}
 \institute[MIPT]{Moscow Institute of Physics and Technology \\
 }
@@ -303,6 +307,93 @@
 	
 \end{frame}
 %=======
+\begin{frame}{Spectral Normalization GAN}
+	How else could we enforce Lipschitzness?
+	\begin{block}{Fact 1}
+		\vspace{-0.3cm}
+		\[
+			\| \mathbf{g} \|_L = \sup_\bx \sigma( \nabla \mathbf{g}(\bx))
+		\]
+	\end{block}
+	Here $\sigma(\bA)$~-- spectral norm of matrix $\bA$.
+	\[
+		\sigma(\bA) = \max_{\bh \neq 0} \frac{\|\bA \bh\|_2}{\|\bh\|_2} = \max_{\|\bh\|_2 \leq 1} \| \bA \bh \|_2 = \lambda_{\text{max}}(A),
+	\]
+	where $\lambda_{\text{max}}(A)$ is the largest singular value of $\bA$.
+	\begin{block}{Fact 2}
+		\vspace{-0.3cm}
+		\[
+			\| \mathbf{g}_1 \circ \mathbf{g}_2 \|_L \leq \| \mathbf{g}_1 \|_L \cdot \| \mathbf{g}_2\|_L
+		\]
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1802.05957}{https://arxiv.org/abs/1802.05957}}
+	
+\end{frame}
+%=======
+\begin{frame}{Spectral Normalization GAN}
+	Let consider the critic $f(\bx, \bphi)$ of the following form:
+	\[
+		f(\bx, \bphi) = \bW_{K+1} a_K (\bW_K a_{K-1}(\dots a_1(\bW_1 \bx) \dots)).
+	\]
+	This feedforward network is a superposition of simple functions.
+	\begin{itemize}
+		\item $a_k$ is a pointwise nonlinearities. We assume that $\| a_k \|_L = 1$ (it holds for ReLU).
+		\item $\mathbf{g}(\bh) = \bW \bh$ is a linear transformation.
+		\[
+			\| \mathbf{g} \|_L = \sup_\bx \sigma( \nabla \mathbf{g}(\bx)) = \sigma(\bW).
+		\]
+	\end{itemize}
+	\vspace{-0.5cm}
+	\begin{block}{Critic spectral norm}
+		\vspace{-0.5cm}
+		\[
+			\| f \|_L \leq \prod_{k=1}^{K+1} \sigma(\bW_k).
+		\]
+	\end{block}
+	If we replace the weights in the critic by $\bW^{SN}_k = \bW_k / \sigma(\bW_k)$, we will get $\| f\|_L \leq 1.$ \\
+	
+	\vspace{0.1cm}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1802.05957}{https://arxiv.org/abs/1802.05957}}
+\end{frame}
+%=======
+\begin{frame}{Spectral Normalization GAN}
+	 If we apply singular value decomposition to compute the $\sigma(\bW)$ at each round of the algorithm, the algorithm becomes computationally heavy.
+	 \begin{block}{Power iteration}
+	 	\begin{itemize}
+	 		\item $\bu$ -- random vector.
+	 		\item repeat
+	 		\[
+	 			\bv = \frac{\bW^T \bu}{\| \bW^T \bu \|}, \quad \bu = \frac{\bW \bv}{\| \bW \bv \|}
+	 		\]
+	 		\item approximate the spectral norm
+	 		\[
+	 			\sigma(\bW) \approx \bu^T \bW \bv
+	 		\]
+	 	\end{itemize}
+	 \end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1802.05957}{https://arxiv.org/abs/1802.05957}}
+\end{frame}
+%=======
+\begin{frame}{Spectral Normalization GAN}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.85\linewidth]{figs/sngan_pseudocode}
+	\end{figure}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.85\linewidth]{figs/sngan_fids}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1802.05957}{https://arxiv.org/abs/1802.05957}}
+\end{frame}
+%=======
 \begin{frame}{Summary}
 	\begin{itemize}
 		\item Likelihood is not a perfect criteria to measure quality of generative model.
@@ -311,7 +402,7 @@
 		\item Mode collapse and vanishing gradients are the two main problems of vanila GAN.
 		\item Lots of tips and tricks has to be used to make the GAN training is stable and scalable.
 		\item Wasserstein distance is more appropriate objective function for distribution matching problem.
-		\item Gradient penalty allows to make Wasserstein GAN even more stable.
+		\item Gradient Penalty and Spectral Normalization allows to make Wasserstein GAN even more stable.
 	\end{itemize}
 \end{frame}
 %=======
@@ -326,6 +417,10 @@
 	\item \textbf{WGAN-GP}: Improved Training of Wasserstein GANs \\
 	\href{https://arxiv.org/abs/1704.00028}{https://arxiv.org/abs/1704.00028} \\
 	\textbf{Summary:} Proves that optimal critic has unit gradient almost everywhere. Gradient penalty proposed to enforce Lipchitzness and constraint the critic norm. It greatly improves stability.
+	
+	\item \textbf{SN-GAN}: Spectral Normalization for Generative Adversarial Networks \\
+	\href{https://arxiv.org/abs/1802.05957}{https://arxiv.org/abs/1802.05957} \\
+	\textbf{Summary:} Constrain Lipschitz norm by spectral norm pf weights. Spectral norm of superpositionis less or equal to spectral norms product. Usually works better than WGAN-GP. 
 \end{itemize}
 }
 \end{frame}

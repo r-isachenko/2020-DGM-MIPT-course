@@ -51,6 +51,7 @@
 \newcommand{\cL}{\mathcal{L}} 
 \newcommand{\cN}{\mathcal{N}} 
 \newcommand{\cS}{\mathcal{S}} 
+\newcommand{\cT}{\mathcal{T}} 
 \newcommand{\cX}{\mathcal{X}} 
 
 \newcommand{\btheta}{\boldsymbol{\theta}} 
@@ -406,6 +407,90 @@
 	\end{itemize}
 \end{frame}
 %=======
+\begin{frame}{Divergences}
+	\begin{block}{What do we have?}
+		\begin{itemize}
+			\item Forward KL divergence in maximum likelihood estimation
+			\item Reverse KL in variational inference
+			\item JS divergence in  vanilla gan
+			\item Wasserstein distance in WGAN
+		\end{itemize}
+	\end{block}
+	\begin{block}{Divergence minimization}
+		\vspace{-0.3cm}
+		\[
+			\min_p D(\pi || p)
+		\]
+		\vspace{-0.5cm}
+	\end{block}
+	\begin{block}{What is a divergence?}
+		Let $\cS$ be the set of all possible probability distributions. Then $D: \cS \times \cS \rightarrow \bbR$ is a divertgence if 
+		\begin{itemize}
+			\item $D(\pi || p) \geq 0$ for all $\pi, p \in \cS$;
+			\item $D(\pi || p) = 0$ if and only if $\pi \equiv p$.
+		\end{itemize}
+	\end{block}
+\end{frame}
+%=======
+\begin{frame}{f-divergence family}
+	
+	\begin{block}{f-divergence}
+		\vspace{-0.3cm}
+		\[
+		D_f(\pi || p) = \bbE_p  f\left( \frac{\pi(\bx)}{p(\bx)} \right)  = \int p(\bx) f\left( \frac{\pi(\bx)}{p(\bx)} \right) d \bx.
+		\]
+		Here $f: \bbR_+ \rightarrow \bbR$ is a convex, lower-semicontinuous function satisfying $f(1) = 0$.
+	\end{block}
+	\begin{block}{Fenchel conjugate}
+		\vspace{-0.5cm}
+		\[
+		f^*(t) = \sup_{u \in \text{dom}_f} \left( ut - f(u) \right), \quad f^{**} = f, \quad f(u) = \sup_{t \in \text{dom}_{f^*}} \left( ut - f^*(t) \right)
+		\]
+		\vspace{-0.5cm}
+	\end{block}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.85\linewidth]{figs/f_divs}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1606.00709}{https://arxiv.org/abs/1606.00709}}
+\end{frame}
+%=======
+\begin{frame}{f-divergence family}
+	\begin{block}{Variational divergence estimation}
+		\vspace{-0.3cm}
+		\begin{align*}
+			D_f(\pi || p) &= \int p(\bx) f\left( \frac{\pi(\bx)}{p(\bx)} \right) d \bx \\
+			& = \int p(\bx) \sup_{t \in \text{dom}_{f^*}} \left( \frac{\pi(\bx)}{p(\bx)} t - f^*(t) \right) d \bx \\
+			& = \int \sup_{t \in \text{dom}_{f^*}} \left( \pi(\bx)t - p(\bx) f^*(t) \right) d \bx \\
+			& \geq \sup_{T \in \cT} \int \left( \pi(\bx)T(\bx) - p(\bx) f^*(T(\bx)) \right) d \bx \\
+			& = \sup_{T \in \cT} \left[\bbE_{\pi}T(\bx) -  \bbE_p f^*(T(\bx)) \right]
+		\end{align*}
+	\end{block}
+	Here $\cT: \cX \rightarrow \bbR$ is an arbitrary class of functions.
+	
+	The lower bound is tight for $T^*(\bx) = f'\left( \frac{\pi(\bx)}{p(\bx)} \right)$.
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1606.00709}{https://arxiv.org/abs/1606.00709}}
+\end{frame}
+%=======
+\begin{frame}{f-divergence family}
+	\begin{block}{Variational divergence estimation}
+		\[
+			D_f(\pi || p) \geq \sup_{T \in \cT} \left[\bbE_{\pi}T(\bx) -  \bbE_p f^*(T(\bx)) \right]
+		\]
+	\end{block}
+	\begin{figure}
+		\centering
+		\includegraphics[width=1.0\linewidth]{figs/f_div_results}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1606.00709}{https://arxiv.org/abs/1606.00709}}
+\end{frame}
+%=======
 \begin{frame}{References}
 {\tiny
 \begin{itemize}
@@ -421,6 +506,11 @@
 	\item \textbf{SN-GAN}: Spectral Normalization for Generative Adversarial Networks \\
 	\href{https://arxiv.org/abs/1802.05957}{https://arxiv.org/abs/1802.05957} \\
 	\textbf{Summary:} Constrain Lipschitz norm by spectral norm pf weights. Spectral norm of superpositionis less or equal to spectral norms product. Usually works better than WGAN-GP. 
+	
+
+	\item \textbf{f-GAN}:  Training generative neural samplers using variational divergence minimization  \\
+	\href{https://arxiv.org/abs/1606.00709}{https://arxiv.org/abs/1606.00709} \\
+	\textbf{Summary:} Extend adversarial learning pipeline to any f-divergence. Variational divergence minimization frameworkis derived. 
 \end{itemize}
 }
 \end{frame}

@@ -32,6 +32,7 @@
 \newcommand{\by}{\mathbf{y}} 
 
 \newcommand{\bA}{\mathbf{A}} 
+\newcommand{\bC}{\mathbf{C}} 
 \newcommand{\bI}{\mathbf{I}} 
 \newcommand{\bT}{\mathbf{T}} 
 \newcommand{\bW}{\mathbf{W}} 
@@ -593,6 +594,66 @@
 	{\scriptsize \href{https://arxiv.org/abs/1801.01973}{https://arxiv.org/abs/1801.01973}}
 \end{frame}
 %=======
+\begin{frame}{Evaluation of likelihood-free models}
+	\begin{block}{Theorem}
+		If $\pi(\bx)$ and $p(\bx | \btheta)$ has moment generation functions then
+		\[
+			\pi(\bx) = p(\bx | \btheta) \, \Leftrightarrow \, \bbE_{\pi} \bx^k = \bbE_{p} \bx^k, \quad \forall k \geq 1.
+		\]
+	\end{block}
+	This is intractable to calculate all moments.
+	\begin{block}{Frechet Inception Distance}
+		\vspace{-0.1cm}
+		\[
+			D^2 (\pi, p) = \| \mathbf{m}_{\pi} - \mathbf{m}_{p}\|_2^2 + \text{Tr} \left( \bC_{\pi} + \bC_p - 2 \sqrt{\bC_{\pi} \bC_p} \right)
+		\]
+	\end{block}
+	\begin{itemize}
+		\item $\mathbf{m}_{\pi}$, $\bC_{\pi} $ are mean vector and covariance matrix of feature representations for real samples from $\pi(\bx)$
+		\item $\mathbf{m}_{p}$, $\bC_p$ are mean vector and covariance matrix of feature representations for generated samples from $p(\bx | \btheta)$.
+		\item Representations are output of intermediate layer from pretrained classification model.
+	\end{itemize} 
+
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1706.08500}{https://arxiv.org/abs/1706.08500}}
+\end{frame}
+%=======
+\begin{frame}{Evaluation of likelihood-free models}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.9\linewidth]{figs/fid_results}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1706.08500}{https://arxiv.org/abs/1706.08500}}
+\end{frame}
+%=======
+\begin{frame}{Evaluation of likelihood-free models}
+	\begin{block}{Frechet Inception Distance}
+		\vspace{-0.1cm}
+		\[
+		D^2 (\pi, p) = \| \mathbf{m}_{\pi} - \mathbf{m}_{p}\|_2^2 + \text{Tr} \left( \bC_{\pi} + \bC_p - 2 \sqrt{\bC_{\pi} \bC_p} \right)
+		\]
+	\end{block}
+	\begin{block}{FID limitations}
+		\begin{itemize}
+			\item FID depends on the pretrained classification model.
+			\item FID needs a large samples  size for evaluation.
+			\item Calculation of FID is slow.
+			\item FID extimates only two sample moments.
+		\end{itemize}
+	\end{block}
+	\vspace{2cm}
+
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1706.08500}{https://arxiv.org/abs/1706.08500}}
+\end{frame}
+%=======
+\begin{frame}{Summary}
+\end{frame}
+%=======
 \begin{frame}{References}
 {\tiny
 \begin{itemize}
@@ -620,6 +681,10 @@
 	\item A Note on the Inception Score \\
 	\href{https://arxiv.org/abs/1801.01973}{https://arxiv.org/abs/1801.01973} \\
 	\textbf{Summary:} Inception Score is not an ideal metric.
+	
+	\item GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium \\
+	\href{https://arxiv.org/abs/1706.08500}{https://arxiv.org/abs/1706.08500} \\
+	\textbf{Summary:} Frechet inception distance was proposed for GAN evaluation.
 \end{itemize}
 }
 \end{frame}

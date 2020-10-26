@@ -21,3 +21,4 @@
 | 1 | September, 14 | September, 28 | Autoregressive models. | [notebook](homeworks/homework1/hw1.ipynb) |
 | 2 | September, 28 | October, 12 | Latent variable models. Flows. | [notebook](homeworks/homework2/hw2.ipynb) |
 | 3 | October, 12 | October, 26 | Autoregressive flows. VLAE. | [notebook](homeworks/homework3/hw3.ipynb) |
+| 3 | October, 26 | November, 9 | GAN. WGAN. | [notebook](homeworks/homework4/hw4.ipynb) |

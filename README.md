@@ -12,7 +12,7 @@
 | 6 | October, 7 | Autoregressive flows (IAF, MAF, Parallel WaveNet). ELBO surgery. | [slides](lectures/lecture6/Isachenko2020DeepGenerativeModels6.pdf) | [video](https://youtu.be/8xzHeHJmXc4) |
 | 7 | October, 14 | VampPrior. Posterior collapse (PixelVAE, VLAE). Decoder weakening. IWAE. | [slides](lectures/lecture7/Isachenko2020DeepGenerativeModels7.pdf) | [video](https://youtu.be/tWQmomQpNEU) |
 | 8 | October, 21 | Vanila GAN. Vanishing gradients, mode collapse. KL vs JSD. DCGAN. Wasserstein distance. | [slides](lectures/lecture8/Isachenko2020DeepGenerativeModels8.pdf) | [video](https://youtu.be/0ma4ZgnwC0M) |
-| 9 | October, 28 | Wasserstein GAN. Spectral Normalization GAN. f-divergence. GAN evaluation. | [slides](lectures/lecture9/Isachenko2020DeepGenerativeModels9.pdf) | [video] |
+| 9 | October, 28 | Wasserstein GAN. Spectral Normalization GAN. f-divergence. GAN evaluation. | [slides](lectures/lecture9/Isachenko2020DeepGenerativeModels9.pdf) | [video](https://youtu.be/tc-YZ_pjwWo) |
 
 
 ## Homeworks
@@ -22,4 +22,4 @@
 | 1 | September, 14 | September, 28 | Autoregressive models. | [notebook](homeworks/homework1/hw1.ipynb) |
 | 2 | September, 28 | October, 12 | Latent variable models. Flows. | [notebook](homeworks/homework2/hw2.ipynb) |
 | 3 | October, 12 | October, 26 | Autoregressive flows. VLAE. | [notebook](homeworks/homework3/hw3.ipynb) |
-| 3 | October, 26 | November, 9 | GAN. WGAN. | [notebook](homeworks/homework4/hw4.ipynb) |
+| 4 | October, 26 | November, 9 | GAN. WGAN. | [notebook](homeworks/homework4/hw4.ipynb) |

@@ -246,6 +246,181 @@
 	\end{itemize}
 \end{frame}
 %=======
+\begin{frame}{Evolution of GANs}
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{figs/gan_evolution}
+	\end{figure}
+	\begin{itemize}
+		\item \textbf{Vanilla GAN} \href{https://arxiv.org/abs/1406.2661}{https://arxiv.org/abs/1406.2661}
+		\item \textbf{DCGAN} \href{https://arxiv.org/abs/1511.06434}{https://arxiv.org/abs/1511.06434}
+		\item \textbf{CoGAN} \href{https://arxiv.org/abs/1606.07536}{https://arxiv.org/abs/1606.07536}
+		\item \textbf{ProGAN} \href{https://arxiv.org/abs/1710.10196}{https://arxiv.org/abs/1710.10196} 
+		\item \textbf{StyleGAN} \href{https://arxiv.org/abs/1812.04948}{https://arxiv.org/abs/1812.04948}
+	\end{itemize}
+\end{frame}
+%=======
+\begin{frame}{Self-Attention GAN}
+	\begin{itemize}
+		\item Convolutional layers process the information in a local neighborhood.
+		\item Using convolutional layers alone is computationally inefficient for modeling long-range dependencies in images.
+	\end{itemize}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.9\linewidth]{figs/conv-vs-sa}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://lilianweng.github.io/lil-log/2018/06/24/attention-attention.html}{https://lilianweng.github.io/lil-log/2018/06/24/attention-attention.html}}
+\end{frame}
+%=======
+\begin{frame}{Self-Attention GAN}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.9\linewidth]{figs/self-attention}
+	\end{figure}
+	\vspace{-0.2cm}
+	\begin{itemize}
+		\item $\bx$ -- feature vector for one feature location.
+		\item $N$ -- number of feature locations.
+	\end{itemize}
+	\vspace{0.5cm}
+	\[
+		\mathbf{f}(\bx) = \bW_f(\bx), \quad \mathbf{g}(\bx) = \bW_g(\bx), \quad \mathbf{h}(\bx) = \bW_h(\bx), \quad \mathbf{v}(\bx) = \bW_v(\bx)
+	\]
+	\[
+		s_{ij} = \mathbf{f}(\bx_i)^T \mathbf{g}(\bx_j), \quad a_{ij} = \frac{\exp{s_{ij}}}{\sum_{i=1}^N \exp{s_{ij}}}, \quad \textbf{o}_j = \textbf{v}\left( \sum_{i=1}^N a_{ij} \mathbf{h}(\bx_i) \right)
+	\]
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1805.08318}{https://arxiv.org/abs/1805.08318}}
+\end{frame}
+%=======
+\begin{frame}{Self-Attention GAN}
+	\begin{block}{Technical Details}
+		\begin{itemize}
+			\item Hinge loss for training.
+			\item Spectral Normalization in both the generator and the discriminator.
+			\item Separate learning rates for the generator and the discriminator.
+		\end{itemize}
+	\end{block}
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{figs/sa_results1}
+	\end{figure}
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{figs/sa_results2}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1805.08318}{https://arxiv.org/abs/1805.08318}}
+\end{frame}
+%=======
+\begin{frame}{Self-Attention GAN}
+	\begin{block}{Visualization of attention maps}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth]{figs/sa_maps}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1805.08318}{https://arxiv.org/abs/1805.08318}}
+\end{frame}
+%=======
+\begin{frame}{BigGAN}
+	\begin{block}{Model description}
+		\begin{itemize}
+			\item Self-Attention GAN baseline.
+			\item Class-conditional generator.
+			\item Increasing batch size gives tremendous benefit (allows to cover more modes).
+			\item Increasing model size is helpful (wider helps as much as deeper).
+			\item Hinge loss for training.
+			\item Orthogonal regularization for smoothness the generator output.
+			\item Truncation trick for balancing between diversity and fidelity.
+		\end{itemize}
+	\end{block}
+	\vspace{0.5cm}
+
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1809.11096}{https://arxiv.org/abs/1809.11096}}
+\end{frame}
+%=======
+\begin{frame}{BigGAN}
+	\begin{itemize}
+		\item Orthogonal regularization
+		\[
+		\| \bW^T \bW - \bI \|^2 \quad \Rightarrow \| \bW^T \bW - \text{diag}(\bW^T \bW) \|^2
+		\]
+		\item Truncation trick. Coordinates of samples $\bz \sim \cN(0, \bI)$ which fall outside a predefined range are resampled to fall inside that range.
+	\end{itemize}
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{figs/biggan_results}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1809.11096}{https://arxiv.org/abs/1809.11096}}
+\end{frame}
+%=======
+\begin{frame}{BigGAN}
+	\begin{block}{Samples (512x512)}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth]{figs/biggan_samples}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1809.11096}{https://arxiv.org/abs/1809.11096}}
+\end{frame}
+%=======
+\begin{frame}{BigGAN}
+	\begin{block}{Interpolations}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth]{figs/biggan_interpolations}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1809.11096}{https://arxiv.org/abs/1809.11096}}
+\end{frame}
+%=======
+\begin{frame}{Progressive Growing GAN}
+	
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1710.10196}{https://arxiv.org/abs/1710.10196}}
+\end{frame}
+\begin{frame}{Progressive Growing GAN}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{figs/pggan_arch}
+	\end{figure}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.6\linewidth]{figs/pggan_fadein}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1710.10196}{https://arxiv.org/abs/1710.10196}}
+\end{frame}
+%=======
+\begin{frame}{Progressive Growing GAN}
+	\begin{block}{Samples (1024x1024)}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth]{figs/pggan_samples}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1710.10196}{https://arxiv.org/abs/1710.10196}}
+\end{frame}
+%=======
 \begin{frame}{References}
 {\tiny
 \begin{itemize}
@@ -257,6 +432,20 @@
 	\item GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium \\
 	\href{https://arxiv.org/abs/1706.08500}{https://arxiv.org/abs/1706.08500} \\
 	\textbf{Summary:} Frechet inception distance was proposed for GAN evaluation.
+	
+	\item \textbf{SAGAN}: Self-Attention Generative Adversarial Networks \\
+	\href{https://arxiv.org/abs/1805.08318}{https://arxiv.org/abs/1805.08318} \\
+	\textbf{Summary:} Self-attention was proposed for G and D. Hinge loss was used for training. Spectral Normalization was injected \\
+	not only for D, but also for G. 
+	
+	\item \textbf{BigGAN}: Large Scale GAN Training for High Fidelity Natural Image Synthesis \\
+	\href{https://arxiv.org/abs/1809.11096}{https://arxiv.org/abs/1809.11096} \\
+	\textbf{Summary:} SAGAN as a baseline. High-quality image generation. Increasing batch is really helpful (covering more modes). Propose orthogonalization regularization. Use truncation trick for trade-off between sample fidelity and variety.
+	
+	\item \textbf{ProGAN}: Progressive Growing of GANs for Improved Quality, Stability, and Variation \\
+	\href{https://arxiv.org/abs/1710.10196}{https://arxiv.org/abs/1710.10196} \\
+	\textbf{Summary:} The key idea is to grow both the generator and discriminator progressively: starting from a low resolution, \\
+	we add new layers that model increasingly fine details as training progresses.
 \end{itemize}
 }
 \end{frame}

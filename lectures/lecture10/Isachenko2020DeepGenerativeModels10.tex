@@ -390,6 +390,21 @@
 \end{frame}
 %=======
 \begin{frame}{Progressive Growing GAN}
+	\begin{block}{Problems with HR image generation}
+		\begin{itemize}
+			\item Disjoint manifolds $\Rightarrow$ gradient problem.
+			\item Small minibatch $\Rightarrow$ training instability.
+		\end{itemize}
+	\end{block}
+	\begin{block}{Solution}
+		Grow both the generator and discriminator progressively, starting from LR images, and add new layers that introduce higher-resolution details as the training progresses. 
+		\begin{itemize}
+			\item Train GAN which generate 4x4 images (just 2 convolutions for G and D).
+			\item Add upsampling layers to G, downsampling layers to D.
+			\item Train GAN which generate 8x8 images.
+			\item etc.
+		\end{itemize}
+	\end{block}
 	
 	\vfill
 	\hrule\medskip 
@@ -419,6 +434,49 @@
 	\vfill
 	\hrule\medskip 
 	{\scriptsize \href{https://arxiv.org/abs/1710.10196}{https://arxiv.org/abs/1710.10196}}
+\end{frame}
+%=======
+\begin{frame}{StyleGAN}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{figs/stylegan_results}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1812.04948}{https://arxiv.org/abs/1812.04948}}
+\end{frame}
+%=======
+\begin{frame}{StyleGAN}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{figs/stylegan_scheme}
+	\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1812.04948}{https://arxiv.org/abs/1812.04948}}
+\end{frame}
+%=======
+\begin{frame}{StyleGAN}
+	\begin{block}{Samples (1024x1024)}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth]{figs/stylegan_samples}
+		\end{figure}
+	\vspace{0.5cm}
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1812.04948}{https://arxiv.org/abs/1812.04948}}
+\end{frame}
+%=======
+\begin{frame}{StyleGAN}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.6\linewidth]{figs/stylegan_mix}
+		\end{figure}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1812.04948}{https://arxiv.org/abs/1812.04948}}
 \end{frame}
 %=======
 \begin{frame}{References}

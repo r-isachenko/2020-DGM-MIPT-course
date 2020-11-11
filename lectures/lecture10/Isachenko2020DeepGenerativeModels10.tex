@@ -352,11 +352,11 @@
 %=======
 \begin{frame}{BigGAN}
 	\begin{itemize}
-		\item Orthogonal regularization
+		\item \textbf{Orthogonal regularization}
 		\[
 		\| \bW^T \bW - \bI \|^2 \quad \Rightarrow \| \bW^T \bW - \text{diag}(\bW^T \bW) \|^2
 		\]
-		\item Truncation trick. Coordinates of samples $\bz \sim \cN(0, \bI)$ which fall outside a predefined range are resampled to fall inside that range.
+		\item \textbf{Truncation trick.} Coordinates of samples $\bz \sim \cN(0, \bI)$ which fall outside a predefined range are resampled to fall inside that range.
 	\end{itemize}
 	\begin{figure}
 		\centering
@@ -499,18 +499,11 @@
 %=======
 \begin{frame}{StyleGAN}
 	\begin{block}{Step 3: Remove traditional input}
+		Mapping network provides stochasticity to different stages of the synthesis network. Input of the synthesis network is a trainable vector.
 		\begin{figure}
 			\centering
-			\includegraphics[width=0.4\linewidth]{figs/stylegan_input}
+			\includegraphics[width=0.55\linewidth]{figs/stylegan_input}
 		\end{figure}
-	\vspace{-0.4cm}
-	\end{block}
-	\begin{block}{Step 4: Style Mixing}
-		\begin{itemize}
-		\item Generate two vectors $\bw_1$ and $\bw_2$ for vectors $\bz_1$ and $\bz_2$.
-		\item Switch from one latent code to another at a randomly selected point	in the synthesis network.
-		\item It makes different levels of synthesis network to be independent.
-		\end{itemize}
 	\end{block}
 	\vfill
 	\hrule\medskip 
@@ -518,7 +511,7 @@
 \end{frame}
 %=======
 \begin{frame}{StyleGAN}
-	\begin{block}{Step 5: Stochastic variation}
+	\begin{block}{Step 4: Stochastic variation}
 		Inject random noise to add small aspects, such as freckles, exact placement of hairs, wrinkles, features which make the image more realistic and increase the variety of outputs.
 		\begin{figure}
 			\centering
@@ -531,13 +524,26 @@
 \end{frame}
 %=======
 \begin{frame}{StyleGAN}
+	\begin{block}{Step 4: Style Mixing}
+		\vspace{-0.33cm}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.8\linewidth]{figs/stylegan_mix_reg}
+		\end{figure}
+	\begin{itemize}
+		\item Makes different levels of synthesis network to be independent.
+		\item Allows to couple diffirent styles.
+	\end{itemize}
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1812.04948}{https://arxiv.org/abs/1812.04948}}
+\end{frame}
+%=======
+\begin{frame}{StyleGAN}
 	\begin{figure}
 		\centering
-		\includegraphics[width=0.6\linewidth]{figs/stylegan_scheme}
-	\end{figure}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.5\linewidth]{figs/stylegan_results}
+		\includegraphics[width=0.8\linewidth]{figs/stylegan_scheme}
 	\end{figure}
 	\vfill
 	\hrule\medskip 
@@ -545,12 +551,42 @@
 \end{frame}
 %=======
 \begin{frame}{StyleGAN}
+	\begin{block}{Truncation trick}
+		\vspace{-0.2cm}
+		\[
+			\bw' = \hat{\bw} - \psi \cdot (\bw - \hat{\bw}), \quad \hat{\bw} = \bbE_{\bz} p(f(\bz))
+		\]
+		\vspace{-0.2cm}
+		\begin{itemize}
+			\item Constant $\psi$ is a tradeoff between diversity and fidelity. 
+			\item $\psi=0.7$ is used for most of the results.
+			\item Truncation is done only at the low-resolution layers.
+		\end{itemize}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.8\linewidth]{figs/stylegan_truncation}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip 
+	{\scriptsize \href{https://arxiv.org/abs/1812.04948}{https://arxiv.org/abs/1812.04948}}
+\end{frame}
+%=======
+\begin{frame}{StyleGAN}
+	\begin{block}{Results}
+		\vspace{-0.2cm}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.6\linewidth]{figs/stylegan_results}
+		\end{figure}
+	\vspace{-0.3cm}
+	\end{block}
 	\begin{block}{Samples (1024x1024)}
 		\begin{figure}
 			\centering
-			\includegraphics[width=\linewidth]{figs/stylegan_samples}
+			\includegraphics[width=0.8\linewidth]{figs/stylegan_samples}
 		\end{figure}
-	\vspace{0.5cm}
+	\vspace{-0.1cm}
 	\end{block}
 	\vfill
 	\hrule\medskip 

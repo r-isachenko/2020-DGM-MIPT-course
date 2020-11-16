@@ -1,0 +1,267 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx, epsfig}
+\usepackage{amsmath,mathrsfs,amsfonts,amssymb}
+%\usepackage{subfig}
+\usepackage{floatflt}
+\usepackage{epic,ecltree}
+\usepackage{mathtext}
+\usepackage{fancybox}
+\usepackage{fancyhdr}
+\usepackage{multirow}
+\usepackage{enumerate}
+\usepackage{epstopdf}
+\usepackage{multicol}
+\usepackage{algorithm}
+\usepackage[noend]{algorithmic}
+\def\algorithmicrequire{\textbf{Input:}}
+\def\algorithmicensure{\textbf{Output:}}
+\usetheme{default}%{Singapore}%{Warsaw}%{Warsaw}%{Darmstadt}
+\usecolortheme{default}
+\setbeamertemplate{footline}[page number]{}
+\setbeamerfont{title}{size=\Huge}
+
+\newcommand{\bt}{\mathbf{t}} 
+\newcommand{\bu}{\mathbf{u}} 
+\newcommand{\bv}{\mathbf{v}} 
+\newcommand{\bw}{\mathbf{w}} 
+\newcommand{\bx}{\mathbf{x}} 
+\newcommand{\bz}{\mathbf{z}} 
+\newcommand{\by}{\mathbf{y}} 
+
+\newcommand{\bI}{\mathbf{I}} 
+\newcommand{\bT}{\mathbf{T}} 
+\newcommand{\bX}{\mathbf{X}} 
+\newcommand{\bZ}{\mathbf{Z}} 
+
+\newcommand{\bmu}{\boldsymbol{\mu}}
+\newcommand{\blambda}{\boldsymbol{\lambda}}
+\newcommand{\bsigma}{\boldsymbol{\sigma}}
+
+\newcommand{\btheta}{\boldsymbol{\theta}} 
+\newcommand{\bphi}{\boldsymbol{\phi}} 
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+%\definecolor{beamer@blendedblue}{RGB}{15,120,80}
+%----------------------------------------------------------------------------------------------------------
+\title[\hbox to 56mm{Deep Generative Models  \hfill\insertframenumber\,/\,\inserttotalframenumber}]
+{Deep Generative Models \\ Lecture 11}
+\author[Roman Isachenko]{\\Roman Isachenko}
+\institute[MIPT]{Moscow Institute of Physics and Technology \\
+}
+\date{2020}
+%--------------------------------------------------------------------------------
+\begin{document}
+%--------------------------------------------------------------------------------
+\begin{frame}
+%\thispagestyle{empty}
+\titlepage
+\end{frame}
+%=======
+\begin{frame}{Disentangled representations}
+\begin{block}{Goal}
+    Learning an interpretable factorised representation of the independent data gen- erative factors of the world without supervision. 
+\end{block}
+\begin{block}{Informal definition}
+A disentangled representation can be defined as one where single latent units are sensitive to changes in single generative factors, while being relatively invariant to changes in other factors. 
+\end{block}
+\begin{block}{Example}
+Model trained on a dataset of 3D objects might learn independent latent units sensitive to single independent data generative factors, such as object identity, position, scale, lighting or colour. 
+\end{block}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
+\end{frame}
+%=======
+\begin{frame}{$\beta$-VAE, 2017}
+\begin{block}{Generative process}
+\begin{itemize}
+    \item $p(\bx | \bv, \bw) = \text{Sim}(\bv, \bw)$~-- true world simulator;
+    \item $\bv$~-- conditionally independent factors: $p(\bv | \bx) = \prod_{k=1}^K p(v_k | \bx)$;
+    \item $\bw$~-- conditionally dependent factors. 
+\end{itemize}
+\end{block}
+\begin{block}{Goal}
+Develop an unsupervised deep generative model
+\[
+    p(\bx | \bz) \approx p(\bx | \bv, \bw).
+\]
+\vspace{-0.5cm}
+\begin{itemize}
+    \item Ensure that the inferred latent factors $q(\bz|\bx)$ capture the factors $\bv$ in a disentangled manner. 
+    \item The conditionally dependent factors $\bw$ can remain entangled in a separate subset of $\bz$ that is not used for representing $\bv$. 
+\end{itemize}
+\end{block}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
+\end{frame}
+%=======
+\begin{frame}{$\beta$-VAE, 2017}
+\begin{block}{Constrained optimization}
+\vspace{-0.5cm}
+\[
+    \max_{q, \btheta} \mathbb{E}_{q(\bz | \bx)} \log p(\bx | \bz, \btheta), \quad \text{subject to } KL (q(\bz | \bx) || p(\bz)) < \epsilon.
+\]
+\vspace{-0.5cm}
+\end{block}
+\begin{block}{Objective}
+\vspace{-0.5cm}
+\[
+    \mathcal{L}(q, \btheta, \beta) = \mathbb{E}_{q(\bz | \bx)} \log p(\bx | \bz, \btheta) - \beta \cdot KL (q(\bz | \bx) || p(\bz)).
+\]
+\end{block}
+What do we get at $\beta = 1$? \\
+\begin{block}{Hypothesis}
+To learn disentangled representations of the conditionally independent factors $\bv$, it is important to set stronger constraint on the latent bottleneck: $\beta > 1$.
+\end{block}
+\textbf{Note:} It could lead to poorer reconstructions due to the loss of high frequency details when passing through a constrained latent bottleneck. \\ 
+\vspace{0.1cm}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
+\end{frame}
+%=======
+\begin{frame}{$\beta$-VAE, 2017}
+\begin{block}{Disentangling metric}
+Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in order to ensure that it has no capacity to perform nonlinear disentangling itself.
+\end{block}
+
+\[
+    \bx_{li} \sim \text{Sim}(\bv_{li}, \bw_{li}); \quad \bx_{lj} \sim \text{Sim}(\bv_{lj}, \bw_{lj}); \quad y \sim U[1, K].
+\]
+\[
+    \bv_{li} \sim p(\bv); \quad \bw_{li} \sim p(\bw); \quad \bv_{lj} \sim p(\bv) \, ([v_{li}]_y = [v_{lj}]_y); \quad \bw_{lj} \sim p(\bw).
+\]
+\[
+    q(\bz | \bx) = \mathcal{N}\left(\mu(\bx) | \sigma^2(\bx)\right); \quad \bz_{li} = \mu(\bx_{li}); \quad \bz_{lj} = \mu(\bx_{lj}).
+\]
+\[
+    \bz_{\text{diff}} = \frac{1}{L} \sum_{l=1}^L | \bz_{li} - \bz_{lj} |.
+\]
+
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
+\end{frame}
+%=======
+\begin{frame}{$\beta$-VAE, 2017}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.95\linewidth]{figs/betaVAE_1.png}
+\end{figure}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
+\end{frame}
+%=======
+\begin{frame}{$\beta$-VAE, 2017}
+\vspace{1cm}
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figs/betaVAE_2.png}
+\end{figure}
+\vspace{1cm}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
+\end{frame}
+%=======
+\begin{frame}{$\beta$-VAE, 2017}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/betaVAE_3.png}
+\end{figure}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
+\end{frame}
+%=======
+\begin{frame}{$\beta$-VAE, 2017}
+	\begin{minipage}[t]{0.5\columnwidth}
+	    \vspace{1.5cm}
+		\begin{figure}
+			\centering
+			\includegraphics[width=1.\linewidth]{figs/betaVAE_4.png}
+		\end{figure}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\columnwidth}
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=.95\linewidth]{figs/betaVAE_5.png}
+		\end{figure}
+	\end{minipage}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
+\end{frame}
+%=======
+\begin{frame}{$\beta$-VAE, 2018}
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figs/betaVAE_6.png}
+\end{figure}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
+\end{frame}
+%=======
+\begin{frame}{$\beta$-VAE, 2018}
+\begin{block}{Controlled encoding capacity}
+\vspace{-0.5cm}
+\[
+    \mathcal{L}(q, \btheta, \beta) = \mathbb{E}_{q(\bz | \bx)} \log p(\bx | \bz, \btheta) - | KL (q(\bz | \bx) || p(\bz)) - C|.
+\]
+\end{block}
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figs/betaVAE_7.png}
+\end{figure}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
+\end{frame}
+%=======
+\begin{frame}{$\beta$-VAE, 2018}
+\begin{block}{Controlled encoding capacity}
+\vspace{-0.5cm}
+\[
+    \mathcal{L}(q, \btheta, \beta) = \mathbb{E}_{q(\bz | \bx)} \log p(\bx | \bz, \btheta) - | KL (q(\bz | \bx) || p(\bz)) - C|.
+\]
+\end{block}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{figs/betaVAE_8.png}
+\end{figure}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
+\end{frame}
+%=======
+\begin{frame}{$\beta$-VAE, 2018}
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figs/betaVAE_9.png}
+\end{figure}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
+\end{frame}
+%=======
+\begin{frame}{References}
+{\tiny
+\begin{itemize}
+    
+    \item \textbf{beta-VAE:} Learning Basic Visual Concepts with a Constrained Variational Framework \\
+    \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl} \\
+    \textbf{Summary:} Modifications of VAE objective. The task is represented as constrained optimization. Increasing the weight of KL divergence term in ELBO allows to disentangle latent space factors and makes model more interpretable. The assessment of disentanglement is provided by constructing the classifier.
+    
+    \item Understanding disentangling in \textbf{$\beta$-VAE} \\
+    \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf} \\
+    \textbf{Summary:} Consider beta-VAE from the position of the rate-distortion theory (information bottleneck). Propose the modified ELBO with controlled latent capacity.
+\end{itemize}
+}
+\end{frame}
+\end{document} 

@@ -21,6 +21,7 @@
 \setbeamertemplate{footline}[page number]{}
 \setbeamerfont{title}{size=\Huge}
 
+\newcommand{\bc}{\mathbf{c}} 
 \newcommand{\bt}{\mathbf{t}} 
 \newcommand{\bu}{\mathbf{u}} 
 \newcommand{\bv}{\mathbf{v}} 
@@ -34,9 +35,20 @@
 \newcommand{\bX}{\mathbf{X}} 
 \newcommand{\bZ}{\mathbf{Z}} 
 
+\newcommand{\bepsilon}{\boldsymbol{\epsilon}}
 \newcommand{\bmu}{\boldsymbol{\mu}}
 \newcommand{\blambda}{\boldsymbol{\lambda}}
 \newcommand{\bsigma}{\boldsymbol{\sigma}}
+\newcommand{\bSigma}{\boldsymbol{\Sigma}}
+
+\newcommand{\bbE}{\mathbb{E}} 
+\newcommand{\bbP}{\mathbb{P}} 
+\newcommand{\bbR}{\mathbb{R}} 
+
+\newcommand{\cL}{\mathcal{L}} 
+\newcommand{\cN}{\mathcal{N}} 
+\newcommand{\cS}{\mathcal{S}} 
+\newcommand{\cX}{\mathcal{X}} 
 
 \newcommand{\btheta}{\boldsymbol{\theta}} 
 \newcommand{\bphi}{\boldsymbol{\phi}} 
@@ -62,7 +74,7 @@
 %=======
 \begin{frame}{Disentangled representations}
 \begin{block}{Goal}
-    Learning an interpretable factorised representation of the independent data gen- erative factors of the world without supervision. 
+    Learning an interpretable factorised representation of the independent data generative factors of the world without supervision. 
 \end{block}
 \begin{block}{Informal definition}
 A disentangled representation can be defined as one where single latent units are sensitive to changes in single generative factors, while being relatively invariant to changes in other factors. 
@@ -97,6 +109,81 @@ Develop an unsupervised deep generative model
 \vfill
 \hrule\medskip
 {\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
+\end{frame}
+%=======
+\begin{frame}{InfoGAN}
+	\begin{block}{GAN objective}
+		\vspace{-0.3cm}
+		\[
+		\min_{G} \max_D V(G, D)
+		\]
+		\[
+		V(G, D)  =  \bbE_{\pi(\bx)} \log D(\bx) + \bbE_{p(\bz)} \log (1 - D(G(\bz)))
+		\]
+	\end{block}
+	Latent vector $\bz$ is not imposed to be disentangled.
+	
+	InfoGAN decomposes input vector:
+	\begin{itemize}
+		\item $\bz$ -- incompressible noise;
+		\item $\bc$ -- structured latent code.
+	\end{itemize}
+	\begin{block}{Information-theoretic regularization}
+		\vspace{-0.3cm}
+		\[
+			\max I (\bc, G(\bz, \bc))
+		\]
+	\end{block}
+	Information in the latent code $\bc$ should not be lost in the generation process.
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1606.03657}{https://arxiv.org/abs/1606.03657}}
+\end{frame}
+%=======
+\begin{frame}{InfoGAN}
+	\begin{block}{Objective}
+		\vspace{-0.3cm}
+		\[
+		\min_{G} \max_D V(G, D) - \lambda I (\bc, G(\bz, \bc))
+		\]
+	\end{block}
+	\begin{block}{Variational Information Maximization}
+		\begin{multline*}
+		I (\bc, G(\bz, \bc)) = H(\bc) - H(\bc | G(\bz, \bc)) = \\
+		= H(\bc) + \bbE_{\bx \sim G(\bz, \bc)} \left[ \bbE_{\bc \sim p(\bc | \bx)} \log p(\bc' | \bx) \right] = \\ 
+		= H(\bc) + \bbE_{\bx \sim G(\bz, \bc)} KL(p(\bc'| \bx) || q(\bz' | \bx)) + 
+		\\ + \bbE_{\bx \sim G(\bz, \bc)}  \bbE_{\bc' \sim p(\bc | \bx)} \log q(\bc' | \bx)  \geq\\
+		 \geq H(\bc) + \bbE_{\bx \sim G(\bz, \bc)} \bbE_{\bc' \sim p(\bc | \bx)} \log q(\bc' | \bx) = \\
+		 H(\bc) + \bbE_{\bc \sim p(\bc)} \bbE_{\bx \sim G(\bz, \bc)} \log q(\bc' | \bx)
+		\end{multline*}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1606.03657}{https://arxiv.org/abs/1606.03657}}
+\end{frame}
+%=======
+\begin{frame}{InfoGAN}
+	\begin{block}{Latent codes on MNIST}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth]{figs/infogan_mnist.png}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1606.03657}{https://arxiv.org/abs/1606.03657}}
+\end{frame}
+%=======
+\begin{frame}{InfoGAN}
+	\begin{block}{Latent codes on 3D Faces}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth]{figs/infogan_faces.png}
+		\end{figure}
+	\end{block}
+\vfill
+\hrule\medskip
+{\scriptsize \href{https://arxiv.org/abs/1606.03657}{https://arxiv.org/abs/1606.03657}}
 \end{frame}
 %=======
 \begin{frame}{$\beta$-VAE, 2017}
@@ -250,17 +337,43 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 {\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
 \end{frame}
 %=======
+\begin{frame}{DIP-VAE}
+	
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1711.00848}{https://arxiv.org/abs/1711.00848}}
+\end{frame}
+%=======
+\begin{frame}{FactorVAE}
+
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1802.05983}{https://arxiv.org/abs/1802.05983}}
+\end{frame}
+%=======
 \begin{frame}{References}
 {\tiny
 \begin{itemize}
+	
+	\item \textbf{InfoGAN:} Interpretable Representation Learning by Information Maximizing Generative Adversarial Nets \\
+	\href{https://arxiv.org/abs/1606.03657}{https://arxiv.org/abs/1606.03657} \\
+	\textbf{Summary:} An information-theoretic extension to the GANs that disentangles representations in an unsupervised manner. InfoGAN maximizes the MI between a small subset of the latent variables and the observation. Lower bound for \\ MI objective is derived that can be optimized efficiently. 
     
     \item \textbf{beta-VAE:} Learning Basic Visual Concepts with a Constrained Variational Framework \\
     \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl} \\
-    \textbf{Summary:} Modifications of VAE objective. The task is represented as constrained optimization. Increasing the weight of KL divergence term in ELBO allows to disentangle latent space factors and makes model more interpretable. The assessment of disentanglement is provided by constructing the classifier.
+    \textbf{Summary:} Modifications of VAE objective. The task is represented as constrained optimization. Increasing the \\ weight of KL divergence term in ELBO allows to disentangle latent space factors and makes model more interpretable. \\ The assessment of disentanglement is provided by constructing the classifier.
     
     \item Understanding disentangling in \textbf{$\beta$-VAE} \\
     \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf} \\
-    \textbf{Summary:} Consider beta-VAE from the position of the rate-distortion theory (information bottleneck). Propose the modified ELBO with controlled latent capacity.
+    \textbf{Summary:} Consider beta-VAE from the position of the rate-distortion theory (information bottleneck). Propose \\ the modified ELBO with controlled latent capacity.
+    
+    \item \textbf{DIP-VAE:} Variational Inference of Disentangled Latent Concepts from Unlabeled Observations \\
+    \href{https://arxiv.org/abs/1711.00848}{https://arxiv.org/abs/1711.00848} \\
+    \textbf{Summary:} Introduce a regularizer on the expectation of the approximate posterior over observed data that encourages \\ the disentanglement. Penalize the mismatch between the aggregated posterior and a factorized prior. Comparison with beta-VAE.
+    
+    \item \textbf{FactorVAE:} Disentangling by Factorising \\
+    \href{https://arxiv.org/abs/1802.05983}{https://arxiv.org/abs/1802.05983} \\
+    \textbf{Summary:} Penalizes the total correlation with density-ratio estimation. Comparison with beta-VAE. Does not degrate \\ the reconstructions.
 \end{itemize}
 }
 \end{frame}

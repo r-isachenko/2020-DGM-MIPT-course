@@ -519,12 +519,57 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 	\begin{block}{Density ratio trick}
 		\vspace{-0.5cm}
 		\begin{multline*}
-			\frac{q_1{\bx}}{q_2(\bx)} = \frac{p(\bx | y = 1)}{p(\bx | y = 0)} = \frac{p(y = 1 | \bx) p(\bx)}{p(y=1)} \bigg/ \frac{p(y = 0 | \bx) p(\bx)}{p(y=0)} = \\
+			\frac{q_1(\bx)}{q_2(\bx)} = \frac{p(\bx | y = 1)}{p(\bx | y = 0)} = \frac{p(y = 1 | \bx) p(\bx)}{p(y=1)} \bigg/ \frac{p(y = 0 | \bx) p(\bx)}{p(y=0)} = \\
 			= \frac{p(y = 1 | \bx)}{p(y = 0 | \bx)} = \frac{p(y = 1 | \bx)}{1 - p(y = 1 | \bx)} = \frac{D(\bx)}{1 - D(\bx)}
 		\end{multline*}
 	Here $D(\bx)$ could be treated as a discriminator model, which outputs the probability that $\bx$ is a sample
 	from $q_1(\bx)$ rather than from $q_2(\bx)$.
 	\end{block}
+	
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1802.05983}{https://arxiv.org/abs/1802.05983}}
+\end{frame}
+%=======
+\begin{frame}{FactorVAE}
+	
+	\begin{block}{FactorVAE objective}
+		\vspace{-0.3cm}
+		\[
+		\min_{\btheta, \bphi} \text{ELBO}(\btheta, \bphi) - \gamma \cdot KL(q(\bz) || \prod_{j=1}^k q(z_j))
+		\]
+		\vspace{-0.3cm}
+	\end{block}
+	
+	\begin{block}{Total correlation regularizer}
+		\vspace{-0.7cm}
+		\begin{multline*}
+		KL(q(\bz) || \prod_{j=1}^k q(z_j)) = KL(q(\bz) || \bar{q}(\bz)) = \\ =\bbE_{q(\bz)} \log \frac{q(\bz)}{\bar{q}(\bz)} \approx \bbE_{q(\bz)} \log \frac{D(\bz)}{1 - D(\bz)}
+		\end{multline*}
+		\vspace{-0.3cm}
+	\end{block}
+	VAE and GAN are trained simultaneously.
+	
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1802.05983}{https://arxiv.org/abs/1802.05983}}
+\end{frame}
+%=======
+\begin{frame}{FactorVAE}
+	
+	\begin{minipage}[t]{0.5\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth]{figs/factorvae_1}
+		\end{figure}
+	\end{minipage}%
+	\begin{minipage}[t]{0.5\columnwidth}
+		\vspace{1.7cm}
+		\begin{figure}[h]
+			\centering
+			\includegraphics[width=\linewidth]{figs/factorvae_2}
+		\end{figure}
+	\end{minipage}
 	
 	\vfill
 	\hrule\medskip

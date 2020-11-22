@@ -186,7 +186,7 @@ Develop an unsupervised deep generative model
 {\scriptsize \href{https://arxiv.org/abs/1606.03657}{https://arxiv.org/abs/1606.03657}}
 \end{frame}
 %=======
-\begin{frame}{$\beta$-VAE, 2017}
+\begin{frame}{$\beta$-VAE}
 \begin{block}{Constrained optimization}
 \vspace{-0.5cm}
 \[
@@ -211,7 +211,7 @@ To learn disentangled representations of the conditionally independent factors $
 {\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
 \end{frame}
 %=======
-\begin{frame}{$\beta$-VAE, 2017}
+\begin{frame}{$\beta$-VAE}
 \begin{block}{Disentangling metric}
 Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in order to ensure that it has no capacity to perform nonlinear disentangling itself.
 \end{block}
@@ -234,7 +234,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 {\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
 \end{frame}
 %=======
-\begin{frame}{$\beta$-VAE, 2017}
+\begin{frame}{$\beta$-VAE}
 \begin{figure}
     \centering
     \includegraphics[width=0.95\linewidth]{figs/betaVAE_1.png}
@@ -244,7 +244,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 {\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
 \end{frame}
 %=======
-\begin{frame}{$\beta$-VAE, 2017}
+\begin{frame}{$\beta$-VAE}
 \vspace{1cm}
 \begin{figure}
     \centering
@@ -256,7 +256,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 {\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
 \end{frame}
 %=======
-\begin{frame}{$\beta$-VAE, 2017}
+\begin{frame}{$\beta$-VAE}
 \begin{figure}
     \centering
     \includegraphics[width=0.8\linewidth]{figs/betaVAE_3.png}
@@ -266,7 +266,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 {\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
 \end{frame}
 %=======
-\begin{frame}{$\beta$-VAE, 2017}
+\begin{frame}{$\beta$-VAE}
 	\begin{minipage}[t]{0.5\columnwidth}
 	    \vspace{1.5cm}
 		\begin{figure}
@@ -285,7 +285,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 {\scriptsize \href{https://openreview.net/references/pdf?id=Sy2fzU9gl}{https://openreview.net/references/pdf?id=Sy2fzU9gl}}
 \end{frame}
 %=======
-\begin{frame}{$\beta$-VAE, 2018}
+\begin{frame}{$\beta$-VAE}
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figs/betaVAE_6.png}
@@ -295,7 +295,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 {\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
 \end{frame}
 %=======
-\begin{frame}{$\beta$-VAE, 2018}
+\begin{frame}{$\beta$-VAE}
 \begin{block}{Controlled encoding capacity}
 \vspace{-0.5cm}
 \[
@@ -311,7 +311,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 {\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
 \end{frame}
 %=======
-\begin{frame}{$\beta$-VAE, 2018}
+\begin{frame}{$\beta$-VAE}
 \begin{block}{Controlled encoding capacity}
 \vspace{-0.5cm}
 \[
@@ -327,7 +327,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 {\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
 \end{frame}
 %=======
-\begin{frame}{$\beta$-VAE, 2018}
+\begin{frame}{$\beta$-VAE}
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figs/betaVAE_9.png}
@@ -337,8 +337,137 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 {\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
 \end{frame}
 %=======
+\begin{frame}{$\beta$-VAE}
+	\begin{block}{ELBO}
+		\vspace{-0.3cm}
+		\[
+		\mathcal{L}(q, \btheta) = \frac{1}{n} \sum_{i=1}^n \left[ \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta) - \beta \cdot KL(q(\bz_i | \bx_i) || p(\bz_i)) \right].
+		\]
+		\vspace{-0.3cm}
+	\end{block}
+	\begin{block}{ELBO surgery}
+		\vspace{-0.3cm}
+		{\footnotesize
+			\[
+			\mathcal{L}(q, \btheta) = \underbrace{\frac{1}{n} \sum_{i=1}^n \mathbb{E}_{q(\bz_i | \bx_i)} \log p(\bx_i | \bz_i, \btheta)}_{\text{Reconstruction loss}} - \beta \cdot \underbrace{\mathbb{I}_{q(i, \bz)} [i, \bz]\vphantom{\sum_{i=1}}}_{\text{Mutual info}} - \beta \cdot \underbrace{KL(q(\bz) || p(\bz))\vphantom{\sum_{i=1}}}_{\text{Marginal KL}}
+			\]}
+	\end{block}
+	\begin{block}{Minimization of MI}
+	\begin{itemize}
+		\item It is not necessary and not desirable for disentanglement. 
+		\item It hurts reconstruction.
+	\end{itemize}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
+\end{frame}
+%=======
 \begin{frame}{DIP-VAE}
+	\begin{block}{Disentangled aggregated variational posterior}
+		\vspace{-0.3cm}
+		\[
+		q(\bz) = \bbE_{\pi(\bx)} q(\bz | \bx) = \int q(\bz | \bx) \pi(\bx) d\bx = \prod_{j=1}^k q(z_j)
+		\]
+		\vspace{-0.3cm}
+	\end{block}
+	Variational inference with disentangled prior encourages inferring factors that are close to being disentangled:
+	\[
+		KL(q(\bz) || \bbE_{\pi(\bx)} p(\bz | \bx)) \leq \bbE_{\pi(\bx)} KL(q(\bz | \bx) || p(\bz | \bx))	
+	\]
+	\begin{block}{DIP-VAE Objective}
+		\vspace{-0.3cm}
+		{\footnotesize
+			\begin{multline*}
+			\mathcal{L}(q, \btheta) = \underbrace{\bbE_{\pi(\bx)} \left[ \mathbb{E}_{q(\bz | \bx)} \log p(\bx | \bz, \btheta) - KL(q(\bz | \bx) || p(\bz)) \right]}_{\text{ELBO}} -\lambda \cdot KL(q(\bz) || p(\bz)) = \\
+			= \underbrace{\bbE_{\pi(\bx)} \left[\mathbb{E}_{q(\bz | \bx)} \log p(\bx | \bz, \btheta)\right]}_{\text{Reconstruction loss}} - \underbrace{\mathbb{I}_{q(i, \bz)} [i, \bz]}_{\text{Mutual info}} - (1 + \lambda) \cdot \underbrace{KL(q(\bz) || p(\bz))}_{\text{Marginal KL}}
+			\end{multline*}
+		}
+		\vspace{-0.3cm}
+	\end{block}
+
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1711.00848}{https://arxiv.org/abs/1711.00848}}
+\end{frame}
+%=======
+\begin{frame}{DIP-VAE}
+	\begin{block}{DIP-VAE Objective}
+		\vspace{-0.3cm}
+		{\footnotesize
+			\[
+				\mathcal{L}(q, \btheta) = \underbrace{\bbE_{\pi(\bx)} \left[ \mathbb{E}_{q(\bz | \bx)} \log p(\bx | \bz, \btheta) - KL(q(\bz | \bx) || p(\bz)) \right]}_{\text{ELBO}} -\lambda \cdot KL(q(\bz) || p(\bz))
+			\]
+		}
+		\vspace{-0.3cm}
+	\end{block}
+	\begin{itemize}
+		\item $KL(q(\bz) || p(\bz))$ is intractable.
+		\item Let match the moments of $q(\bz)$ and $p(\bz)$.
+		\[
+		\text{cov}_{q(\bz)}(\bz) = \bbE_{\pi(\bx)} \text{cov}_{q(\bz|\bx)}(\bz) + \text{cov}_{\pi(\bx)} \left( \bbE_{q(\bz | \bx)}\bz \right).
+		\]
+		For most common case $q(\bz | \bx) = \cN(\bmu(\bx), \bSigma(\bx))$:
+		\[
+		\text{cov}_{q(\bz)}(\bz) = \bbE_{\pi(\bx)} \bSigma(\bx) + \text{cov}_{\pi(\bx)} \bmu(\bx)
+		\]
+		DIP-VAE regularizes $\text{cov}_{q(\bz)}(\bz) $ to be close to the identity matrix.
+	\end{itemize}
 	
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1711.00848}{https://arxiv.org/abs/1711.00848}}
+\end{frame}
+%=======
+\begin{frame}{DIP-VAE}
+	\begin{block}{DIP-VAE Objective}
+		\vspace{-0.3cm}
+		{\footnotesize
+			\[
+			\mathcal{L}(q, \btheta) = \underbrace{\bbE_{\pi(\bx)} \left[ \mathbb{E}_{q(\bz | \bx)} \log p(\bx | \bz, \btheta) - KL(q(\bz | \bx) || p(\bz)) \right]}_{\text{ELBO}} -\lambda \cdot KL(q(\bz) || p(\bz))
+			\]
+		}
+		\vspace{-0.5cm}
+	\end{block}
+	\[
+		\text{cov}_{q(\bz)}(\bz) = \bbE_{\pi(\bx)} \bSigma(\bx) + \text{cov}_{\pi(\bx)} \bmu(\bx)
+	\]
+	\vspace{-0.3cm}
+	\begin{block}{DIP-VAE-I}
+		\vspace{-0.3cm}
+		\[
+			\max_{\btheta, \bphi} \text{ELBO}(\btheta, \bphi) - \lambda_1 \sum_{i \neq j} \left[\text{cov}_{\pi(\bx)} \bmu(\bx)\right]^2_{ij} - \lambda_2 \sum_{i} \left( \left[ \text{cov}_{\pi(\bx)} \bmu(\bx) \right]_{ii} - 1 \right)^2
+		\]
+		\vspace{-0.3cm}
+	\end{block}
+	\begin{block}{DIP-VAE-II}
+		\vspace{-0.3cm}
+		\[
+			\max_{\btheta, \bphi} \text{ELBO}(\btheta, \bphi) - \lambda_1 \sum_{i \neq j} \left[\text{cov}_{q(\bz)} (\bz) \right]^2_{ij} - \lambda_2 \sum_{i} \left( \left[ \text{cov}_{q(\bz)} (\bz) \right]_{ii} - 1 \right)^2
+		\]
+		\vspace{-0.3cm}
+	\end{block}
+	
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1711.00848}{https://arxiv.org/abs/1711.00848}}
+\end{frame}
+%=======
+\begin{frame}{DIP-VAE}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{figs/dip-vae_1}
+	\end{figure}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1711.00848}{https://arxiv.org/abs/1711.00848}}
+\end{frame}
+%=======
+\begin{frame}{DIP-VAE}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.95\linewidth]{figs/dip-vae_2}
+	\end{figure}
 	\vfill
 	\hrule\medskip
 	{\scriptsize \href{https://arxiv.org/abs/1711.00848}{https://arxiv.org/abs/1711.00848}}

@@ -576,6 +576,83 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 	{\scriptsize \href{https://arxiv.org/abs/1802.05983}{https://arxiv.org/abs/1802.05983}}
 \end{frame}
 %=======
+\begin{frame}{Challenging Disentanglement Assumptions}
+	Whether unsupervised disentanglement learning is even possible for arbitrary generative models?
+	
+	\begin{block}{Theorem}
+		For $d > 1$, let $\bz \sim P$ denote any distribution which admits a density $p(\bz) = \prod^d_{i=1} p(z_i)$. Then, there exists an infinite family of bijective functions $f : \text{supp}(\bz) \rightarrow \text{supp}(\bz)$ such that
+		\begin{itemize}
+			\item $\frac{\partial f_i(\bu)}{\partial u_j} \neq 0$ almost everywhere for all $i$ and $j$ (i.e., $\bz$ and $f(\bz)$ are completely entangled);
+			\item and $P(\bz \leq \bu) = P(f(\bz) \leq \bu)$ for all $\bu \in \text{supp}(\bz)$ (i.e., they
+			have the same marginal distribution).
+		\end{itemize}  
+	\end{block}
+
+	Theorem claims that unsupervised disentanglement learning is impossible for arbitrary generative models with a factorized prior.
+	
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1811.12359}{https://arxiv.org/abs/1811.12359}}
+\end{frame}
+%=======
+\begin{frame}{Challenging Disentanglement Assumptions}
+	Assume we have $p(\bz)$ and some $p(\bx|\bz)$ defining a generative model. Consider any unsupervised
+	disentanglement method and assume that it finds a representation that is perfectly disentangled with respect
+	to $\bz$ in the generative model.
+	\begin{itemize}
+		\item Theorem claims that $\exists$ $\hat{\bz} = f(\bz)$ where $\bar{\bz}$ is completely entangled
+		with respect to $\bz$.
+		\item Since the (unsupervised) disentanglement method only has access to
+		observations $\bx$, it hence cannot distinguish between the two equivalent generative models and thus has to be entangled to at least one of them
+		\[
+			p(\bx) = \int p(\bx | \bz) p(\bz) d\bz = \int p(\bx | \hat{\bz})p(\hat{\bz}) d \hat{\bz}.
+		\]
+	\end{itemize}
+	
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1811.12359}{https://arxiv.org/abs/1811.12359}}
+\end{frame}
+%=======
+\begin{frame}{Challenging Disentanglement Assumptions}
+	\begin{itemize}
+		\item \textbf{Training:} Factorizing \textbf{samples} from aggregated posterior $q(\bz) = \prod_{i=1}^d q(z_i)$.
+		\item \textbf{Inference:} Use the \textbf{mean} vector (usually mean of Gaussian encoder) as the representation.
+	\end{itemize}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.95\linewidth]{figs/challenge_dis_1}
+	\end{figure}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1811.12359}{https://arxiv.org/abs/1811.12359}}
+\end{frame}
+%=======
+\begin{frame}{Challenging Disentanglement Assumptions}
+	\begin{block}{Importance of different models and hyperparameters for disentanglement}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth]{figs/challenge_dis_2}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1811.12359}{https://arxiv.org/abs/1811.12359}}
+\end{frame}
+%=======
+\begin{frame}{Challenging Disentanglement Assumptions}
+	\begin{block}{Agreement of different disentanglement metrics}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.9\linewidth]{figs/challenge_dis_3}
+	\end{figure}
+	\vspace{0.5cm}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1811.12359}{https://arxiv.org/abs/1811.12359}}
+\end{frame}
+%=======
 \begin{frame}{References}
 {\tiny
 \begin{itemize}
@@ -599,6 +676,11 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
     \item \textbf{FactorVAE:} Disentangling by Factorising \\
     \href{https://arxiv.org/abs/1802.05983}{https://arxiv.org/abs/1802.05983} \\
     \textbf{Summary:} Penalizes the total correlation with density-ratio estimation. Comparison with beta-VAE. Does not degrate \\ the reconstructions.
+    
+    \item \textbf{FactorVAE:} Challenging Common Assumptions in the Unsupervised Learning of Disentangled Representations  \\
+    \href{https://arxiv.org/abs/1811.12359}{https://arxiv.org/abs/1811.12359} \\
+    \textbf{Summary:} There infinite family of equivalent generative models with entangled factors. Uncorrelated samples vs Correlated means. Agreement of all disentanglement metrics. Hyperparameter choice is crucial.
+    
 \end{itemize}
 }
 \end{frame}

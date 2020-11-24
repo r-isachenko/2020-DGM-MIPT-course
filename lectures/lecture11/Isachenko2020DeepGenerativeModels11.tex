@@ -30,6 +30,7 @@
 \newcommand{\bz}{\mathbf{z}} 
 \newcommand{\by}{\mathbf{y}} 
 
+\newcommand{\bA}{\mathbf{A}} 
 \newcommand{\bI}{\mathbf{I}} 
 \newcommand{\bT}{\mathbf{T}} 
 \newcommand{\bX}{\mathbf{X}} 
@@ -73,10 +74,10 @@
 \end{frame}
 %=======
 \begin{frame}{Disentangled representations}
-\begin{block}{Goal}
+\begin{block}{Unsupervised representation learning}
     Learning an interpretable factorised representation of the independent data generative factors of the world without supervision. 
 \end{block}
-\begin{block}{Informal definition}
+\begin{block}{Disentanglement informal definition}
 A disentangled representation can be defined as one where single latent units are sensitive to changes in single generative factors, while being relatively invariant to changes in other factors. 
 \end{block}
 \begin{block}{Example}
@@ -91,12 +92,12 @@ Model trained on a dataset of 3D objects might learn independent latent units se
 \begin{block}{Generative process}
 \begin{itemize}
     \item $p(\bx | \bv, \bw) = \text{Sim}(\bv, \bw)$~-- true world simulator;
-    \item $\bv$~-- conditionally independent factors: $p(\bv | \bx) = \prod_{k=1}^K p(v_k | \bx)$;
+    \item $\bv$~-- conditionally independent factors: $p(\bv | \bx) = \prod_{j=1}^d p(v_j | \bx)$;
     \item $\bw$~-- conditionally dependent factors. 
 \end{itemize}
 \end{block}
 \begin{block}{Goal}
-Develop an unsupervised deep generative model
+Construct an unsupervised deep generative model
 \[
     p(\bx | \bz) \approx p(\bx | \bv, \bw).
 \]
@@ -126,7 +127,7 @@ Develop an unsupervised deep generative model
 	InfoGAN decomposes input vector:
 	\begin{itemize}
 		\item $\bz$ -- incompressible noise;
-		\item $\bc$ -- structured latent code.
+		\item $\bc$ -- structured latent code $p(\bc) = \prod_{j=1}^d p(c_j)$.
 	\end{itemize}
 	\begin{block}{Information-theoretic regularization}
 		\vspace{-0.3cm}
@@ -148,6 +149,7 @@ Develop an unsupervised deep generative model
 		\]
 	\end{block}
 	\begin{block}{Variational Information Maximization}
+		\vspace{-0.3cm}
 		\begin{multline*}
 		I (\bc, G(\bz, \bc)) = H(\bc) - H(\bc | G(\bz, \bc)) = \\
 		= H(\bc) + \bbE_{\bx \sim G(\bz, \bc)} \left[ \bbE_{\bc \sim p(\bc | \bx)} \log p(\bc' | \bx) \right] = \\ 
@@ -217,7 +219,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 \end{block}
 
 \[
-    \bx_{li} \sim \text{Sim}(\bv_{li}, \bw_{li}); \quad \bx_{lj} \sim \text{Sim}(\bv_{lj}, \bw_{lj}); \quad y \sim U[1, K].
+    \bx_{li} \sim \text{Sim}(\bv_{li}, \bw_{li}); \quad \bx_{lj} \sim \text{Sim}(\bv_{lj}, \bw_{lj}); \quad y \sim U[1, d].
 \]
 \[
     \bv_{li} \sim p(\bv); \quad \bw_{li} \sim p(\bw); \quad \bv_{lj} \sim p(\bv) \, ([v_{li}]_y = [v_{lj}]_y); \quad \bw_{lj} \sim p(\bw).
@@ -290,6 +292,8 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
     \centering
     \includegraphics[width=\linewidth]{figs/betaVAE_6.png}
 \end{figure}
+\vspace{0.3cm}
+
 \vfill
 \hrule\medskip
 {\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
@@ -304,8 +308,11 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 \end{block}
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figs/betaVAE_7.png}
+    \includegraphics[width=0.9\linewidth]{figs/betaVAE_7.png}
 \end{figure}
+The early capacity is allocated to positional latents only, followed by a scale latent, then shape and orientation latents.
+\vspace{0.3cm}
+
 \vfill
 \hrule\medskip
 {\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
@@ -317,21 +324,27 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 \[
     \mathcal{L}(q, \btheta, \beta) = \mathbb{E}_{q(\bz | \bx)} \log p(\bx | \bz, \btheta) - | KL (q(\bz | \bx) || p(\bz)) - C|.
 \]
+\vspace{-0.5cm}
 \end{block}
 \begin{figure}
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/betaVAE_8.png}
+    \includegraphics[width=0.7\linewidth]{figs/betaVAE_8.png}
 \end{figure}
+As the information capacity increases the different latents associated with their data generative factors become informative.
+\vspace{0.3cm}
+
 \vfill
 \hrule\medskip
 {\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
 \end{frame}
 %=======
 \begin{frame}{$\beta$-VAE}
-\begin{figure}
-    \centering
-    \includegraphics[width=\linewidth]{figs/betaVAE_9.png}
-\end{figure}
+	\begin{block}{Single latent traversals, ordered by their average KL divergence with the prior}
+		\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{figs/betaVAE_9.png}
+	\end{figure}
+	\end{block}
 \vfill
 \hrule\medskip
 {\scriptsize \href{https://arxiv.org/pdf/1804.03599.pdf}{https://arxiv.org/pdf/1804.03599.pdf}}
@@ -367,7 +380,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 	\begin{block}{Disentangled aggregated variational posterior}
 		\vspace{-0.3cm}
 		\[
-		q(\bz) = \bbE_{\pi(\bx)} q(\bz | \bx) = \int q(\bz | \bx) \pi(\bx) d\bx = \prod_{j=1}^k q(z_j)
+		q(\bz) = \bbE_{\pi(\bx)} q(\bz | \bx) = \int q(\bz | \bx) \pi(\bx) d\bx = \prod_{j=1}^d q(z_j)
 		\]
 		\vspace{-0.3cm}
 	\end{block}
@@ -477,21 +490,21 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 	\begin{block}{Disentangled aggregated variational posterior}
 		\vspace{-0.3cm}
 		\[
-		q(\bz) = \bbE_{\pi(\bx)} q(\bz | \bx) = \int q(\bz | \bx) \pi(\bx) d\bx = \prod_{j=1}^k q(z_j)
+		q(\bz) = \bbE_{\pi(\bx)} q(\bz | \bx) = \int q(\bz | \bx) \pi(\bx) d\bx = \prod_{j=1}^d q(z_j)
 		\]
 		\vspace{-0.3cm}
 	\end{block}
 	\begin{block}{Total correlation regularizer}
 		\vspace{-0.3cm}
 		\[
-		\min KL(q(\bz) || \prod_{j=1}^k q(z_j))
+		\min KL(q(\bz) || \prod_{j=1}^d q(z_j))
 		\]
 		\vspace{-0.3cm}
 	\end{block}
 	\begin{block}{FactorVAE objective}
 		\vspace{-0.3cm}
 		\[
-		\min_{\btheta, \bphi} \text{ELBO}(\btheta, \bphi) - \gamma \cdot KL(q(\bz) || \prod_{j=1}^k q(z_j))
+		\min_{\btheta, \bphi} \text{ELBO}(\btheta, \bphi) - \gamma \cdot KL(q(\bz) || \prod_{j=1}^d q(z_j))
 		\]
 		\vspace{-0.3cm}
 	\end{block}
@@ -536,7 +549,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 	\begin{block}{FactorVAE objective}
 		\vspace{-0.3cm}
 		\[
-		\min_{\btheta, \bphi} \text{ELBO}(\btheta, \bphi) - \gamma \cdot KL(q(\bz) || \prod_{j=1}^k q(z_j))
+		\min_{\btheta, \bphi} \text{ELBO}(\btheta, \bphi) - \gamma \cdot KL(q(\bz) || \prod_{j=1}^d q(z_j))
 		\]
 		\vspace{-0.3cm}
 	\end{block}
@@ -544,7 +557,7 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 	\begin{block}{Total correlation regularizer}
 		\vspace{-0.7cm}
 		\begin{multline*}
-		KL(q(\bz) || \prod_{j=1}^k q(z_j)) = KL(q(\bz) || \bar{q}(\bz)) = \\ =\bbE_{q(\bz)} \log \frac{q(\bz)}{\bar{q}(\bz)} \approx \bbE_{q(\bz)} \log \frac{D(\bz)}{1 - D(\bz)}
+		KL(q(\bz) || \prod_{j=1}^d q(z_j)) = KL(q(\bz) || \bar{q}(\bz)) = \\ =\bbE_{q(\bz)} \log \frac{q(\bz)}{\bar{q}(\bz)} \approx \bbE_{q(\bz)} \log \frac{D(\bz)}{1 - D(\bz)}
 		\end{multline*}
 		\vspace{-0.3cm}
 	\end{block}
@@ -615,6 +628,60 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 \end{frame}
 %=======
 \begin{frame}{Challenging Disentanglement Assumptions}
+	\begin{block}{Proof (1)}
+		\begin{enumerate}
+			\item 
+			Consider the function $g: \text{supp}(\bz) \rightarrow [0, 1]^d$:
+			\vspace{-0.1cm}
+			\[
+				g_i(\bv) = P(z_i \leq v_i), \quad i=1, \dots, d.
+			\]
+			\vspace{-0.4cm}
+			\begin{itemize}
+				\item $g$ is bijective (since $p(\bz) = \prod_{i=1}dp(z_i)$).
+				\item $\frac{\partial g_i(\bu)}{\partial u_i} \neq 0$, for all $i$ and $\frac{\partial g_i(\bu)}{\partial u_j} = 0$ for all $i \neq j$.
+				\item $g(\bz)$ is an independent $d$-dimensional uniform distribution.
+			\end{itemize}
+			\item 
+			Consider $h: (0, 1]^d \rightarrow \bbR^d$
+			\[
+				h_i(\bv) = \psi^{-1}(v_i), \quad i= 1, \dots, d.
+			\]
+			Here $\psi$  denotes the CDF of a standard normal distribution.
+			\begin{itemize}
+				\item $h$ is bijective.
+				\item $\frac{\partial g_i(\bu)}{\partial u_i} \neq 0$, for all $i$ and $\frac{\partial g_i(\bu)}{\partial u_j} = 0$ for all $i \neq j$.
+				\item $h(g(\bz))$  is a $d$-dimensional standard normal distribution.
+			\end{itemize}
+		\end{enumerate}
+	\end{block}
+	
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1811.12359}{https://arxiv.org/abs/1811.12359}}
+\end{frame}
+\begin{frame}{Challenging Disentanglement Assumptions}
+	\begin{block}{Proof (2)}
+		Let $\bA \in \bbR^{d \times d}$ be an arbitrary orthogonal matrix with $A_{ij} \neq 0$ for all $i, j$.
+		The family of such matrices is infinite.
+		\begin{itemize}
+			\item $\bA$ is orthogonal, it is invertible and thus defines a bijective linear operator. 
+			\item $\bA h(g(\bz)) \in \bbR^d$ is hence an independent, multivariate standard normal distribution.
+			\item $h^{-1}( \bA h(g(\bz))) \in \bbR^d$ is an independent $d$-dimensional uniform distribution.
+		\end{itemize}
+		Define $f: \text{supp}(\bz) \rightarrow \text{supp}(\bz)$:
+		\[
+			f(\bu) = g^{-1} (h^{-1}( \bA h(g(\bz)))).
+		\]
+		By definition $f(\bz)$ has the same marginal distribution as $\bz$: $P(\bz \leq \bu) = P(f(\bz) \leq \bu)$ and $\frac{\partial f_i(\bu)}{\partial u_j} \neq 0$.
+		\end{block}
+	
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1811.12359}{https://arxiv.org/abs/1811.12359}}
+\end{frame}
+%=======
+\begin{frame}{Challenging Disentanglement Assumptions}
 	\begin{itemize}
 		\item \textbf{Training:} Factorizing \textbf{samples} from aggregated posterior $q(\bz) = \prod_{i=1}^d q(z_i)$.
 		\item \textbf{Inference:} Use the \textbf{mean} vector (usually mean of Gaussian encoder) as the representation.
@@ -642,11 +709,11 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 %=======
 \begin{frame}{Challenging Disentanglement Assumptions}
 	\begin{block}{Agreement of different disentanglement metrics}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.9\linewidth]{figs/challenge_dis_3}
-	\end{figure}
-	\vspace{0.5cm}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.9\linewidth]{figs/challenge_dis_3}
+		\end{figure}
+		\vspace{0.5cm}
 	\end{block}
 	\vfill
 	\hrule\medskip

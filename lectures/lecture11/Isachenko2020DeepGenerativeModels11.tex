@@ -215,21 +215,25 @@ To learn disentangled representations of the conditionally independent factors $
 %=======
 \begin{frame}{$\beta$-VAE}
 \begin{block}{Disentangling metric}
-Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in order to ensure that it has no capacity to perform nonlinear disentangling itself.
-\end{block}
+	\begin{enumerate}
+		\item Generate two sets of objects
+		\[
+		\bx_{li} \sim \text{Sim}(\bv_{li}, \bw_{li}); \quad \bx_{lj} \sim \text{Sim}(\bv_{lj}, \bw_{lj}); \quad y_{ij} \sim U[1, d].
+		\]
+		\[
+		\bv_{li} \sim p(\bv); \quad \bv_{lj} \sim p(\bv) \, ([v_{li}]_y = [v_{lj}]_y); \quad \bw_{li}, \bw_{lj} \sim p(\bw).
+		\]
+		\item Find representations
+		\[
+		q(\bz | \bx) = \mathcal{N}\left(\mu(\bx) | \sigma^2(\bx)\right); \quad \bz_{li} = \mu(\bx_{li}); \quad \bz_{lj} = \mu(\bx_{lj}).
+		\]
+		\item Use accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension as metric of disentanglement
+		\[
+		\bz_{\text{diff}} = \frac{1}{L} \sum_{l=1}^L | \bz_{li} - \bz_{lj} |.
+		\]
+	\end{enumerate}
 
-\[
-    \bx_{li} \sim \text{Sim}(\bv_{li}, \bw_{li}); \quad \bx_{lj} \sim \text{Sim}(\bv_{lj}, \bw_{lj}); \quad y \sim U[1, d].
-\]
-\[
-    \bv_{li} \sim p(\bv); \quad \bw_{li} \sim p(\bw); \quad \bv_{lj} \sim p(\bv) \, ([v_{li}]_y = [v_{lj}]_y); \quad \bw_{lj} \sim p(\bw).
-\]
-\[
-    q(\bz | \bx) = \mathcal{N}\left(\mu(\bx) | \sigma^2(\bx)\right); \quad \bz_{li} = \mu(\bx_{li}); \quad \bz_{lj} = \mu(\bx_{lj}).
-\]
-\[
-    \bz_{\text{diff}} = \frac{1}{L} \sum_{l=1}^L | \bz_{li} - \bz_{lj} |.
-\]
+\end{block}
 
 \vfill
 \hrule\medskip
@@ -288,6 +292,12 @@ Accuracy of classifier $p(y | \bz_{\text{diff}})$ with a low VC-dimension in ord
 \end{frame}
 %=======
 \begin{frame}{$\beta$-VAE}
+	\begin{itemize}
+		\item \textbf{Top row:} original images.
+		\item \textbf{Second row:} the corresponding reconstructions. 
+		\item \textbf{Remaining rows:} latent traversals ordered by KL divergence with the prior. 
+		\item \textbf{Heatmaps:} latent activations for each 2D position.
+	\end{itemize}
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figs/betaVAE_6.png}

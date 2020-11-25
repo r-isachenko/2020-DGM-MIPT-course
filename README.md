@@ -14,7 +14,7 @@
 | 8 | October, 21 | Vanila GAN. Vanishing gradients, mode collapse. KL vs JSD. DCGAN. Wasserstein distance. | [slides](lectures/lecture8/Isachenko2020DeepGenerativeModels8.pdf) | [video](https://youtu.be/0ma4ZgnwC0M) |
 | 9 | October, 28 | Wasserstein GAN. Spectral Normalization GAN. f-divergence. | [slides](lectures/lecture9/Isachenko2020DeepGenerativeModels9.pdf) | [video](https://youtu.be/tc-YZ_pjwWo) |
 | 10 | November, 11 | GAN evaluation. Advanced GANs (SAGAN, BigGAN, ProGAN, StyleGAN). | [slides](lectures/lecture10/Isachenko2020DeepGenerativeModels10.pdf) | [video](https://youtu.be/kKmQlLOQLIY) |
-| 11 | November, 25 | Disentanglement (InfoGAN, beta-VAE, DIP-VAE, FactorVAE). | [slides](lectures/lecture11/Isachenko2020DeepGenerativeModels11.pdf) | [video] |
+| 11 | November, 25 | Disentanglement (InfoGAN, beta-VAE, DIP-VAE, FactorVAE). | [slides](lectures/lecture11/Isachenko2020DeepGenerativeModels11.pdf) | [video](https://youtu.be/xqP01Q4jLIM) |
 
 
 ## Homeworks

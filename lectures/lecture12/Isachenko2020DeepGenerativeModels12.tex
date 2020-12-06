@@ -22,6 +22,7 @@
 \setbeamerfont{title}{size=\Huge}
 
 \newcommand{\ba}{\mathbf{a}} 
+\newcommand{\be}{\mathbf{e}} 
 \newcommand{\bt}{\mathbf{t}} 
 \newcommand{\bu}{\mathbf{u}} 
 \newcommand{\bv}{\mathbf{v}} 
@@ -34,6 +35,8 @@
 \newcommand{\bT}{\mathbf{T}} 
 \newcommand{\bX}{\mathbf{X}} 
 \newcommand{\bZ}{\mathbf{Z}} 
+
+\newcommand{\bbR}{\mathbb{R}} 
 
 \newcommand{\bepsilon}{\boldsymbol{\epsilon}}
 \newcommand{\bmu}{\boldsymbol{\mu}}
@@ -61,7 +64,7 @@
 %\thispagestyle{empty}
 \titlepage
 \end{frame}
-\begin{frame}{Neural ODE, 2018}
+\begin{frame}{Neural ODE}
 \begin{minipage}[t]{0.6\columnwidth}
 \vspace{0.2cm}
 How did it become possible to train neural networks with hundreds of layers? \\
@@ -79,10 +82,10 @@ Skip connections eliminates exploding/vanishing gradients.
 \end{figure}
 \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1806.07366.pdf}{https://arxiv.org/pdf/1806.07366.pdf}}   
+{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
 \end{frame}
 %=======
-\begin{frame}{Neural ODE, 2018}
+\begin{frame}{Neural ODE}
 Consider ODE    
 \vspace{-0.2cm}
 \[
@@ -107,10 +110,10 @@ It is exactly Euler update step for solving ODE with $\Delta t = 1$! \\
 Euler update step is unstable and trivial. \\
  \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1806.07366.pdf}{https://arxiv.org/pdf/1806.07366.pdf}}   
+{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
 \end{frame}
 %=======
-\begin{frame}{Neural ODE, 2018}
+\begin{frame}{Neural ODE}
 \begin{block}{Residual block}
 \vspace{-0.2cm}
 \[
@@ -133,10 +136,10 @@ In the limit, we parameterize the continuous dynamics of hidden units using an O
 \end{block}
  \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1806.07366.pdf}{https://arxiv.org/pdf/1806.07366.pdf}}   
+{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
 \end{frame}
 %=======
-\begin{frame}{Neural ODE, 2018}
+\begin{frame}{Neural ODE}
 
 \vspace{-0.2cm}
 \begin{block}{Benefits}
@@ -153,10 +156,10 @@ In the limit, we parameterize the continuous dynamics of hidden units using an O
 \end{figure}
  \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1806.07366.pdf}{https://arxiv.org/pdf/1806.07366.pdf}}   
+{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
 \end{frame}
 %=======
-\begin{frame}{Neural ODE, 2018}
+\begin{frame}{Neural ODE}
 \begin{block}{Loss function}
 \vspace{-0.2cm}
 \[
@@ -180,10 +183,10 @@ How to train such model? How to fit $\btheta$? How to compute efficiently $\frac
 \end{block}
  \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1806.07366.pdf}{https://arxiv.org/pdf/1806.07366.pdf}}   
+{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
 \end{frame}
 %=======
-\begin{frame}{Neural ODE, 2018}
+\begin{frame}{Neural ODE}
 \begin{block}{Theorem}
 \vspace{-0.2cm}
 \[
@@ -201,10 +204,10 @@ To obtain $\ba(t)$ along the trajectory we could solve this ODE backward in time
 All these gradients could be computed at once.
 \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1806.07366.pdf}{https://arxiv.org/pdf/1806.07366.pdf}} 
+{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
 \end{frame}
 %=======
-\begin{frame}{Continuous NF, 2018}
+\begin{frame}{Continuous NF}
 \begin{block}{Discrete NF}
 \vspace{-0.2cm}
     \[
@@ -221,10 +224,10 @@ Function $f$ is not necessary bijective! (uniformly Lipschitz continuous in $\bz
 \end{block}
 \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1806.07366.pdf}{https://arxiv.org/pdf/1806.07366.pdf}} 
+{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
 \end{frame}
 %=======
-\begin{frame}{Continuous NF, 2018}
+\begin{frame}{Continuous NF}
 \[
     \log p(\bz(t_1)) = \log p(\bz(t_0)) - \int_{t_0}^{t_1} \text{trace} \left( \frac{\partial f}{\partial \bz} \right) dt.
 \]
@@ -234,20 +237,20 @@ Function $f$ is not necessary bijective! (uniformly Lipschitz continuous in $\bz
 \end{figure}
 \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1806.07366.pdf}{https://arxiv.org/pdf/1806.07366.pdf}} 
+{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
 \end{frame}
 %=======
-\begin{frame}{FFJORD, 2018}
+\begin{frame}{FFJORD}
 \begin{figure}
     \centering
     \includegraphics[width=0.5\linewidth]{figs/cnf_flow.png}
 \end{figure}
 \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1810.01367.pdf}{https://arxiv.org/pdf/1810.01367.pdf}} 
+{\scriptsize \href{https://arxiv.org/abs/1810.01367}{https://arxiv.org/abs/1810.01367}} 
 \end{frame}
 %=======
-\begin{frame}{FFJORD, 2018}
+\begin{frame}{FFJORD}
 \begin{block}{Hutchinson's trace estimator}
 \[
     \text{trace}(A) = \mathbb{E}_{p(\bepsilon)} \left[ \bepsilon^T A \bepsilon \right]; \quad \mathbb{E} [\bepsilon] = 0; \quad \text{Cov} (\bepsilon) = I.
@@ -261,27 +264,94 @@ Function $f$ is not necessary bijective! (uniformly Lipschitz continuous in $\bz
 This reduces the cost from quadratic to linear.\\
 \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1810.01367.pdf}{https://arxiv.org/pdf/1810.01367.pdf}} 
+{\scriptsize \href{https://arxiv.org/abs/1810.01367}{https://arxiv.org/abs/1810.01367}} 
 \end{frame}
 %=======
-\begin{frame}{FFJORD, 2018}
+\begin{frame}{FFJORD}
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figs/flow_comparison.png}
 \end{figure}
 \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1810.01367.pdf}{https://arxiv.org/pdf/1810.01367.pdf}} 
+{\scriptsize \href{https://arxiv.org/abs/1810.01367}{https://arxiv.org/abs/1810.01367}} 
 \end{frame}
 %=======
-\begin{frame}{FFJORD, 2018}
+\begin{frame}{FFJORD}
 \begin{figure}
     \centering
     \includegraphics[width=0.6\linewidth]{figs/ffjord.png}
 \end{figure}
 \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/pdf/1810.01367.pdf}{https://arxiv.org/pdf/1810.01367.pdf}} 
+{\scriptsize \href{https://arxiv.org/abs/1810.01367}{https://arxiv.org/abs/1810.01367}} 
+\end{frame}
+%=======
+\begin{frame}{Discrete VAE}
+	\begin{itemize}
+		\item Before we have discussed VAE with \textbf{continuous} latent variables.
+		\item VAE suffers from posterior collapse if the decoder too powerful (PixelVAE, VLAE tries to solve this problem).
+		\item \textbf{Discrete} representations are potentially a more natural fit for many of the modalities.
+		\item Powerful autoregressive models (like PixelCNNN) have been developed for modelling distributions over discrete variables.
+		\item However, to construct the model with discrete representations is not so easy (e.g. variance of such estimators is a problem).
+	\end{itemize}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1711.00937}{https://arxiv.org/abs/1711.00937}} 
+\end{frame}
+%=======
+\begin{frame}{Vector Quantized VAE}
+	\begin{itemize}
+		\item Latent embedding space $\{\be_j\}_{j=1}^K$, where $\be_j \in \bbR_D$, $K$ is the size of the discrete latent space.
+		\item $\bz_e(\bx)$ is the encoder output.
+		\item $z$ is the discrete random variable calculated by a nearest neighbour look-up using the shared embedding space. The posterior categorical distribution is defined as 
+		\[
+			q(z = k | \bx) = \begin{cases}
+				1 , \quad \text{for } k = \argmin_j \| \bz_e(\bx) - \be_j \| \\
+				0, \quad \text{otherwise}.
+			\end{cases}
+		\]
+		
+		\item VAE proposal distribution $q(z | \bx)$ is deterministic. If prior $p(z)$ is a uniform then $KL(q(z| \bx) || p(z))$ term in ELBO is constant (equals to $\log K$).
+		\item Quantized representation is defined as follows
+		\[
+			\bz_q(\bx) = \be_k, \quad \text{where } k = \argmin_j \| \bz_e(\bx) - \be_j \| 
+		\] 
+		
+	\end{itemize}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1711.00937}{https://arxiv.org/abs/1711.00937}} 
+\end{frame}
+%=======
+\begin{frame}{Vector Quantized VAE}
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{figs/vqvae}
+	\end{figure}
+	\begin{block}{Objective}
+		\vspace{-0.3cm}
+		\[
+			\log p(\bx | \bz_q(\bx)) + \| \text{sg} (\bz_e(\bx)) - \bz_q(\bx) \| + \beta \| \bz_e(\bx) - \text{sg}(\bz_q(\bx)) \|
+		\]
+	\end{block}
+	\begin{itemize}
+		\item Quantization operation is not differentiable.
+		\item Straight-through gradient estimation is used to backpropagate the quantization operation.
+	\end{itemize}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1711.00937}{https://arxiv.org/abs/1711.00937}} 
+\end{frame}
+%=======
+\begin{frame}{Vector Quantized VAE}
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{figs/vqvae_results}
+	\end{figure}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1711.00937}{https://arxiv.org/abs/1711.00937}} 
 \end{frame}
 %=======
 \begin{frame}{References}
@@ -296,6 +366,10 @@ This reduces the cost from quadratic to linear.\\
     \href{https://arxiv.org/abs/1810.01367}{https://arxiv.org/abs/1810.01367} \\
     \textbf{Summary:} Continuous version of NF is investigated. 
     Jacobian computation cost is reduced to O(D) by using Hutchinson’s \\ trace estimator. 
+    
+    \item \textbf{VQ-VAE:} Neural discrete representation learning \\
+    \href{https://arxiv.org/abs/1711.00937}{https://arxiv.org/abs/1711.00937} \\
+    \textbf{Summary:} Discrete latent representation for VAE. Nearest neighbor lookup table quantization is used. Learned powerful PixelCNN prior in the latent space.
 \end{itemize}
 }
 \end{frame}

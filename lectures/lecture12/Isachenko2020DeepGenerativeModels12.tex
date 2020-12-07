@@ -67,8 +67,13 @@
 \begin{frame}{Neural ODE}
 \begin{minipage}[t]{0.6\columnwidth}
 \vspace{0.2cm}
-How did it become possible to train neural networks with hundreds of layers? \\
-Skip connections eliminates exploding/vanishing gradients.
+\begin{itemize}
+	\item Neural network for classification task has hundreds of layers.
+	\item Skip connections eliminates exploding/vanishing gradients.
+\end{itemize}
+\[
+	\bz_{t + 1} = \bz_t + f(\bz_t, \btheta)
+\]
 \end{minipage}%
 \begin{minipage}[t]{0.4\columnwidth}
 \begin{figure}
@@ -86,40 +91,40 @@ Skip connections eliminates exploding/vanishing gradients.
 \end{frame}
 %=======
 \begin{frame}{Neural ODE}
-Consider ODE    
-\vspace{-0.2cm}
-\[
-    \frac{d \bz(t)}{dt} = f(\bz(t), \btheta); \quad \bz(t_0) = \bz_0.
-\]
-\vspace{-0.2cm}
-\begin{block}{Euler update step}
-\vspace{-0.2cm}
-\[
-    \bz(t + \Delta t) = \bz(t) + \Delta t f(\bz(t), \btheta).
-\]
-\vspace{-0.2cm}
-\end{block}
-\begin{block}{Residual block}
-\vspace{-0.2cm}
-\[
-    \bz_{t+1} = \bz_t + f(\bz_t, \btheta).
-\]
-\vspace{-0.2cm}
-\end{block}
-It is exactly Euler update step for solving ODE with $\Delta t = 1$! \\
-Euler update step is unstable and trivial. \\
- \vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
+	Consider Ordinary Differential Equation    
+	\begin{align*}
+	    \frac{d \bz(t)}{dt} &= f(\bz(t), \btheta); \quad \text{with initial condition }\bz(t_0) = \bz_0. \\
+	    \bz(t_1) &= \int^{t_1}_{t_0} f(\bz(t), \btheta) d t  + \bz_0\quad \Leftarrow \quad \text{solution}.
+	\end{align*}
+	\vspace{-0.4cm}
+	\begin{block}{Euler update step}
+		\vspace{-0.2cm}
+		\[
+		    \frac{\bz(t + \Delta t) - \bz(t)}{\Delta t} = f(\bz(t), \btheta) \quad \Rightarrow \quad \bz(t + \Delta t) = \bz(t) + \Delta t f(\bz(t), \btheta).
+		\]
+		\vspace{-0.2cm}
+	\end{block}
+	\begin{block}{Residual block}
+		\vspace{-0.2cm}
+		\[
+		    \bz_{t+1} = \bz_t + f(\bz_t, \btheta).
+		\]
+		\vspace{-0.2cm}
+	\end{block}
+	It is exactly Euler update step for solving ODE with $\Delta t = 1$! \\
+	Euler update step is unstable and trivial. \\
+	 \vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
 \end{frame}
 %=======
 \begin{frame}{Neural ODE}
 \begin{block}{Residual block}
-\vspace{-0.2cm}
+\vspace{-0.3cm}
 \[
     \bz_{t+1} = \bz_t + f(\bz_t, \btheta).
 \]
-\vspace{-0.2cm}
+\vspace{-0.3cm}
 \end{block}
 What happens as we add more layers and take smaller steps? \\
 In the limit, we parameterize the continuous dynamics of hidden units using an ODE specified by a neural network: 
@@ -127,14 +132,16 @@ In the limit, we parameterize the continuous dynamics of hidden units using an O
     \frac{d \bz(t)}{dt} = f(\bz(t), t, \btheta); \quad \bz(t_0) = \bx; \quad \bz(t_1) = \by.
 \]
 \vspace{-0.2cm}
-\begin{block}{Loss function}
-\vspace{-0.2cm}
+\begin{block}{Loss function (forward pass)}
+\vspace{-0.5cm}
 \begin{align*}
     L(\by) = L(\bz(t_1)) &= L\left( \bz(t_0) + \int_{t_0}^{t_1} f(\bz(t), t, \btheta) dt \right) \\ &= L\left(\text{ODESolve}(\bz(t_0), f, t_0,t_1, \btheta) \right)
 \end{align*}
-\vspace{-0.2cm}
 \end{block}
- \vfill
+\vspace{-0.3cm}
+If we could get $\frac{\partial L(\by)}{\partial \btheta}$, the problem will be solved.
+\vspace{0.2cm}
+
 \hrule\medskip
 {\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
 \end{frame}
@@ -144,12 +151,13 @@ In the limit, we parameterize the continuous dynamics of hidden units using an O
 \vspace{-0.2cm}
 \begin{block}{Benefits}
 \begin{itemize}
-    \item memory efficient;
-    \item adaptive computation;
-    \item parameter efficient;
-    \item scalable and invertible normalizing flows.
+    \item memory efficient (there is no need to store activations);
+    \item adaptive computation (depth is not defined explicitly);
+    \item parameter efficient (there is only parameters of function $f(\bz(t), \btheta)$);
+    \item scalable and invertible normalizing flows (we will discuss it today).
 \end{itemize}
 \end{block}
+\vspace{-0.2cm}
 \begin{figure}
     \centering
     \includegraphics[width=0.55\linewidth]{figs/resnet_vs_neural_ode.png}
@@ -165,21 +173,23 @@ In the limit, we parameterize the continuous dynamics of hidden units using an O
 \[
     L(\by) = L(\bz(t_1)) = L\left(\text{ODESolve}(\bz(t_0), f, t_0,t_1, \btheta) \right)
 \]
-\vspace{-0.2cm}
+\vspace{-0.3cm}
 \end{block}
-How to train such model? How to fit $\btheta$? How to compute efficiently $\frac{\partial L}{\partial \btheta}$? -- Pontryagin theorem!
+How to train such model? How to fit $\btheta$? How to compute efficiently $\frac{\partial L}{\partial \btheta}$? -- \textbf{Pontryagin theorem!}
 \begin{block}{Adjoint function}
 \vspace{-0.2cm}
 \[
     \ba(t) = \frac{\partial L(\bz(t))}{\partial \bz(t)}
 \]
+Shows how the gradient of the loss depends on the hidden state~$\bz(t)$.
 \vspace{-0.2cm}
 \end{block}
 \begin{block}{Theorem}
-\vspace{-0.2cm}
+\vspace{-0.3cm}
 \[
     \frac{d \ba(t)}{dt} = - \ba(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)}
 \]
+Do we know any initilal condition?
 \end{block}
  \vfill
 \hrule\medskip
@@ -187,57 +197,117 @@ How to train such model? How to fit $\btheta$? How to compute efficiently $\frac
 \end{frame}
 %=======
 \begin{frame}{Neural ODE}
-\begin{block}{Theorem}
-\vspace{-0.2cm}
-\[
-    \frac{d \ba(t)}{dt} = - \ba(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)}; \quad \ba(t) = \frac{\partial L(\bz(t))}{\partial \bz(t)}
-\]
-\end{block}
-
-To obtain $\ba(t)$ along the trajectory we could solve this ODE backward in time, starting from the initial value $\ba(t_1) = \frac{\partial L(\bz(t_1))}{\partial \bz(t_1)}$.
-\begin{block}{Theorem}
-\vspace{-0.2cm}
-\[
-    \frac{dL}{d \btheta} = - \int_{t_0}^{t_1} \ba(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \btheta} dt.
-\]
-\end{block}
-All these gradients could be computed at once.
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
+	\begin{block}{Theorem}
+	\vspace{-0.2cm}
+	\[
+	    \frac{d \ba(t)}{dt} = - \ba(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)}; \quad \ba(t) = \frac{\partial L(\bz(t))}{\partial \bz(t)}
+	\]
+	\end{block}
+	
+	To obtain $\ba(t)$ along the trajectory we could solve this ODE backward in time, starting from the initial value $\ba(t_1) = \frac{\partial L(\bz(t_1))}{\partial \bz(t_1)}$.
+	\begin{block}{Solution for adjoint function}
+	\[
+		\ba(t_0) =  - \int_{t_1}^{t_0} \ba(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)} dt + \ba(t_1)
+	\]
+	\end{block}
+	\begin{block}{Solution for hidden state}
+	\vspace{-0.2cm}
+	
+	\[
+	\bz(t_1) = \int^{t_1}_{t_0} f(\bz(t), \btheta) d t  + \bz_0.
+	\]
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
+\end{frame}
+%=======
+\begin{frame}{Neural ODE}
+	\begin{block}{Final gradient}
+		\vspace{-0.2cm}
+		\[
+		\frac{dL}{d \btheta(t_0)} = - \int_{t_1}^{t_0} \ba(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \btheta} dt.
+		\]
+	\end{block}
+	Initial condition is $\frac{\partial L}{\partial \btheta(t_1)} = 0$ (why?). \\
+	All these ODEs could be computed simultaneiusly using augmented dynamic.
+	
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{figs/neural_ode}
+	\end{figure}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
+\end{frame}
+%=======
+\begin{frame}{Continuous Normaling Flows}
+	\begin{block}{Discrete Normalizing Fflows}
+		\vspace{-0.4cm}
+		  \[
+		  \bz_{t+1} = f(\bz_t, \btheta); \quad \log p(\bz_{t+1}) = \log p(\bz_{t}) - \log \left| \det \frac{\partial f(\bz_t, \btheta)}{\partial \bz_{t}} \right| .
+		  \]
+		\vspace{-0.4cm}
+	\end{block}
+	\begin{block}{Planar flows}
+		\vspace{-0.3cm}
+		\[
+		\bz_{t + 1} = g(\bz_t, \btheta) = \bz_t + \mathbf{u} h(\bw^T\bz_t + b) = \bz_t + f(\bz_t, \btheta).
+		\]
+		Exactly residual learning.
+	\end{block}
+	Let consider continuous-in-time dynamic transformation of $\bz_t$
+	\[
+		\frac{d\bz(t)}{dt} = f(\bz(t), \btheta).
+	\]
+	\vspace{-0.3cm}
+	\begin{block}{Continuous dynamic for planar flows}
+		\vspace{-0.3cm}
+		\[
+			\frac{d\bz(t)}{dt}  = \mathbf{u} h(\bw^T\bz_t + b); \quad \frac{\partial \log p (\bz(t))}{ \partial t} = - \mathbf{u}^T \frac{\partial h}{\partial \bz(t)}.
+		\]
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
+\end{frame}
+%=======
+\begin{frame}{Continuous Normaling Flows}
+	\begin{block}{Theorem}
+		Consider the continuous dynamic $\frac{d\bz(t)}{dt} = f(\bz(t), \btheta)$. if function $f$ is uniformly Lipschitz continuous in $\bz$ and continuous in $t$, then the change in log probability follows a differential equation
+		\[
+		\frac{\partial \log p(\bz(t))}{\partial t} = - \text{trace} \left( \frac{\partial f}{\partial \bz(t)} \right).
+		\]
+		\vspace{-0.1cm}
+		Continuity of function $f$ guarantees that the solution of ODE exists and unique (Piccard theorem).
+	\end{block}
+	\begin{itemize}
+		\item Unlike standard finite flows, the differential equation $f$ does not need to be bijective, since if
+		uniqueness is satisfied, then the entire transformation is automatically bijective.
+		\item trace($\cdot$) is a linear op instead of det($\cdot$)
+		\vspace{-0.1cm}
+		\[
+		\frac{d\bz(t)}{dt} = \sum_{j=1}^M f_j(\bz(t), \btheta); \quad \frac{\partial \log p(\bz(t))}{\partial t} = - \sum_{j=1}^M\text{trace} \left( \frac{\partial f_j}{\partial \bz(t)} \right).
+		\]
+	\end{itemize}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
 \end{frame}
 %=======
 \begin{frame}{Continuous NF}
-\begin{block}{Discrete NF}
-\vspace{-0.2cm}
-    \[
-    \bz_{t+1} = f(\bz_t, \btheta); \quad \log p(\bz_{t+1}) = \log p(\bz_{t}) - \log \left| \det \frac{\partial f(\bz_t, \btheta)}{\partial \bz_{t}} \right| .
-    \]
-\vspace{-0.2cm}
-Function $f$ should be bijective!
-\end{block}
-\begin{block}{Theorem}
-\[
-    \frac{\partial \log p(\bz(t))}{\partial t} = - \text{trace} \left( \frac{\partial f}{\partial \bz(t)} \right).
-\]
-Function $f$ is not necessary bijective! (uniformly Lipschitz continuous in $\bz$ and continuous in $t$).
-\end{block}
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
-\end{frame}
-%=======
-\begin{frame}{Continuous NF}
-\[
-    \log p(\bz(t_1)) = \log p(\bz(t_0)) - \int_{t_0}^{t_1} \text{trace} \left( \frac{\partial f}{\partial \bz} \right) dt.
-\]
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{figs/cnf.png}
-\end{figure}
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
+	\begin{block}{Solution for continuous NF}
+	\[
+	    \log p(\bz(t_1)) = \log p(\bz(t_0)) - \int_{t_0}^{t_1} \text{trace} \left( \frac{\partial f}{\partial \bz} \right) dt.
+	\]
+	\end{block}
+	\begin{figure}
+	    \centering
+	    \includegraphics[width=1\linewidth]{figs/cnf}
+	\end{figure}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
 \end{frame}
 %=======
 \begin{frame}{FFJORD}

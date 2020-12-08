@@ -478,6 +478,12 @@
 \end{frame}
 %=======
 \begin{frame}{Vector Quantized VAE}
+	\begin{itemize}
+		\item The prior distribution over the discrete latents $p(\bz)$ is a categorical distribution.
+		\item It could be made autoregressive by depending on other $\bz$ in the feature map. 
+		\item Whilst training the VQ-VAE, the prior is kept constant and uniform. 
+		\item After training, fit an autoregressive distribution (using PixelCNN) over $\bz$.
+	\end{itemize}
 	\begin{figure}
 		\centering
 		\includegraphics[width=\linewidth]{figs/vqvae_results}
@@ -485,6 +491,64 @@
 	\vfill
 	\hrule\medskip
 	{\scriptsize \href{https://arxiv.org/abs/1711.00937}{https://arxiv.org/abs/1711.00937}} 
+\end{frame}
+%=======
+\begin{frame}{Vector Quantized VAE-2}
+	\begin{itemize}
+		\item Use multi-scale hierarchical model.
+		\item Use autoregressive prior model in each scale of the hierarchy.
+		\item Improve autoregressive prior (PixelSNAIL with self-attenrion in bottom layer, PixelCNN++ in bottom layer).
+		\item Train the encoder and decoder at the first stage, train the priors at the second stage.
+	\end{itemize}
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{figs/vqvae2}
+	\end{figure}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1906.00446}{https://arxiv.org/abs/1906.00446}} 
+\end{frame}
+%=======
+\begin{frame}{Vector Quantized VAE-2}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.9\linewidth]{figs/vqvae2_pseudo}
+		\end{figure}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.85\linewidth]{figs/vqvae2_latents}
+		\end{figure}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1906.00446}{https://arxiv.org/abs/1906.00446}} 
+\end{frame}
+%=======
+\begin{frame}{Vector Quantized VAE-2}
+	\begin{block}{FFHQ 1024x1024}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.63\linewidth]{figs/vqvae2_faces}
+	\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1906.00446}{https://arxiv.org/abs/1906.00446}} 
+\end{frame}
+%=======
+\begin{frame}{Vector Quantized VAE-2}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.7\linewidth]{figs/vqvae2_diversity}
+	\end{figure}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1906.00446}{https://arxiv.org/abs/1906.00446}} 
+\end{frame}
+%=======
+\begin{frame}{Feature Quantized GAN}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/2004.02088}{https://arxiv.org/abs/2004.02088}} 
 \end{frame}
 %=======
 \begin{frame}{References}
@@ -503,6 +567,14 @@
     \item \textbf{VQ-VAE:} Neural discrete representation learning \\
     \href{https://arxiv.org/abs/1711.00937}{https://arxiv.org/abs/1711.00937} \\
     \textbf{Summary:} Discrete latent representation for VAE. Nearest neighbor lookup table quantization is used. Learned powerful PixelCNN prior in the latent space.
+    
+    \item \textbf{VQ-VAE-2:} Generating Diverse High-Fidelity Images with VQ-VAE-2 \\
+    \href{https://arxiv.org/abs/1906.00446}{https://arxiv.org/abs/1906.00446} \\
+    \textbf{Summary:} The extension of VQ-VAE model for generating highly realistic images (comparable with sota gans). Use \\ hierarchical latent representation with PixelSnail prior. Comparison with BigGan.
+    
+    \item \textbf{FQ-VAE:} Feature Quantization Improves GAN Training \\
+    \href{https://arxiv.org/abs/2004.02088}{https://arxiv.org/abs/2004.02088} \\
+    \textbf{Summary:} Lots of "feature matching" techniques for GANN was introduced to stabilize training. Vector quantization has a proporty of implicit feature matching. Adding vector quantization module to GAN discriminator improves quality.
 \end{itemize}
 }
 \end{frame}

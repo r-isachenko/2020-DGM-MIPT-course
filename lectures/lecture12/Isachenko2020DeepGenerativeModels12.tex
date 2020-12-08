@@ -94,128 +94,127 @@
 	Consider Ordinary Differential Equation    
 	\begin{align*}
 	    \frac{d \bz(t)}{dt} &= f(\bz(t), \btheta); \quad \text{with initial condition }\bz(t_0) = \bz_0. \\
-	    \bz(t_1) &= \int^{t_1}_{t_0} f(\bz(t), \btheta) d t  + \bz_0\quad \Leftarrow \quad \text{solution}.
+	    \bz(t_1) &= \int^{t_1}_{t_0} f(\bz(t), \btheta) d t  + \bz_0 = \text{ODESolve}(\bz(t_0), f, t_0,t_1, \btheta).
 	\end{align*}
 	\vspace{-0.4cm}
 	\begin{block}{Euler update step}
-		\vspace{-0.2cm}
+		\vspace{-0.4cm}
 		\[
 		    \frac{\bz(t + \Delta t) - \bz(t)}{\Delta t} = f(\bz(t), \btheta) \quad \Rightarrow \quad \bz(t + \Delta t) = \bz(t) + \Delta t f(\bz(t), \btheta).
 		\]
-		\vspace{-0.2cm}
+		\vspace{-0.5cm}
 	\end{block}
 	\begin{block}{Residual block}
-		\vspace{-0.2cm}
+		\vspace{-0.5cm}
 		\[
 		    \bz_{t+1} = \bz_t + f(\bz_t, \btheta).
 		\]
-		\vspace{-0.2cm}
+		\vspace{-0.4cm}
 	\end{block}
-	It is exactly Euler update step for solving ODE with $\Delta t = 1$! \\
-	Euler update step is unstable and trivial. \\
+	\begin{itemize}
+	 \item Residual learning is equavalent to Euler update step for solving ODE with $\Delta t = 1$!
+	 \item Euler update step is unstable and trivial. There are much more sophisticated methods.
+	\end{itemize}
 	 \vfill
 	\hrule\medskip
 	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
 \end{frame}
 %=======
 \begin{frame}{Neural ODE}
-\begin{block}{Residual block}
-\vspace{-0.3cm}
-\[
-    \bz_{t+1} = \bz_t + f(\bz_t, \btheta).
-\]
-\vspace{-0.3cm}
-\end{block}
-What happens as we add more layers and take smaller steps? \\
-In the limit, we parameterize the continuous dynamics of hidden units using an ODE specified by a neural network: 
-\[
-    \frac{d \bz(t)}{dt} = f(\bz(t), t, \btheta); \quad \bz(t_0) = \bx; \quad \bz(t_1) = \by.
-\]
-\vspace{-0.2cm}
-\begin{block}{Loss function (forward pass)}
-\vspace{-0.5cm}
-\begin{align*}
-    L(\by) = L(\bz(t_1)) &= L\left( \bz(t_0) + \int_{t_0}^{t_1} f(\bz(t), t, \btheta) dt \right) \\ &= L\left(\text{ODESolve}(\bz(t_0), f, t_0,t_1, \btheta) \right)
-\end{align*}
-\end{block}
-\vspace{-0.3cm}
-If we could get $\frac{\partial L(\by)}{\partial \btheta}$, the problem will be solved.
-\vspace{0.2cm}
+	\begin{block}{Residual block}
+	\vspace{-0.3cm}
+	\[
+	    \bz_{t+1} = \bz_t + f(\bz_t, \btheta).
+	\]
+	\vspace{-0.4cm}
+	\end{block}
+	\begin{itemize}
+		\item What happens as we add more layers and take smaller steps? \\
+		\item In the limit, we parameterize the continuous dynamics of hidden units using an ODE specified by a neural network: 
+	\[
+	    \frac{d \bz(t)}{dt} = f(\bz(t), t, \btheta); \quad \bz(t_0) = \bx; \quad \bz(t_1) = \by.
+	\]
+	\end{itemize}
+	\begin{minipage}[t]{0.4\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.9\linewidth]{figs/euler}
+		\end{figure}
+	\end{minipage}%
+	\begin{minipage}[t]{0.6\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.8\linewidth]{figs/resnet_vs_neural_ode.png}
+		\end{figure}
+	\end{minipage}
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
+\end{frame}
+%=======
 
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
+\begin{frame}{Neural ODE}
+	\begin{block}{Forward pass (loss function)}
+		\vspace{-0.5cm}
+		\begin{align*}
+			L(\by) = L(\bz(t_1)) &= L\left( \bz(t_0) + \int_{t_0}^{t_1} f(\bz(t), \btheta) dt \right) \\ &= L\left(\text{ODESolve}(\bz(t_0), f, t_0,t_1, \btheta) \right)
+		\end{align*}
+	\vspace{-0.5cm}
+	\end{block}
+	\textbf{Note:} ODESolve could be any method (not neccessary Euler).
+	\begin{block}{Backward pass (gradients computation)}
+		For fitting parameters we need gradients:
+		\[
+		\ba_{\bz}(t) = \frac{\partial L(\by)}{\partial \btheta(t)}; \quad \ba_{\btheta}(t) = \frac{\partial L(\by)}{\partial \bz(t_0)}.
+		\]
+		In theory of optimal control this functions called \textbf{adjoint} functions. 
+		They shows how the gradient of the loss depends on the hidden state~$\bz(t)$ and parameters $\btheta$.
+	\end{block}
+	\vspace{0.1cm}
+		
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
 \end{frame}
 %=======
 \begin{frame}{Neural ODE}
-
-\vspace{-0.2cm}
-\begin{block}{Benefits}
-\begin{itemize}
-    \item memory efficient (there is no need to store activations);
-    \item adaptive computation (depth is not defined explicitly);
-    \item parameter efficient (there is only parameters of function $f(\bz(t), \btheta)$);
-    \item scalable and invertible normalizing flows (we will discuss it today).
-\end{itemize}
-\end{block}
-\vspace{-0.2cm}
-\begin{figure}
-    \centering
-    \includegraphics[width=0.55\linewidth]{figs/resnet_vs_neural_ode.png}
-\end{figure}
- \vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
-\end{frame}
-%=======
-\begin{frame}{Neural ODE}
-\begin{block}{Loss function}
-\vspace{-0.2cm}
-\[
-    L(\by) = L(\bz(t_1)) = L\left(\text{ODESolve}(\bz(t_0), f, t_0,t_1, \btheta) \right)
-\]
-\vspace{-0.3cm}
-\end{block}
-How to train such model? How to fit $\btheta$? How to compute efficiently $\frac{\partial L}{\partial \btheta}$? -- \textbf{Pontryagin theorem!}
-\begin{block}{Adjoint function}
-\vspace{-0.2cm}
-\[
-    \ba(t) = \frac{\partial L(\bz(t))}{\partial \bz(t)}
-\]
-Shows how the gradient of the loss depends on the hidden state~$\bz(t)$.
-\vspace{-0.2cm}
-\end{block}
-\begin{block}{Theorem}
-\vspace{-0.3cm}
-\[
-    \frac{d \ba(t)}{dt} = - \ba(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)}
-\]
-Do we know any initilal condition?
-\end{block}
- \vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
-\end{frame}
-%=======
-\begin{frame}{Neural ODE}
-	\begin{block}{Theorem}
+	\begin{block}{Loss function (forward pass)}
 	\vspace{-0.2cm}
 	\[
-	    \frac{d \ba(t)}{dt} = - \ba(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)}; \quad \ba(t) = \frac{\partial L(\bz(t))}{\partial \bz(t)}
+	    L(\by) = L(\bz(t_1)) = L\left(\text{ODESolve}(\bz(t_0), f, t_0,t_1, \btheta) \right)
 	\]
+	\vspace{-0.3cm}
 	\end{block}
-	
-	To obtain $\ba(t)$ along the trajectory we could solve this ODE backward in time, starting from the initial value $\ba(t_1) = \frac{\partial L(\bz(t_1))}{\partial \bz(t_1)}$.
+	\begin{block}{Adjoint functions}
+	\vspace{-0.2cm}
+	\[
+	    \ba_{\bz}(t) = \frac{\partial L(\bz(t))}{\partial \bz(t)}; \quad \ba_{\btheta}(t) = \frac{\partial L(\bz(t))}{\partial \btheta}
+	\]
+	\vspace{-0.2cm}
+	\end{block}
+	\begin{block}{Theorem (Pontryagin)}
+	\vspace{-0.3cm}
+	\[
+	    \frac{d \ba_{\bz}(t)}{dt} = - \ba_{\bz}(t)^T \cdot \frac{\partial f(\bz(t), \btheta)}{\partial \bz(t)}; \quad  \frac{d \ba_{\btheta}(t)}{dt} = - \ba_{\bz}(t)^T \cdot \frac{\partial f(\bz(t), \btheta)}{\partial \btheta}
+	\]
+	Do we know any initilal condition?
+	\end{block}
+	 \vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
+\end{frame}
+%=======
+\begin{frame}{Neural ODE}
+	\begin{block}{Theorem (Pontryagin)}
+		\vspace{-0.3cm}
+		\[
+		\frac{d \ba_{\bz}(t)}{dt} = - \ba_{\bz}(t)^T \cdot \frac{\partial f(\bz(t), \btheta)}{\partial \bz(t)}; \quad  \frac{d \ba_{\btheta}(t)}{dt} = - \ba_{\btheta}(t)^T \cdot \frac{\partial f(\bz(t), \btheta)}{\partial \btheta}
+		\]
+	\end{block}
 	\begin{block}{Solution for adjoint function}
-	\[
-		\ba(t_0) =  - \int_{t_1}^{t_0} \ba(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)} dt + \ba(t_1)
-	\]
-	\end{block}
-	\begin{block}{Solution for hidden state}
-	\vspace{-0.2cm}
-	
-	\[
-	\bz(t_1) = \int^{t_1}_{t_0} f(\bz(t), \btheta) d t  + \bz_0.
-	\]
+		\begin{align*}
+		 \frac{\partial L}{\partial \bz(t_0)} &= \ba_{\bz}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)} dt + \frac{\partial L}{\partial \bz(t_1)} \\
+		 \frac{\partial L}{\partial \btheta(t_0)} &= \ba_{\btheta}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f(\bz(t), \btheta))}{\partial \btheta(t)} dt \\
+		 \bz(t_0) &= \int^{t_1}_{t_0} f(\bz(t), \btheta) d t  + \bz_1.
+		\end{align*}
 	\end{block}
 	\vfill
 	\hrule\medskip
@@ -223,22 +222,46 @@ Do we know any initilal condition?
 \end{frame}
 %=======
 \begin{frame}{Neural ODE}
-	\begin{block}{Final gradient}
-		\vspace{-0.2cm}
+	\begin{block}{Forward pass}
 		\[
-		\frac{dL}{d \btheta(t_0)} = - \int_{t_1}^{t_0} \ba(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \btheta} dt.
+		\bz(t_1) = \int^{t_1}_{t_0} f(\bz(t), \btheta) d t  + \bz_0 \quad \Rightarrow \quad \text{ODE Solver}
 		\]
 	\end{block}
-	Initial condition is $\frac{\partial L}{\partial \btheta(t_1)} = 0$ (why?). \\
-	All these ODEs could be computed simultaneiusly using augmented dynamic.
+	\begin{block}{Backward pass}
+		\small
+		\vspace{-0.3cm}
+		\begin{equation*}
+			{\left.\begin{aligned}
+				\frac{\partial L}{\partial \bz(t_0)} &= \ba_{\bz}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)} dt + \frac{\partial L}{\partial \bz(t_1)} \\
+				\frac{\partial L}{\partial \btheta(t_0)} &= \ba_{\btheta}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f(\bz(t), \btheta))}{\partial \btheta(t)} dt \\
+				\bz(t_0) &= \int^{t_1}_{t_0} f(\bz(t), \btheta) d t  + \bz_1.
+			\end{aligned}\right\rbrace} \Rightarrow
+			\text{ODE Solver}
+		\end{equation*}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
+\end{frame}
+%=======
+\begin{frame}{Neural ODE}
 	
 	\begin{figure}
 		\centering
 		\includegraphics[width=\linewidth]{figs/neural_ode}
 	\end{figure}
+	
+	\begin{block}{Benefits}
+		\begin{itemize}
+			\item memory efficient (there is no need to store activations);
+			\item adaptive computation (depth is not defined explicitly);
+			\item parameter efficient (there is only parameters of function $f(\bz(t), \btheta)$);
+			\item scalable and invertible normalizing flows (we will discuss it today).
+		\end{itemize}
+	\end{block}
 	\vfill
 	\hrule\medskip
-	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
+	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}}   
 \end{frame}
 %=======
 \begin{frame}{Continuous Normaling Flows}
@@ -297,10 +320,13 @@ Do we know any initilal condition?
 %=======
 \begin{frame}{Continuous NF}
 	\begin{block}{Solution for continuous NF}
-	\[
-	    \log p(\bz(t_1)) = \log p(\bz(t_0)) - \int_{t_0}^{t_1} \text{trace} \left( \frac{\partial f}{\partial \bz} \right) dt.
-	\]
+		\vspace{-0.3cm}
+	\begin{align*}
+		\bz(t_0) &= \int_{t_1}^{t_0} f(\bz(t), \btheta) dt + \bz(t_1); \\
+	    \log p(\bz(t_1)) &= \log p(\bz(t_0)) - \int_{t_0}^{t_1} \text{trace} \left( \frac{\partial f}{\partial \bz(t)} \right) dt.
+	\end{align*}
 	\end{block}
+	\vspace{-0.3cm}
 	\begin{figure}
 	    \centering
 	    \includegraphics[width=1\linewidth]{figs/cnf}
@@ -310,41 +336,78 @@ Do we know any initilal condition?
 	{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
 \end{frame}
 %=======
-\begin{frame}{FFJORD}
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{figs/cnf_flow.png}
-\end{figure}
+\begin{frame}{Continuous NF}
+	
+	\begin{minipage}[t]{0.45\columnwidth}
+		\begin{itemize}
+			\item Standard normalizing flows need invertible $f$.
+			\item In general, it costs $O(d^3)$ to get det of Jacobian.
+			\item Continuous flows need smooth $f$.
+			\item In general, it costs $O(d^2)$ to get trace of Jacobian.
+		\end{itemize}
+	\end{minipage}%
+	\begin{minipage}[t]{0.55\columnwidth}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth]{figs/cnf_flow.png}
+		\end{figure}
+	\end{minipage}
 \vfill
 \hrule\medskip
-{\scriptsize \href{https://arxiv.org/abs/1810.01367}{https://arxiv.org/abs/1810.01367}} 
+{\scriptsize \href{https://arxiv.org/abs/1806.07366}{https://arxiv.org/abs/1806.07366}} 
 \end{frame}
 %=======
 \begin{frame}{FFJORD}
-\begin{block}{Hutchinson's trace estimator}
-\[
-    \text{trace}(A) = \mathbb{E}_{p(\bepsilon)} \left[ \bepsilon^T A \bepsilon \right]; \quad \mathbb{E} [\bepsilon] = 0; \quad \text{Cov} (\bepsilon) = I.
-\]
-\end{block}
-\begin{align*}
-    \log p(\bz(t_1)) &= \log p(\bz(t_0)) - \int_{t_0}^{t_1} \text{trace} \left( \frac{\partial f}{\partial \bz} \right) dt \\
-    &= \log p(\bz(t_0)) - \int_{t_0}^{t_1} \mathbb{E}_{p(\bepsilon)} \left[ \bepsilon^T \frac{\partial f}{\partial \bz} \bepsilon \right] dt \\
-    &= \log p(\bz(t_0)) - \mathbb{E}_{p(\bepsilon)} \int_{t_0}^{t_1} \left[ \bepsilon^T \frac{\partial f}{\partial \bz} \bepsilon \right] dt.
-\end{align*}
-This reduces the cost from quadratic to linear.\\
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/abs/1810.01367}{https://arxiv.org/abs/1810.01367}} 
+	It is possible to reduce cost from $O(d^2)$ to $O(d)$.
+	\begin{block}{Hutchinson's trace estimator}
+	\[
+	    \text{trace}(A) = \mathbb{E}_{p(\bepsilon)} \left[ \bepsilon^T A \bepsilon \right]; \quad \mathbb{E} [\bepsilon] = 0; \quad \text{Cov} (\bepsilon) = I.
+	\]
+	\end{block}
+	\begin{block}{Unbiased estimation}
+		\vspace{-0.3cm}
+	\begin{align*}
+	    \log p(\bz(t_1)) &= \log p(\bz(t_0)) - \int_{t_0}^{t_1} \text{trace} \left( \frac{\partial f}{\partial \bz} \right) dt \\
+	    &= \log p(\bz(t_0)) - \int_{t_0}^{t_1} \mathbb{E}_{p(\bepsilon)} \left[ \bepsilon^T \frac{\partial f}{\partial \bz} \bepsilon \right] dt \\
+	    &= \log p(\bz(t_0)) - \mathbb{E}_{p(\bepsilon)} \int_{t_0}^{t_1} \left[ \bepsilon^T \frac{\partial f}{\partial \bz} \bepsilon \right] dt.
+	\end{align*}
+	\end{block}
+	\vspace{0.3cm}
+
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1810.01367}{https://arxiv.org/abs/1810.01367}} 
 \end{frame}
 %=======
 \begin{frame}{FFJORD}
-\begin{figure}
-    \centering
-    \includegraphics[width=\linewidth]{figs/flow_comparison.png}
-\end{figure}
-\vfill
-\hrule\medskip
-{\scriptsize \href{https://arxiv.org/abs/1810.01367}{https://arxiv.org/abs/1810.01367}} 
+	\begin{block}{Comparison of generative modelling approaches}
+		\begin{figure}
+		    \centering
+		    \includegraphics[width=\linewidth]{figs/flow_comparison.png}
+		\end{figure}
+	\end{block}
+	\vspace{1cm}
+	
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1810.01367}{https://arxiv.org/abs/1810.01367}} 
+\end{frame}
+%=======
+\begin{frame}{FFJORD}
+	\begin{block}{Density estimation}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.8\linewidth]{figs/ffjord_results}
+		\end{figure}
+	\end{block}
+	\begin{block}{Flows for variational inference}
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.8\linewidth]{figs/ffjord_vae}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/1810.01367}{https://arxiv.org/abs/1810.01367}} 
 \end{frame}
 %=======
 \begin{frame}{FFJORD}

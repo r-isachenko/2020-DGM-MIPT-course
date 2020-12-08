@@ -15,6 +15,7 @@
 | 9 | October, 28 | Wasserstein GAN. Spectral Normalization GAN. f-divergence. | [slides](lectures/lecture9/Isachenko2020DeepGenerativeModels9.pdf) | [video](https://youtu.be/tc-YZ_pjwWo) |
 | 10 | November, 11 | GAN evaluation. Advanced GANs (SAGAN, BigGAN, ProGAN, StyleGAN). | [slides](lectures/lecture10/Isachenko2020DeepGenerativeModels10.pdf) | [video](https://youtu.be/kKmQlLOQLIY) |
 | 11 | November, 25 | Disentanglement (InfoGAN, beta-VAE, DIP-VAE, FactorVAE). | [slides](lectures/lecture11/Isachenko2020DeepGenerativeModels11.pdf) | [video](https://youtu.be/xqP01Q4jLIM) |
+| 12 | December, 8 | Continious-in-time models (NeuralODE, FFjord). Quantized latent models (VQ-VAE, VQ-VAE-2, FQ-GAN). | [slides](lectures/lecture12/Isachenko2020DeepGenerativeModels12.pdf) | [video](https://youtu.be/xqP01Q4jLIM) |
 
 
 ## Homeworks

@@ -546,7 +546,76 @@
 \end{frame}
 %=======
 \begin{frame}{Feature Quantized GAN}
+	\begin{itemize}
+		\item GAN tries to find Nash equilibrium, minibatch training is unstable. GAN relies heavily on the minibatch statistics.
+		\item Lots of feature matching strategies were proposed to stabilize the training. 
+	\end{itemize}
+	\begin{block}{Feature quantized GAN discriminator}
+		\[
+			D(\bx) = f_{\bw_T} \circ f_{\bw_B}(\bx) \quad \Rightarrow \quad D(\bx) = f_{\bw_T} \circ f_Q \circ f_{\bw_B}(\bx). 
+		\]
+	\end{block}
+	Here $f_Q$ is a vector quantization operation.
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.7\linewidth]{figs/fqgan}
+	\end{figure}
 	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/2004.02088}{https://arxiv.org/abs/2004.02088}} 
+\end{frame}
+%=======
+\begin{frame}{Feature Quantized GAN}
+	\begin{block}{Quantization procedure}
+		\begin{minipage}[t]{0.65\columnwidth}
+			\begin{figure}
+				\centering
+				\includegraphics[width=\linewidth]{figs/fqgan_cnn.png}
+			\end{figure}
+		\end{minipage}%
+		\begin{minipage}[t]{0.35\columnwidth}
+			\begin{figure}
+				\centering
+				\includegraphics[width=0.9\linewidth]{figs/fqgan_lookup}
+			\end{figure}
+		\end{minipage}
+	\end{block}
+	\begin{block}{Quantized features}
+		\begin{figure}
+			\centering
+			\includegraphics[width=\linewidth]{figs/fqgan_features}
+		\end{figure}
+	\end{block}
+	\vfill
+	\hrule\medskip
+	{\scriptsize \href{https://arxiv.org/abs/2004.02088}{https://arxiv.org/abs/2004.02088}} 
+\end{frame}
+%=======
+\begin{frame}{Feature Quantized GAN}
+		\begin{minipage}[t]{0.45\columnwidth}
+			\begin{block}{ImageNet-1000}
+				\begin{figure}
+					\centering
+					\includegraphics[width=\linewidth]{figs/fqgan_results1.png}
+				\end{figure}
+			\end{block}
+			\begin{block}{FFHQ}
+				\begin{figure}
+					\centering
+					\includegraphics[width=\linewidth]{figs/fqgan_results2.png}
+				\end{figure}
+			\end{block}
+		\end{minipage}%
+		\begin{minipage}[t]{0.55\columnwidth}
+			\begin{block}{Per class metrics for ImageNet}
+				\begin{figure}
+					\centering
+					\includegraphics[width=\linewidth]{figs/fqgan_results3}
+				\end{figure}
+			\end{block}
+		\end{minipage}
+	\vspace{0.8cm}
+	
 	\hrule\medskip
 	{\scriptsize \href{https://arxiv.org/abs/2004.02088}{https://arxiv.org/abs/2004.02088}} 
 \end{frame}

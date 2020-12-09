@@ -152,11 +152,11 @@ Construct an unsupervised deep generative model
 		\vspace{-0.3cm}
 		\begin{multline*}
 		I (\bc, G(\bz, \bc)) = H(\bc) - H(\bc | G(\bz, \bc)) = \\
-		= H(\bc) + \bbE_{\bx \sim G(\bz, \bc)} \left[ \bbE_{\bc \sim p(\bc | \bx)} \log p(\bc' | \bx) \right] = \\ 
+		= H(\bc) + \bbE_{\bx \sim G(\bz, \bc)} \left[ \bbE_{\bc' \sim p(\bc | \bx)} \log p(\bc' | \bx) \right] = \\ 
 		= H(\bc) + \bbE_{\bx \sim G(\bz, \bc)} KL(p(\bc'| \bx) || q(\bz' | \bx)) + 
 		\\ + \bbE_{\bx \sim G(\bz, \bc)}  \bbE_{\bc' \sim p(\bc | \bx)} \log q(\bc' | \bx)  \geq\\
 		 \geq H(\bc) + \bbE_{\bx \sim G(\bz, \bc)} \bbE_{\bc' \sim p(\bc | \bx)} \log q(\bc' | \bx) = \\
-		 H(\bc) + \bbE_{\bc \sim p(\bc)} \bbE_{\bx \sim G(\bz, \bc)} \log q(\bc' | \bx)
+		 H(\bc) + \bbE_{\bc \sim p(\bc)} \bbE_{\bx \sim G(\bz, \bc)} \log q(\bc | \bx)
 		\end{multline*}
 	\end{block}
 	\vfill
@@ -623,7 +623,7 @@ As the information capacity increases the different latents associated with thei
 	disentanglement method and assume that it finds a representation that is perfectly disentangled with respect
 	to $\bz$ in the generative model.
 	\begin{itemize}
-		\item Theorem claims that $\exists$ $\hat{\bz} = f(\bz)$ where $\bar{\bz}$ is completely entangled
+		\item Theorem claims that $\exists$ $\hat{\bz} = f(\bz)$ where $\hat{\bz}$ is completely entangled
 		with respect to $\bz$.
 		\item Since the (unsupervised) disentanglement method only has access to
 		observations $\bx$, it hence cannot distinguish between the two equivalent generative models and thus has to be entangled to at least one of them

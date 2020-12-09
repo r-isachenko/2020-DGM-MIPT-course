@@ -164,7 +164,7 @@
 	\begin{block}{Backward pass (gradients computation)}
 		For fitting parameters we need gradients:
 		\[
-		\ba_{\bz}(t) = \frac{\partial L(\by)}{\partial \btheta(t)}; \quad \ba_{\btheta}(t) = \frac{\partial L(\by)}{\partial \bz(t_0)}.
+		\ba_{\bz}(t) = \frac{\partial L(\by)}{\partial \bz(t)}; \quad \ba_{\btheta}(t) = \frac{\partial L(\by)}{\partial \btheta(t)}.
 		\]
 		In theory of optimal control this functions called \textbf{adjoint} functions. 
 		They shows how the gradient of the loss depends on the hidden state~$\bz(t)$ and parameters $\btheta$.
@@ -206,14 +206,14 @@
 	\begin{block}{Theorem (Pontryagin)}
 		\vspace{-0.3cm}
 		\[
-		\frac{d \ba_{\bz}(t)}{dt} = - \ba_{\bz}(t)^T \cdot \frac{\partial f(\bz(t), \btheta)}{\partial \bz(t)}; \quad  \frac{d \ba_{\btheta}(t)}{dt} = - \ba_{\btheta}(t)^T \cdot \frac{\partial f(\bz(t), \btheta)}{\partial \btheta}
+		\frac{d \ba_{\bz}(t)}{dt} = - \ba_{\bz}(t)^T \cdot \frac{\partial f(\bz(t), \btheta)}{\partial \bz(t)}; \quad  \frac{d \ba_{\btheta}(t)}{dt} = - \ba_{\bz}(t)^T \cdot \frac{\partial f(\bz(t), \btheta)}{\partial \btheta}
 		\]
 	\end{block}
 	\begin{block}{Solution for adjoint function}
 		\begin{align*}
 		 \frac{\partial L}{\partial \bz(t_0)} &= \ba_{\bz}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)} dt + \frac{\partial L}{\partial \bz(t_1)} \\
 		 \frac{\partial L}{\partial \btheta(t_0)} &= \ba_{\btheta}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f(\bz(t), \btheta))}{\partial \btheta(t)} dt \\
-		 \bz(t_0) &= \int^{t_1}_{t_0} f(\bz(t), \btheta) d t  + \bz_1.
+		 \bz(t_0) &= \int^{t_0}_{t_1} f(\bz(t), \btheta) d t  + \bz_1.
 		\end{align*}
 	\end{block}
 	\vfill
@@ -234,7 +234,7 @@
 			{\left.\begin{aligned}
 				\frac{\partial L}{\partial \bz(t_0)} &= \ba_{\bz}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f(\bz(t), t, \btheta)}{\partial \bz(t)} dt + \frac{\partial L}{\partial \bz(t_1)} \\
 				\frac{\partial L}{\partial \btheta(t_0)} &= \ba_{\btheta}(t_0) =  - \int_{t_1}^{t_0} \ba_{\bz}(t)^T \frac{\partial f(\bz(t), \btheta))}{\partial \btheta(t)} dt \\
-				\bz(t_0) &= \int^{t_1}_{t_0} f(\bz(t), \btheta) d t  + \bz_1.
+				\bz(t_0) &= \int^{t_0}_{t_1} f(\bz(t), \btheta) d t  + \bz_1.
 			\end{aligned}\right\rbrace} \Rightarrow
 			\text{ODE Solver}
 		\end{equation*}
@@ -435,7 +435,7 @@
 %=======
 \begin{frame}{Vector Quantized VAE}
 	\begin{itemize}
-		\item Latent embedding space $\{\be_j\}_{j=1}^K$, where $\be_j \in \bbR_D$, $K$ is the size of the discrete latent space.
+		\item Latent embedding space $\{\be_j\}_{j=1}^K$, where $\be_j \in \bbR^D$, $K$ is the size of the discrete latent space.
 		\item $\bz_e(\bx)$ is the encoder output.
 		\item $z$ is the discrete random variable calculated by a nearest neighbour look-up using the shared embedding space. The posterior categorical distribution is defined as 
 		\[
@@ -497,7 +497,7 @@
 	\begin{itemize}
 		\item Use multi-scale hierarchical model.
 		\item Use autoregressive prior model in each scale of the hierarchy.
-		\item Improve autoregressive prior (PixelSNAIL with self-attenrion in bottom layer, PixelCNN++ in bottom layer).
+		\item Improve autoregressive prior (PixelSNAIL with self-attention in bottom layer, PixelCNN++ in bottom layer).
 		\item Train the encoder and decoder at the first stage, train the priors at the second stage.
 	\end{itemize}
 	\begin{figure}
